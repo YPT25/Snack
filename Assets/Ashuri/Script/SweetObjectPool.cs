@@ -4,71 +4,83 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Mirror;
 
-#if UNITY_EDITOR // UnityエディタでのみHandles APIを使用するために必要
-using UnityEditor;
-#endif
-
 /// <summary>
-/// お菓子オブジェクトを生成・管理するためのオブジェクトプール。
-/// Mirrorネットワーク上で同期されるお菓子を効率的に再利用する。
+/// Sweetオブジェクトを生成・管理するためのオブジェクトプール。
+/// Mirrorネットワーク上で同期されるSweetを効率的に再利用する。
 /// </summary>
 public class SweetObjectPool : NetworkBehaviour
 {
     [Header("複製する元")]
-    [SerializeField] private List<GameObject> _sweetPrefabs; // GameObjectのリストに変更
-    [Header("複製する場所")]
+    [SerializeField] private GameObject _sweetPrefab;
+    [Header("複製する場所 (このスクリプトがアタッチされているオブジェクト)")]
+    [Tooltip("Sweetを生成する際の親となるTransform。通常、このスクリプトがアタッチされているオブジェクトを設定します。")]
     [SerializeField] private Transform _sweetContent;
-    [Header("お菓子を生成する間隔")]
+    [Header("Sweetを生成する間隔")]
     [SerializeField] private float _spawnInterval = 2f;
 
-    [Header("生成範囲設定")]
-    [SerializeField] private float _spawnRadius = 5f; // 生成する円の半径
-
     [Header("オブジェクトプール")]
-    // プレハブごとにプールを持つ必要があるため、Dictionaryを使用
-    private Dictionary<GameObject, ObjectPool<GameObject>> _pools = new Dictionary<GameObject, ObjectPool<GameObject>>();
+    private ObjectPool<GameObject> _pool;
 
-    // お菓子の生成タイミングを計るためのタイマー
+    // Sweetの生成タイミングを計るためのタイマー
     private float _timer;
+
+    [Header("Sweet生成範囲の頂点 (X-Z平面)")]
+    [Tooltip("Sweetが生成されるX-Z平面上の4つの頂点座標を設定します。Y座標は無視されます。" +
+             "これらの座標は'_sweetContent'からの相対的なローカル座標として扱われます。")]
+    [SerializeField] private Vector3[] _spawnAreaVertices = new Vector3[4];
 
     // Startはサーバーでのみ実行されるようにする
     public override void OnStartServer()
     {
         base.OnStartServer(); // 親クラスのOnStartServerを呼び出す
 
-        // 各プレハブに対して個別のオブジェクトプールを初期化する
-        foreach (GameObject prefab in _sweetPrefabs)
+        // _sweetContentが未設定の場合、このスクリプトがアタッチされているTransformを使用
+        if (_sweetContent == null)
         {
-            if (prefab == null)
-            {
-                // エラーメッセージを修正: "SweetPrefabs"
-                Debug.LogWarning("SweetPrefabs list contains a null entry. Please check your inspector settings.");
-                continue;
-            }
-
-            _pools.Add(prefab, new ObjectPool<GameObject>(
-                () => OnCreatePoolObject(prefab), // 各プレハブに対応する生成処理を渡す
-                OnGetFromPool,               // オブジェクトプールからゲームオブジェクトを取得する関数 (サーバーのみ)
-                OnReleaseToPool,             // ゲームオブジェクトをオブジェクトプールに返却する処理関数 (サーバーのみ)
-                OnDestroyPooledObject        // ゲームオブジェクトを削除する処理の関数 (サーバーのみ)
-            ));
+            _sweetContent = this.transform;
+            Debug.LogWarning($"'_sweetContent' was not set. Using '{_sweetContent.name}' (this GameObject's transform) as default.");
         }
 
+        // UnityのObjectPoolの初期化
+        _pool = new ObjectPool<GameObject>(
+            OnCreatePoolObject,          // ゲームオブジェクトの生成処理の関数 (サーバーのみ)
+            OnGetFromPool,               // オブジェクトプールからゲームオブジェクトを取得する関数 (サーバーのみ)
+            OnReleaseToPool,             // ゲームオブジェクトをオブジェクトプールに返却する処理関数 (サーバーのみ)
+            OnDestroyPooledObject,       // ゲームオブジェクトを削除する処理の関数 (サーバーのみ)
+            defaultCapacity: 10,         // 初期容量 (任意)
+            maxSize: 100                 // 最大サイズ (任意)
+        );
+
         _timer = _spawnInterval; // 初回生成のためにタイマーを初期化
+
+        // 頂点が設定されているかチェック
+        if (_spawnAreaVertices == null || _spawnAreaVertices.Length != 4)
+        {
+            Debug.LogError("SpawnAreaVertices must contain exactly 4 vertices. Please set them in the Inspector. " +
+                           "Using default square range [-5,5] in X and Z.");
+            // デフォルトの範囲を設定しておく (フォールバック)
+            _spawnAreaVertices = new Vector3[]
+            {
+                new Vector3(-5, 0, -5), // bottom-left
+                new Vector3(5, 0, -5),  // bottom-right
+                new Vector3(5, 0, 5),   // top-right
+                new Vector3(-5, 0, 5)   // top-left
+            };
+        }
     }
 
     // Updateはサーバーでのみ実行されるようにする
     [ServerCallback] // このメソッドがサーバー上でのみ呼び出されることを保証
     void Update()
     {
-        // サーバー上でのみお菓子の生成ロジックを実行
+        // サーバー上でのみSweetの生成ロジックを実行
         if (!isServer) return; // 念のため、サーバーでなければ処理しない
 
         _timer -= Time.deltaTime; // タイマーを減少させる
 
         if (_timer <= 0)
         {
-            SpawnSweet(); // お菓子を生成する (関数名を修正)
+            SpawnSweet(); // Sweetを生成する
             _timer = _spawnInterval; // タイマーをリセット
         }
     }
@@ -76,16 +88,14 @@ public class SweetObjectPool : NetworkBehaviour
     /// <summary>
     /// オブジェクトプール用のゲームオブジェクト生成処理の関数。
     /// この関数はサーバー側でオブジェクトが不足した際に呼び出される。
-    /// 引数でどのプレハブから生成するかを指定できるように変更。
     /// </summary>
-    /// <param name="prefab">生成元のプレハブ</param>
     /// <returns>生成されたGameObject</returns>
-    public GameObject OnCreatePoolObject(GameObject prefab)
+    public GameObject OnCreatePoolObject()
     {
         // ここではまだ親を設定しません。スポーン後、RPCでクライアントにも親を同期させます。
         // Instantiateはサーバー側で実行されます。
-        GameObject sweetObject = Instantiate(prefab); // 引数のプレハブを使用
-        // 生成したお菓子オブジェクトは最初は非アクティブな状態でPoolに格納されるようにする
+        GameObject sweetObject = Instantiate(_sweetPrefab);
+        // 生成したSweetオブジェクトは最初は非アクティブな状態でPoolに格納されるようにする
         sweetObject.SetActive(false);
         return sweetObject;
     }
@@ -112,7 +122,7 @@ public class SweetObjectPool : NetworkBehaviour
         target.gameObject.SetActive(false);
         // プールに戻す際に、オブジェクトの親を解除しておくことで、
         // 次に取得されたときにクリーンな状態からスタートできるようにする。
-        target.transform.SetParent(null);
+        target.transform.SetParent(null); // 親を解除
     }
 
     /// <summary>
@@ -122,55 +132,47 @@ public class SweetObjectPool : NetworkBehaviour
     /// <param name="target">削除するGameObject</param>
     public void OnDestroyPooledObject(GameObject target)
     {
+        // MirrorでNetworkServer.SpawnされたオブジェクトをDestroyする際は、
+        // NetworkServer.Destroy を使用してネットワークからオブジェクトを削除します。
+        // これは、Poolingをせずに完全にオブジェクトを削除する場合に重要です。
+        // ただし、通常PoolingではDestroyPooledObjectが呼ばれるのは稀なケースです。
         if (target != null && target.TryGetComponent<NetworkIdentity>(out NetworkIdentity ni) && ni.isServer)
         {
-            NetworkServer.Destroy(target); // NetworkServer.Destroy を使用してネットワークからオブジェクトを削除
+            NetworkServer.Destroy(target);
         }
-        else if (target != null) // NetworkIdentityがない場合でもDestroyを呼ぶ
+        else
         {
             Destroy(target.gameObject);
         }
     }
 
     /// <summary>
-    /// お菓子を生成し、オブジェクトプールから取得してネットワークにスポーンする関数。
+    /// Sweetを生成し、オブジェクトプールから取得してネットワークにスポーンする関数。
     /// </summary>
-    private void SpawnSweet() // 関数名を修正
+    private void SpawnSweet()
     {
-        if (_sweetPrefabs.Count == 0)
-        {
-            // エラーメッセージを修正: "SweetPrefabs"
-            Debug.LogWarning("SweetPrefabs list is empty. Cannot spawn sweet.");
-            return;
-        }
+        // オブジェクトプールからSweetオブジェクトを取得
+        GameObject sweet = _pool.Get();
 
-        // お菓子プレハブのリストからランダムに1つ選択
-        GameObject selectedPrefab = _sweetPrefabs[Random.Range(0, _sweetPrefabs.Count)];
-        if (selectedPrefab == null)
-        {
-            // エラーメッセージを修正: "sweet prefab"
-            Debug.LogWarning("Selected sweet prefab is null. Skipping spawn.");
-            return;
-        }
+        // サーバー側で、一時的に親を設定し、座標を調整する。
+        // このSetParentは、クライアントには直接同期されないため、RPCで別途通知します。
+        sweet.transform.SetParent(_sweetContent);
 
-        // 選択されたプレハブに対応するオブジェクトプールからお菓子オブジェクトを取得
-        GameObject sweet = _pools[selectedPrefab].Get(); // 変数名を修正
+        // 4つの頂点で定義されるX-Z平面の四角形内のランダムなローカル座標を取得します。
+        // この関数の内部で、Y座標は _sweetContent のローカルY座標に固定されます。
+        Vector3 randomLocalPosition = GetRandomPointInQuadXZ();
 
-        // 円形範囲内のランダムな位置を計算
-        // _sweetContentの位置を中心に、_spawnRadiusの半径で生成
-        Vector2 randomCirclePoint = Random.insideUnitCircle * _spawnRadius;
-        Vector3 spawnPosition = _sweetContent.position + new Vector3(randomCirclePoint.x, randomCirclePoint.y, 0f);
-
-
-        sweet.transform.SetParent(_sweetContent); // _sweetContentを親に設定
-        sweet.transform.position = spawnPosition; // 計算した位置にスポーン
+        // 取得したランダムなローカル座標をSweetのlocalPositionに設定
+        sweet.transform.localPosition = randomLocalPosition;
         sweet.transform.localRotation = Quaternion.identity; // 回転もリセット
         sweet.transform.localScale = Vector3.one; // スケールもリセット (必要に応じて)
 
-        // ここでお菓子の初期設定を行う場合は、そのコンポーネントにアクセスして設定
-        // 例: sweet.GetComponent<SweetData>().Initialize();
+        // 必要であれば、ここでSweetのコンポーネントにアクセスして初期設定を行います
+        // 例: sweet.GetComponent<SweetData>().Initialize(Color.red);
 
-        // オブジェクトをネットワーク上にスポーンする。
+        // オブジェクトをネットワーク上にスポーンします。
+        // これにより、クライアント側でもこのSweetオブジェクトが生成され、
+        // そのTransformが同期され始めます。
         NetworkServer.Spawn(sweet);
 
         // クライアント側で親を設定するためにRPCを呼び出す。
@@ -186,95 +188,111 @@ public class SweetObjectPool : NetworkBehaviour
             }
             else
             {
-                // エラーメッセージを修正: "SweetParentSetter"
-                Debug.LogWarning($"Sweet prefab '{selectedPrefab.name}' is missing SweetParentSetter component. Cannot set parent on clients.");
+                Debug.LogWarning($"Sweet prefab '{_sweetPrefab.name}' is missing SweetParentSetter component. Cannot set parent on clients.");
             }
         }
         else
         {
-            // エラーメッセージを修正: "_sweetContent"
-            Debug.LogWarning($"'_sweetContent' ({_sweetContent.name}) is missing NetworkIdentity component. Cannot synchronize parent via RPC.");
+            // _sweetContentにNetworkIdentityがない場合でも、基本的な生成は可能です。
+            // ただし、クライアント側でSweetが親の下に階層化されないため、
+            // ワールド座標で生成されてしまいます。
+            Debug.LogWarning($"'_sweetContent' ({_sweetContent.name}) is missing NetworkIdentity component. " +
+                             "Sweet objects will spawn in world space on clients if not manually parented.");
         }
     }
 
     /// <summary>
-    /// お菓子が破壊されたり、不要になったりした際にプールに戻すための関数。
-    /// お菓子自身のスクリプトなどから呼び出されることを想定。
+    /// Sweetが破壊されたり、不要になったりした際にプールに戻すための関数。
+    /// Sweet自身のスクリプトなどから呼び出されることを想定。
     /// </summary>
-    /// <param name="sweetToRelease">プールに返却するお菓子GameObject</param>
-    public void ReleaseSweet(GameObject sweetToRelease) // 関数名と引数名を修正
+    /// <param name="sweetToRelease">プールに返却するSweet GameObject</param>
+    public void ReleaseSweet(GameObject sweetToRelease)
     {
         if (sweetToRelease == null) return;
 
-        // 返却するオブジェクトの元のプレハブを見つける必要がある
-        GameObject originalPrefab = null;
-        foreach (GameObject prefab in _sweetPrefabs)
-        {
-            if (prefab != null && sweetToRelease.name.Contains(prefab.name)) // 名前の部分一致で判定 (厳密にはGUIDなどで判定すべきだが、簡易的に)
-            {
-                originalPrefab = prefab;
-                break;
-            }
-        }
+        // オブジェクトプールに戻す場合、NetworkServer.UnSpawnは通常行いません。
+        // NetworkServer.UnSpawn を実行すると、クライアントからもオブジェクトが消えてしまいます。
+        // プールの目的は再利用なので、完全にネットワークから削除するのではなく、
+        // 非アクティブにしてプールに返却し、次回の利用に備えます。
+        _pool.Release(sweetToRelease); // オブジェクトをプールに返却
+    }
 
-        if (originalPrefab != null && _pools.ContainsKey(originalPrefab))
+    /// <summary>
+    /// 4つの頂点で定義されるX-Z平面の四角形（または凸四角形）内のランダムなローカル座標を返す。
+    /// 返されるY座標は、'_sweetContent'のローカルY座標に固定されます。
+    /// </summary>
+    /// <returns>四角形内のランダムなローカル座標</returns>
+    private Vector3 GetRandomPointInQuadXZ()
+    {
+        // _spawnAreaVertices が _sweetContent のローカル座標として入力されることを想定しています。
+        // (もしワールド座標として入力される場合は、事前に _sweetContent.InverseTransformPoint() で
+        //  ローカル座標に変換する必要がありますが、今回はインスペクターからの入力なのでローカルを想定します)
+
+        // 四角形を2つの三角形に分割し、どちらかの三角形内でランダムな点を生成します。
+        // この方法は、四角形が凸型である場合に最も均一な分布を提供します。
+        // 頂点0, 1, 2, 3 が反時計回りまたは時計回りに順序良く並んでいることを前提とします。
+
+        // 重心座標系 (Barycentric Coordinates) を利用して、
+        // 三角形内のランダムな点を効率的に生成します。
+        float r1 = Random.value;
+        float r2 = Random.value;
+
+        Vector3 randomPoint;
+
+        if (r1 + r2 < 1)
         {
-            _pools[originalPrefab].Release(sweetToRelease); // 対応するプールに返却
+            // 頂点0, 頂点1, 頂点2 で構成される三角形の範囲
+            randomPoint = _spawnAreaVertices[0] + r1 * (_spawnAreaVertices[1] - _spawnAreaVertices[0]) + r2 * (_spawnAreaVertices[2] - _spawnAreaVertices[0]);
         }
         else
         {
-            Debug.LogWarning($"Could not find original prefab for {sweetToRelease.name} to release it to a pool. Destroying instead.");
-            // プールが見つからない場合は、最終手段としてオブジェクトを破棄
-            if (sweetToRelease.TryGetComponent<NetworkIdentity>(out NetworkIdentity ni) && ni.isServer)
-            {
-                NetworkServer.Destroy(sweetToRelease);
-            }
-            else
-            {
-                Destroy(sweetToRelease);
-            }
+            // 頂点0, 頂点2, 頂点3 で構成される三角形の範囲
+            // または、頂点3, 頂点2, 頂点0 の順で考える (1-r1, 1-r2 を使用)
+            float r1Prime = 1 - r1;
+            float r2Prime = 1 - r2;
+            randomPoint = _spawnAreaVertices[3] + r1Prime * (_spawnAreaVertices[2] - _spawnAreaVertices[3]) + r2Prime * (_spawnAreaVertices[0] - _spawnAreaVertices[3]);
         }
+
+        // Y座標は'_sweetContent'のローカルY座標に固定します。
+        // _sweetContentの子としてSweetが生成されるため、親のローカルY座標を適用することで
+        // 親と同じ高さ（Y座標）にSweetが配置されます。
+        // 通常、_sweetContentのローカルY座標は0なので、SweetのY座標も0になります。
+        randomPoint.y = _sweetContent.InverseTransformPoint(_sweetContent.position).y;
+
+        return randomPoint;
     }
 
-    // =========================================================================
-    // エディタ専用の描画・調整機能 (GizmosとHandles)
-    // =========================================================================
-
-    // Sceneビューで常に円を描画
-    void OnDrawGizmos()
-    {
-        // _sweetContentが設定されていない場合は描画しない
-        if (_sweetContent == null) return;
-
-        // 常に描画される円の色を設定
-        Gizmos.color = Color.yellow;
-        // _sweetContentの位置を中心に、_spawnRadiusの半径でワイヤーフレームの球（円）を描画
-        // ここではZ軸を無視してXY平面に描画されるようにします
-        Gizmos.DrawWireSphere(_sweetContent.position, _spawnRadius);
-    }
-
-    // コンポーネクトが選択されたときにのみ、半径調整ハンドルと強調された円を描画
+    // デバッグ表示用のGizmos (エディタ専用)
     void OnDrawGizmosSelected()
     {
-#if UNITY_EDITOR // Handles APIはエディタ専用のため、#if UNITY_EDITORで囲む
+        // _sweetContentが設定されていないか、頂点数が不正な場合は描画しない
+        if (_sweetContent == null || _spawnAreaVertices == null || _spawnAreaVertices.Length != 4)
+        {
+            return;
+        }
 
-        // _sweetContentが設定されていない場合は描画しない
-        if (_sweetContent == null) return;
+        // ギズモの色を設定
+        Gizmos.color = Color.cyan;
 
-        // 選択時に描画される円の色を設定
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(_sweetContent.position, _spawnRadius);
+        // _sweetContentを基準としたワールド座標に変換してGizmosを描画
+        // _spawnAreaVerticesは_sweetContentのローカル座標として扱われるため、
+        // Gizmosでワールド座標として表示するにはTransformPointを使用します。
+        Vector3 v0_world = _sweetContent.TransformPoint(_spawnAreaVertices[0]);
+        Vector3 v1_world = _sweetContent.TransformPoint(_spawnAreaVertices[1]);
+        Vector3 v2_world = _sweetContent.TransformPoint(_spawnAreaVertices[2]);
+        Vector3 v3_world = _sweetContent.TransformPoint(_spawnAreaVertices[3]);
 
-        // Handles.RadiusHandle を使用して、Sceneビューで半径をドラッグで調整できるようにする
-        // _sweetContent.position がハンドルの中心点
-        // _spawnRadius が現在の半径
-        // Quaternion.identity はハンドルの向き（ここでは回転なし）
-        // Handles.RadiusHandle は調整後の新しい半径を返す
-        _spawnRadius = Handles.RadiusHandle(Quaternion.identity, _sweetContent.position, _spawnRadius);
+        // 4頂点を結ぶ線を描画
+        Gizmos.DrawLine(v0_world, v1_world);
+        Gizmos.DrawLine(v1_world, v2_world);
+        Gizmos.DrawLine(v2_world, v3_world);
+        Gizmos.DrawLine(v3_world, v0_world);
 
-        // 半径が負の値にならないようにクランプ
-        _spawnRadius = Mathf.Max(0.1f, _spawnRadius); // 最低半径を0.1fに設定
-
-#endif
+        // 各頂点を強調表示する球を描画
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(v0_world, 0.1f);
+        Gizmos.DrawSphere(v1_world, 0.1f);
+        Gizmos.DrawSphere(v2_world, 0.1f);
+        Gizmos.DrawSphere(v3_world, 0.1f);
     }
 }

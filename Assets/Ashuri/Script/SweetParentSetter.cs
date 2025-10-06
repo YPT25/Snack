@@ -23,7 +23,7 @@ public class SweetParentSetter : NetworkBehaviour
             transform.SetParent(parentIdentity.transform);
 
             // 親を設定した後、ローカル座標や回転をリセットして親に対する相対位置を調整する
-            transform.localPosition = Vector3.zero; // 親の原点に配置
+            //transform.localPosition = Vector3.zero; // 親の原点に配置
             transform.localRotation = Quaternion.identity; // 親と同じ回転
             transform.localScale = Vector3.one; // 親と同じスケール (必要に応じて)
         }
