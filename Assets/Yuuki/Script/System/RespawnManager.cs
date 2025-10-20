@@ -6,129 +6,130 @@ using TMPro;
 
 public class RespawnManager : MonoBehaviour
 {
-    // TODO: 将来的に「現存するNPCの種類」と同じキャラだけ選択可能にする
-    //       FindObjectsOfType<NPCBase>() でリスト化して判定する予定
-
     [Header("リスポーン設定")]
-    [SerializeField] private List<GameObject> playerPrefabs; // リスポーン候補（プレイヤーのプレハブ）
+    [SerializeField] private List<GameObject> playerPrefabs; // リスポーン候補
     [SerializeField] private Transform respawnPoint;          // リスポーン位置
-    [SerializeField] private GameObject respawnUI;            // リスポーンUI（Canvas配下の親）
-    [SerializeField] private Button buttonPrefab;             // 選択ボタンのプレハブ（ルートにButton）
+    [SerializeField] private GameObject respawnUI;            // リスポーンUI（Canvas配下）
+    [SerializeField] private Button buttonPrefab;             // 選択ボタンのプレハブ
 
-    private GameObject currentPlayer; // 現在のプレイヤー
+    private GameObject currentPlayer;
     private bool isWaitingForSelection = false;
 
     private void Start()
     {
-        // 初回起動時はUIを非表示
-        if (respawnUI != null)
-            respawnUI.SetActive(false);
-
-        // 初期プレイヤー生成（仮に最初のキャラ）
-        SpawnPlayer(0);
+        if (respawnUI != null) respawnUI.SetActive(false);
+        SpawnPlayer(0); // 仮で最初のキャラ
     }
 
-    /// <summary>
-    /// プレイヤー死亡時に呼び出される（MPlayerBaseから）
-    /// </summary>
     public void OnPlayerDeath()
     {
-        Debug.Log("プレイヤー死亡。キャラ選択画面を表示。");
+        Debug.Log("プレイヤー死亡。リスポーン選択UIを表示。");
         ShowRespawnUI();
     }
 
     /// <summary>
-    /// キャラ選択UIを表示
+    /// 現在ステージに存在するNPC(敵)のタイプを取得
     /// </summary>
-    private void ShowRespawnUI()
+    private HashSet<EnemyBase.EnemyType> GetExistingEnemyTypes()
     {
-        if (respawnUI == null || buttonPrefab == null) return;
+        HashSet<EnemyBase.EnemyType> existingTypes = new HashSet<EnemyBase.EnemyType>();
+        var enemies = FindObjectsOfType<EnemyBase>();
 
-        respawnUI.SetActive(true);
-        isWaitingForSelection = true;
-
-        // 既存ボタンをクリア
-        foreach (Transform child in respawnUI.transform)
-            Destroy(child.gameObject);
-
-        // 現在ステージに存在するNPCの種類を取得
-        var existingTypes = GetExistingNPCTypes();
-
-        // ボタンを生成
-        for (int i = 0; i < playerPrefabs.Count; i++)
+        foreach (var enemy in enemies)
         {
-            string playerName = playerPrefabs[i].name;
-            if (!existingTypes.Contains(playerName))
-            {
-                // 存在しない種類はスキップ
-                continue;
-            }
-
-            var newButton = Instantiate(buttonPrefab, respawnUI.transform);
-
-            // ボタン名設定
-            TMP_Text textComp = newButton.GetComponentInChildren<TMP_Text>();
-            if (textComp != null)
-                textComp.text = playerName;
-
-            // Button コンポーネント取得＆Listener登録
-            Button btn = newButton.GetComponent<Button>();
-            if (btn == null)
-                btn = newButton.GetComponentInChildren<Button>();
-
-            if (btn != null)
-            {
-                int index = i; // クロージャ対策
-                btn.onClick.AddListener(() => OnCharacterSelected(index));
-            }
+            if (enemy.GetEnemyType() != EnemyBase.EnemyType.TYPE_NULL)
+                existingTypes.Add(enemy.GetEnemyType());
         }
+
+        return existingTypes;
     }
 
     /// <summary>
-    /// キャラ選択後の処理（ボタン押下で呼ばれる）
+    /// キャラ選択UIを表示（敵のタイプに応じてフィルタ）
+    /// </summary>
+    private void ShowRespawnUI()
+    {
+        if (respawnUI == null || buttonPrefab == null)
+        {
+            Debug.LogError("Respawn UI または ボタンプレハブ が設定されていません！");
+            return;
+        }
+
+        // 既存ボタンを削除
+        foreach (Transform child in respawnUI.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // ステージ上の敵タイプを取得
+        HashSet<EnemyBase.EnemyType> allowedTypes = GetExistingEnemyTypes();
+        Debug.Log($"[RespawnManager] 現在の敵タイプ: {string.Join(", ", allowedTypes)}");
+
+
+        // 対応プレイヤーのみボタン生成
+        for (int i = 0; i < playerPrefabs.Count; i++)
+        {
+            var playerPrefab = playerPrefabs[i];
+            var playerBase = playerPrefab.GetComponent<MPlayerBase>();
+
+            if (playerBase == null)
+            {
+                Debug.LogWarning($"[{playerPrefab.name}] に PlayerBase がアタッチされていません。");
+                continue;
+            }
+
+            var pType = playerBase.GetEnemyType();
+
+            // 敵のタイプに存在するプレイヤーのみボタン生成
+            if (allowedTypes.Contains(pType))
+            {
+                var newButton = Instantiate(buttonPrefab, respawnUI.transform);
+                var textComp = newButton.GetComponentInChildren<TMP_Text>();
+                var imageComp = newButton.GetComponentInChildren<Image>();
+
+                // テキスト設定
+                if (textComp != null)
+                    textComp.text = playerPrefab.name;
+
+                // 画像設定（ボタンに Image がある場合）
+                var icon = playerBase.GetRespawnIcon();
+                if (imageComp != null && icon != null)
+                    imageComp.sprite = icon;
+
+                int index = i; // クロージャー対策
+                newButton.onClick.AddListener(() => OnCharacterSelected(index));
+                Debug.Log("リスポーンボタン生成：" + playerPrefab.name);
+            }
+        }
+
+        respawnUI.SetActive(true);
+        isWaitingForSelection = true;
+    }
+
+    /// <summary>
+    /// プレイヤー選択後の処理
     /// </summary>
     private void OnCharacterSelected(int index)
     {
         if (!isWaitingForSelection) return;
 
         Debug.Log($"プレイヤー[{playerPrefabs[index].name}]を選択。リスポーンします。");
-
         respawnUI.SetActive(false);
         isWaitingForSelection = false;
-
         SpawnPlayer(index);
     }
 
     /// <summary>
-    /// プレイヤーを生成
+    /// プレイヤー生成
     /// </summary>
     private void SpawnPlayer(int index)
     {
-        // 既存プレイヤーを破棄
         if (currentPlayer != null)
             Destroy(currentPlayer);
 
-        // 新しいプレイヤーを生成
         GameObject prefab = playerPrefabs[index];
         currentPlayer = Instantiate(prefab, respawnPoint.position, Quaternion.identity);
 
         Debug.Log($"プレイヤー[{prefab.name}]をリスポーンしました。");
-    }
-
-    /// <summary>
-    /// ステージ内に存在しているNPCの名前を取得
-    /// </summary>
-    private HashSet<string> GetExistingNPCTypes()
-    {
-        HashSet<string> existingTypes = new HashSet<string>();
-        var npcs = FindObjectsOfType<NPCBase>();
-
-        foreach (var npc in npcs)
-        {
-            string npcName = npc.name.Replace("(Clone)", "").Trim();
-            existingTypes.Add(npcName);
-        }
-
-        return existingTypes;
     }
 }

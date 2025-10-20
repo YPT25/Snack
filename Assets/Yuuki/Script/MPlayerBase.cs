@@ -8,7 +8,9 @@ public class MPlayerBase : EnemyBase
     [Header("マウス感度")]
     [SerializeField] protected float mouseSensitivity = 3.0f;
     [Header("プレイヤー回転の補間速度")]
-    [SerializeField] protected float rotationSmooth = 10f;   
+    [SerializeField] protected float rotationSmooth = 10f;
+    [Header("リスポーン選択用アイコン")]
+    [SerializeField] private Sprite m_respawnIcon;
 
     protected Vector3 m_inputDir;
     protected Rigidbody m_rb;
@@ -142,4 +144,11 @@ public class MPlayerBase : EnemyBase
     {
         Debug.Log($"{name} が攻撃入力");
     }
+
+    // アクセッサ
+    public Sprite GetRespawnIcon()
+    {
+        return m_respawnIcon;
+    }
+
 }
