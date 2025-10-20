@@ -53,7 +53,7 @@ public class NPCBase : EnemyBase
         float dist = Vector3.Distance(transform.position, m_target.position);
         if (dist < 2.0f) // ‰¼‚ÌUŒ‚”ÍˆÍ
         {
-            Attack(m_target.GetComponent<CharacterBase>());
+            Attack(m_target.GetComponent<CharacterBaseY>());
         }
     }
 

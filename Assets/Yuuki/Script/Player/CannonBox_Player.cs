@@ -21,7 +21,7 @@ public class CannonBox_Player : MPlayerBase
         Attack(null); // �ߐڑΏۂ͕s�v
     }
 
-    public override void Attack(CharacterBase target)
+    public override void Attack(CharacterBaseY target)
     {
         if (cannonBallPrefab == null || firePoint == null) return;
 

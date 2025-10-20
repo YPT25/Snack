@@ -90,7 +90,7 @@ public class NormalBox_Player : MPlayerBase
     {
         if (!m_isAttacking) return;
 
-        CharacterBase target = other.GetComponent<CharacterBase>();
+        CharacterBaseY target = other.GetComponent<CharacterBaseY>();
         if (target != null && target != this)
         {
             // EnemyBase の Attack を呼ぶ（ダメージ処理は共通）
