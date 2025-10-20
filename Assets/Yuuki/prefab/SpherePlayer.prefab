@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_initialParameter:
-    hp: 100
+    hp: 30
     power: 20
     moveSpeed: 10.1
     stamina: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_enemyType: 2
   mouseSensitivity: 3
   rotationSmooth: 10
-  m_respawnIcon: {fileID: 0}
+  m_respawnIcon: {fileID: 21300000, guid: 573e845e8ce42ff46aa8474262411549, type: 3}
   m_attackCollider: {fileID: 0}
   m_rollDuration: 1
   m_rollForce: 15
