@@ -49,19 +49,21 @@ public class DropState : IItemState_Tanabe
                 item.GetPlayerData() != null && item.GetPlayerData().GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f && item.GetPlayerData().GetPart() == null)
             {
                 item.GetPlayerData().SetPrevShotButton(Input.GetAxisRaw("Shot"));
-                item.ChangeState(new PartEquippedState(item));
+                item.CmdChangeState(item, ItemStateMachine.ItemStateType.PARTEQUIPPED);
             }
         }
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(GameObject other)
     {
-        if(other.gameObject.tag != "Player") { return; }
+        Debug.Log("hit");
+        if(other.tag != "Player") { return; }
 
 
 
         Player_Tanabe player = other.GetComponent<Player_Tanabe>();
-        if (item.GetItemType() != ItemStateMachine.ItemType.POINT && player == null ||
+
+        if (player == null ||
             item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetItemType() != ItemStateMachine.ItemType.SETPART && player.GetPossesionManager().IsMaxPossession())
         {
             return;
@@ -71,7 +73,7 @@ public class DropState : IItemState_Tanabe
 
         if(item.GetItemType() != ItemStateMachine.ItemType.SETPART)
         {
-            item.ChangeState(new SuckState(item));
+            item.CmdChangeState(item, ItemStateMachine.ItemStateType.SUCK);
         }
     }
 

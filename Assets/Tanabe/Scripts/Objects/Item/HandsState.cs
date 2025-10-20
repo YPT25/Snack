@@ -32,10 +32,10 @@ public class HandsState : IItemState_Tanabe
 
     public void Update()
     {
-
+        item.transform.localPosition = new Vector3(-0.6f, 0.0f, 0.8f);
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(GameObject other)
     {
     }
 

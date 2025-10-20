@@ -20,12 +20,20 @@ public class TPSCameraController_Tanabe : MonoBehaviour
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;  // マウスロック
         m_player = GetComponentInParent<Player_Tanabe>();
+        if(m_player == null || !m_player.isLocalPlayer) { return; }
+        target = m_player.transform;
+        Transform camera = GameObject.FindWithTag("MainCamera").transform;
+        camera.parent = this.transform;
+        camera.localPosition = new Vector3(0f, 0.35f, 0f);
+        camera.localRotation = Quaternion.identity;
+        Cursor.lockState = CursorLockMode.Locked;  // マウスロック
     }
 
     void LateUpdate()
     {
+        if (m_player == null || !m_player.isLocalPlayer) { return; }
+
         if (Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.C))
         {
             Cursor.lockState = (CursorLockMode)(Math.Abs((int)Cursor.lockState - 1));

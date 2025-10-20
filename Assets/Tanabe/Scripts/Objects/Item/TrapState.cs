@@ -120,13 +120,13 @@ public class TrapState : IItemState_Tanabe
         //}
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(GameObject other)
     {
         if(m_trapInterval > 0.0f || item.GetRigidbody().isKinematic) { return; }
 
         if(item.GetItemType() != ItemStateMachine.ItemType.TRAP_BOMB)
         {
-            CharacterBase character = other.gameObject.GetComponent<CharacterBase>();
+            CharacterBase character = other.GetComponent<CharacterBase>();
             if (character != null)
             {
                 if(!m_characters.Contains(character))
@@ -135,15 +135,15 @@ public class TrapState : IItemState_Tanabe
                     character.SetIsMove(false);
                 }
             }
-            else if(other.gameObject.GetComponent<Rigidbody>() != null)
+            else if(other.GetComponent<Rigidbody>() != null)
             {
-                Vector3 velocity = other.gameObject.GetComponent<Rigidbody>().velocity;
+                Vector3 velocity = other.GetComponent<Rigidbody>().velocity;
                 velocity = velocity * 0.3f;
-                other.gameObject.GetComponent<Rigidbody>().velocity = velocity;
+                other.GetComponent<Rigidbody>().velocity = velocity;
             }
         }
         //一時停止
-        else if (other.gameObject.GetComponent<Bullet_Tanabe>() != null/* || other.GetComponent<DebugAttacker>() != null*/ || other.GetComponent<ShockWave_Tanabe>() != null)
+        else if (other.GetComponent<Bullet_Tanabe>() != null/* || other.GetComponent<DebugAttacker>() != null*/ || other.GetComponent<ShockWave_Tanabe>() != null)
         {
             this.Explode();
         }

@@ -2,24 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Mirror;
 
-public class Gun_Tanabe : MonoBehaviour
+public class Gun_Tanabe : NetworkBehaviour
 {
     private Player_Tanabe m_player;
     [SerializeField] private GameObject m_bulletPrefab;
     [SerializeField] GameObject m_gunHead;
     private float m_interval = 0.0f;
     private float m_maxInterval = 0.5f;
+    private CustomNetworkManager_Tanabe m_networkManager;
 
     // Start is called before the first frame update
     void Start()
     {
         m_player = GetComponentInParent<Player_Tanabe>();
+        m_networkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager_Tanabe>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!m_player.isLocalPlayer) { return; }
+
         if (m_player.GetIsAiming())
         {
             // ÉvÉåÉCÉÑÅ[ÇÃYâÒì]ÇÉJÉÅÉâÇÃYâÒì]Ç…çáÇÌÇπÇÈ
@@ -54,17 +59,20 @@ public class Gun_Tanabe : MonoBehaviour
                 {
                     case global::SetPart_Tanabe.PartType.NONE_TYPE:
                         {
-                            this.Shot();
+                            this.CmdShot();
+                            m_interval = m_maxInterval;
                             break;
                         }
                     case global::SetPart_Tanabe.PartType.LONGBARREL:
                         {
-                            this.ShotGun();
+                            this.CmdShotGun();
+                            m_interval = 2.0f;
                             break;
                         }
                     case global::SetPart_Tanabe.PartType.SHARPBULLET:
                         {
-                            this.SharpShot();
+                            this.CmdSharpShot();
+                            m_interval = 1.0f;
                             break;
                         }
                     default:
@@ -75,33 +83,41 @@ public class Gun_Tanabe : MonoBehaviour
     }
 
     // í èÌíe
-    private void Shot()
+    [Command]
+    private void CmdShot()
     {
-        GameObject obj = m_bulletPrefab;
-        Instantiate(obj).GetComponent<Bullet_Tanabe>().Shot(this.GetComponentInParent<Player_Tanabe>().GetPower(), m_gunHead.transform);
-        m_interval = m_maxInterval;
+        //GameObject obj = m_bulletPrefab;
+        //Instantiate(obj).GetComponent<Bullet_Tanabe>().Shot(this.GetComponentInParent<Player_Tanabe>().GetPower(), m_gunHead.transform);
+        //m_interval = m_maxInterval;
+
+        //GameObject obj = m_networkManager.OnCreateObject(m_bulletPrefab, m_player.gameObject);
+        GameObject obj = Instantiate(m_bulletPrefab);
+        obj.GetComponent<Bullet_Tanabe>().Shot(m_player.GetPower(), m_gunHead.transform);
+        NetworkServer.Spawn(obj);
     }
 
     // ÉVÉáÉbÉgÉKÉì
-    private void ShotGun()
+    [Command]
+    private void CmdShotGun()
     {
         int bulletCount = 10;
         for (int i = 0; i < bulletCount; i++)
         {
             Vector3 moveVector3 = m_gunHead.transform.forward * 5.0f + new Vector3(GetRandomPoint(), GetRandomPoint(), GetRandomPoint()).normalized;
 
-            GameObject obj = m_bulletPrefab;
-            Instantiate(obj).GetComponent<Bullet_Tanabe>().ShotGun(this.GetComponentInParent<Player_Tanabe>().GetPower(), m_gunHead.transform, moveVector3.normalized);
+            GameObject obj = Instantiate(m_bulletPrefab);
+            obj.GetComponent<Bullet_Tanabe>().ShotGun(m_player.GetPower(), m_gunHead.transform, moveVector3.normalized);
+            NetworkServer.Spawn(obj);
         }
-        m_interval = 2.0f;
     }
 
     // êÎíe
-    private void SharpShot()
+    [Command]
+    private void CmdSharpShot()
     {
-        GameObject obj = m_bulletPrefab;
-        Instantiate(obj).GetComponent<Bullet_Tanabe>().SharpShot(this.GetComponentInParent<Player_Tanabe>().GetPower(), m_gunHead.transform);
-        m_interval = 1.0f;
+        GameObject obj = Instantiate(m_bulletPrefab);
+        obj.GetComponent<Bullet_Tanabe>().SharpShot(m_player.GetPower(), m_gunHead.transform);
+        NetworkServer.Spawn(obj);
     }
 
     private float GetRandomPoint()

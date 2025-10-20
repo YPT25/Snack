@@ -56,9 +56,9 @@ public class ThrowState : IItemState_Tanabe
         }
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(GameObject other)
     {
-        if (other.gameObject.GetComponentInParent<Player_Tanabe>() != null || other.gameObject.tag == "Player" || item.GetRigidbody().isKinematic) { return; }
+        if (other.GetComponentInParent<Player_Tanabe>() != null || other.tag == "Player" || item.GetRigidbody().isKinematic) { return; }
         this.Explode();
     }
 

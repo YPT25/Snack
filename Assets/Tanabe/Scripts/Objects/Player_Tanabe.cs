@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class Player_Tanabe : CharacterBase
 {
@@ -18,7 +19,7 @@ public class Player_Tanabe : CharacterBase
 
     [Header("カメラ")]
     public Transform m_cameraTransform;
-    [Header("武器ID"), SerializeField] private WeaponID m_weaponID;
+    [SyncVar, Header("武器ID"), SerializeField] private WeaponID m_weaponID;
     [Header("武器オブジェクト"), SerializeField] private GameObject m_weaponObject;
     [Header("武器"), SerializeField] private Hammer_Tanabe m_hammer;
     [Header("武器"), SerializeField] private Gun_Tanabe m_gun;
@@ -46,16 +47,16 @@ public class Player_Tanabe : CharacterBase
     private bool m_jumpRequest = false;
 
     // エイム状態か
-    private bool m_isAiming = false;
+    [SyncVar] private bool m_isAiming = false;
 
     // Throw状態かの判定フラグ
-    private bool m_isThrow = false;
+    [SyncVar] private bool m_isThrow = false;
 
     // 爆発が当たっているか
-    private bool m_isHitBomb = false;
+    [SyncVar] private bool m_isHitBomb = false;
 
     // 重力
-    private float m_prevGravity = 0.0f;
+    [SyncVar] private float m_prevGravity = 0.0f;
 
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
@@ -67,6 +68,9 @@ public class Player_Tanabe : CharacterBase
         base.OnStartClient();
         // Rigidbodyをアタッチする
         m_rb = GetComponent<Rigidbody>();
+
+        if (!this.isLocalPlayer) { return; }
+        m_cameraTransform = GameObject.FindWithTag("MainCamera").transform;
 
         // アイテムマネージャをアタッチする
         m_possessionManager = GetComponent<PossessionManager_Tanabe>();
@@ -84,6 +88,8 @@ public class Player_Tanabe : CharacterBase
 
     public override void Update()
     {
+        if (!this.isLocalPlayer) { return; }
+
         if (Input.GetKeyDown(KeyCode.P))
         {
             this.transform.position = new Vector3(0f, 2f, 0f);
@@ -124,6 +130,8 @@ public class Player_Tanabe : CharacterBase
 
     public override void FixedUpdate()
     {
+        if (!this.isLocalPlayer) { return; }
+
         base.FixedUpdate();
         // 現在のステートの更新処理
         m_currentState?.FixedUpdate();
@@ -197,6 +205,7 @@ public class Player_Tanabe : CharacterBase
     }
 
     // 銃口の取得
+    [Client]
     public Transform GetGunHead()
     {
         return m_gun.GetGunHead();

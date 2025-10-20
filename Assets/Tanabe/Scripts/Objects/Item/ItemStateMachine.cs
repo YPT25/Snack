@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class ItemStateMachine : MonoBehaviour
+public class ItemStateMachine : NetworkBehaviour
 {
     public enum ItemType
     {
@@ -16,9 +17,20 @@ public class ItemStateMachine : MonoBehaviour
         SETPART,
     }
 
+    public enum ItemStateType
+    {
+        DROP,
+        SUCK,
+        HANDS,
+        TRAP,
+        PREPARINGTHROW,
+        THROW,
+        PARTEQUIPPED,
+    }
+
     // 現在のステート
     private IItemState_Tanabe currentState;
-    [Header("アイテムの種類"), SerializeField] private ItemType m_itemType;
+    [SyncVar, Header("アイテムの種類"), SerializeField] private ItemType m_itemType;
     [Header("移動速度 ※デフォルト値:30.0"), SerializeField, Range(0f, 100f)] public float moveSpeed;
     [Header("回転速度 ※デフォルト値:30.0"), SerializeField, Range(0f, 100f)] public float rotateSpeed;
     [Header("ポイント"), SerializeField, Range(0f, 100f)] private float m_point;
@@ -26,27 +38,27 @@ public class ItemStateMachine : MonoBehaviour
     private Rigidbody m_rb = null;
     private Collider m_collider = null;
     private Transform playerTransform = null;
-    private Player_Tanabe m_playerData;
+    [SyncVar] private Player_Tanabe m_playerData;
 
     [Header("バフの種類"), SerializeField] private BuffManager_Tanabe.Buff.BuffType m_buffType;
 
-    private GameObject m_effectObject;
+    [Header("エフェクトのオブジェクト"), SerializeField] private GameObject m_effectObject;
 
     // 開始関数
-    void Start()
+    public override void OnStartClient()
     {
         m_rb = GetComponent<Rigidbody>();
         m_collider = GetComponent<Collider>();
-
+        Debug.Log("Item_Start");
         // 初期のステートの設定
-        ChangeState(new DropState(this));
+        CmdChangeState(this, ItemStateType.DROP);
 
         if(m_itemType == ItemType.THROW)
         {
             // プレハブをGameObject型で取得
-            GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Yellow");
+            //GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Yellow");
 
-            m_effectObject = Instantiate(obj);
+            m_effectObject = Instantiate(m_effectObject);
             m_effectObject.transform.parent = this.transform;
             m_effectObject.SetActive(false);
             m_effectObject.transform.localPosition = new Vector3(0f, 1f, 0f);
@@ -54,9 +66,9 @@ public class ItemStateMachine : MonoBehaviour
         else if(m_itemType == ItemType.TRAP_BOMB)
         {
             // プレハブをGameObject型で取得
-            GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Purple");
+            //GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Purple");
 
-            m_effectObject = Instantiate(obj);
+            m_effectObject = Instantiate(m_effectObject);
             m_effectObject.transform.parent = this.transform;
             m_effectObject.SetActive(false);
             //m_effectObject.transform.localPosition = new Vector3(0f, 2f, 0f);
@@ -71,8 +83,41 @@ public class ItemStateMachine : MonoBehaviour
     }
 
     // 現在のステートの変更
-    public void ChangeState(IItemState_Tanabe newState)
+    [Client]
+    public void CmdChangeState(ItemStateMachine _item, ItemStateType _newStateType)
     {
+        Debug.Log("Item_CmdChangeState");
+        switch(_newStateType)
+        {
+            case ItemStateType.DROP:
+                this.ChangeState(new DropState(_item));
+                break;
+            case ItemStateType.SUCK:
+                this.ChangeState(new SuckState(_item));
+                break;
+            case ItemStateType.HANDS:
+                this.ChangeState(new HandsState(_item));
+                break;
+            case ItemStateType.TRAP:
+                this.ChangeState(new TrapState(_item));
+                break;
+            case ItemStateType.PREPARINGTHROW:
+                this.ChangeState(new PreparingThrowState(_item));
+                break;
+            case ItemStateType.THROW:
+                this.ChangeState(new ThrowState(_item));
+                break;
+            case ItemStateType.PARTEQUIPPED:
+                this.ChangeState(new PartEquippedState(_item));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ChangeState(IItemState_Tanabe newState)
+    {
+        Debug.Log("Item_ChageState");
         // 現在のステートの終了処理
         currentState?.Exit();
         // 新たなステートの設定
@@ -84,11 +129,21 @@ public class ItemStateMachine : MonoBehaviour
     // isTrigger衝突判定
     private void OnTriggerEnter(Collider other)
     {
+        if(!this.isServer) { return; }
         // 現在のステートにisTrigger衝突が起きたことを通知する
-        currentState?.OnTriggerEnter(other);
+        CmdOnTriggerEnter(other.gameObject);
     }
 
+
     private void OnTriggerStay(Collider other)
+    {
+        if (!this.isServer) { return; }
+        // 現在のステートにisTrigger衝突が起きたことを通知する
+        CmdOnTriggerEnter(other.gameObject);
+    }
+
+    [Client]
+    private void CmdOnTriggerEnter(GameObject other)
     {
         // 現在のステートにisTrigger衝突が起きたことを通知する
         currentState?.OnTriggerEnter(other);
@@ -96,20 +151,23 @@ public class ItemStateMachine : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (!this.isServer) { return; }
         // 現在のステートにisTrigger衝突が外れたことを通知する
         currentState?.OnTriggerExit(other);
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        if(m_itemType != ItemType.TRAP && m_itemType != ItemType.TRAP_BOMB) { return; }
+        if (!this.isServer) { return; }
+        if (m_itemType != ItemType.TRAP && m_itemType != ItemType.TRAP_BOMB) { return; }
         // 現在のステートに衝突が起きたことを通知する
-        currentState?.OnTriggerEnter(collision.collider);
+        currentState?.OnTriggerEnter(collision.collider.gameObject);
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if(m_itemType != ItemType.TRAP && m_itemType != ItemType.SETPART) { return; }
+        if (!this.isServer) { return; }
+        if (m_itemType != ItemType.TRAP && m_itemType != ItemType.SETPART) { return; }
         // 現在のステートに衝突が離れたことを通知する
         currentState?.OnCollisionExit(collision.collider);
     }

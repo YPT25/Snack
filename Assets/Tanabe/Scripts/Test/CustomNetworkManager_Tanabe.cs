@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using static Mirror.Examples.CharacterSelection.NetworkManagerCharacterSelection;
 
 public class CustomNetworkManager_Tanabe : NetworkManager
 {
@@ -133,4 +134,18 @@ public class CustomNetworkManager_Tanabe : NetworkManager
         base.OnServerChangeScene(sceneName);
         print("OnServerChangeScene : " + sceneName);
     }
+
+
+    //====================
+    // ÇªÇÃëºí«â¡èàóù
+    //====================
+
+    public GameObject OnCreateObject(GameObject _prefab, GameObject _player)
+    {
+        GameObject obj = Instantiate(_prefab);
+        NetworkServer.AddPlayerForConnection(obj.GetComponent<NetworkConnectionToClient>(), _player);
+        return obj;
+    }
+
+
 }

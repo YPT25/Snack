@@ -33,7 +33,7 @@ public class SuckState : IItemState_Tanabe
             item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetPlayerData().GetPossesionManager().IsMaxPossession())
         {
             // ドロップ状態に遷移する
-            item.ChangeState(new DropState(item));
+            item.CmdChangeState(item, ItemStateMachine.ItemStateType.DROP);
             return;
         }
 
@@ -63,12 +63,12 @@ public class SuckState : IItemState_Tanabe
             else
             {
                 // プレイヤーに所持させる
-                item.ChangeState(new HandsState(item));
+                item.CmdChangeState(item, ItemStateMachine.ItemStateType.HANDS);
             }
         }
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(GameObject other)
     {
     }
 
@@ -78,7 +78,7 @@ public class SuckState : IItemState_Tanabe
         {
             item.SetPlayerData(null);
             // ドロップ状態に遷移させる
-            item.ChangeState(new DropState(item));
+            item.CmdChangeState(item, ItemStateMachine.ItemStateType.DROP);
         }
     }
 

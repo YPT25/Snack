@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class PossessionManager_Tanabe : MonoBehaviour
+public class PossessionManager_Tanabe : NetworkBehaviour
 {
     private Player_Tanabe m_player;
 
@@ -23,10 +24,12 @@ public class PossessionManager_Tanabe : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!m_player.isLocalPlayer) { return; }
+
         if (!m_player.GetIsDefaultState())
         {
-            if (m_items[0] != null) m_items[0].gameObject.SetActive(false);
-            if (m_items[1] != null) m_items[1].gameObject.SetActive(false);
+            if (m_items[0] != null) CmdSetItemActive(m_items[0].gameObject, false);
+            if (m_items[1] != null) CmdSetItemActive(m_items[1].gameObject, false);
             m_leftHand.SetIsHand(false);
             return;
         }
@@ -41,8 +44,8 @@ public class PossessionManager_Tanabe : MonoBehaviour
             }
 
             // プレイヤーの左手に持つ
-            m_items[0].gameObject.SetActive(true);
-            if (m_items[1] != null) m_items[1].gameObject.SetActive(false);
+            CmdSetItemActive(m_items[0].gameObject, true);
+            if (m_items[1] != null) CmdSetItemActive(m_items[1].gameObject, false);
             m_leftHand.SetIsHand(true);
         }
         else if (Input.GetKeyDown(KeyCode.E) && m_items[1] != null ||
@@ -55,8 +58,8 @@ public class PossessionManager_Tanabe : MonoBehaviour
             }
 
             // プレイヤーの左手に持つ
-            if (m_items[0] != null) m_items[0].gameObject.SetActive(false);
-            m_items[1].gameObject.SetActive(true);
+            if (m_items[0] != null) CmdSetItemActive(m_items[0].gameObject, false);
+            CmdSetItemActive(m_items[1].gameObject, true);
 
             m_leftHand.SetIsHand(true);
         }
@@ -81,7 +84,7 @@ public class PossessionManager_Tanabe : MonoBehaviour
                 {
                     if (!m_player.GetIsThrow())
                     {
-                        m_items[_index].ChangeState(new PreparingThrowState(m_items[_index]));
+                        m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.PREPARINGTHROW);
                         m_player.SetIsThrow(true);
 
                         m_items[_index] = null;
@@ -91,14 +94,14 @@ public class PossessionManager_Tanabe : MonoBehaviour
                 }
             case ItemStateMachine.ItemType.TRAP:
                 {
-                    m_items[_index].ChangeState(new TrapState(m_items[_index]));
+                    m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
                     m_items[_index] = null;
                     m_leftHand.SetIsHand(false);
                     break;
                 }
             case ItemStateMachine.ItemType.TRAP_BOMB:
                 {
-                    m_items[_index].ChangeState(new TrapState(m_items[_index]));
+                    m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
 
                     m_items[_index] = null;
                     m_leftHand.SetIsHand(false);
@@ -115,13 +118,13 @@ public class PossessionManager_Tanabe : MonoBehaviour
         if (m_items[0] == null)
         {
             m_items[0] = _item;
-            m_items[0].gameObject.SetActive(false);
+            CmdSetItemActive(m_items[0].gameObject, false);
             return true;
         }
         else if (m_items[1] == null)
         {
             m_items[1] = _item;
-            m_items[1].gameObject.SetActive(false);
+            CmdSetItemActive(m_items[1].gameObject, false);
             return true;
         }
 
@@ -135,4 +138,9 @@ public class PossessionManager_Tanabe : MonoBehaviour
         return true;
     }
 
+    [Command]
+    private void CmdSetItemActive(GameObject _item, bool _flag)
+    {
+        _item.SetActive(_flag);
+    }
 }
