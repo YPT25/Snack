@@ -112,7 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_initialParameter:
-    hp: 0
+    hp: 20
     power: 0
     moveSpeed: 2.9
     stamina: 0

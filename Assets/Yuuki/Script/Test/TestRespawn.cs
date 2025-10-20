@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class TestRespawn : MonoBehaviour
 {
-    [Header("ƒŠƒXƒ|[ƒ“İ’è")]
-    [SerializeField] private List<GameObject> playerPrefabs; // ƒŠƒXƒ|[ƒ“Œó•â
-    [SerializeField] private Transform respawnPoint;          // ƒŠƒXƒ|[ƒ“ˆÊ’u
-    [SerializeField] private GameObject respawnUI;            // ƒŠƒXƒ|[ƒ“UIiCanvas”z‰ºj
-    [SerializeField] private Button buttonPrefab;             // ‘I‘ğƒ{ƒ^ƒ“‚ÌƒvƒŒƒnƒu
+    [Header("ãƒªã‚¹ãƒãƒ¼ãƒ³è¨­å®š")]
+    [SerializeField] private List<GameObject> playerPrefabs; // ãƒªã‚¹ãƒãƒ¼ãƒ³å€™è£œ
+    [SerializeField] private Transform respawnPoint;          // ãƒªã‚¹ãƒãƒ¼ãƒ³ä½ç½®
+    [SerializeField] private GameObject respawnUI;            // ãƒªã‚¹ãƒãƒ¼ãƒ³UIï¼ˆCanvasé…ä¸‹ï¼‰
+    [SerializeField] private Button buttonPrefab;             // é¸æŠãƒœã‚¿ãƒ³ã®ãƒ—ãƒ¬ãƒãƒ–
 
     private GameObject currentPlayer;
     private bool isWaitingForSelection = false;
@@ -18,17 +18,17 @@ public class TestRespawn : MonoBehaviour
     private void Start()
     {
         if (respawnUI != null) respawnUI.SetActive(false);
-        SpawnPlayer(0); // ‰¼‚ÅÅ‰‚ÌƒLƒƒƒ‰
+        SpawnPlayer(0); // ä»®ã§æœ€åˆã®ã‚­ãƒ£ãƒ©
     }
 
     public void OnPlayerDeath()
     {
-        Debug.Log("ƒvƒŒƒCƒ„[€–SBƒŠƒXƒ|[ƒ“‘I‘ğUI‚ğ•\¦B");
+        Debug.Log("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ­»äº¡ã€‚ãƒªã‚¹ãƒãƒ¼ãƒ³é¸æŠUIã‚’è¡¨ç¤ºã€‚");
         ShowRespawnUI();
     }
 
     /// <summary>
-    /// Œ»İƒXƒe[ƒW‚É‘¶İ‚·‚éNPC(“G)‚Ìƒ^ƒCƒv‚ğæ“¾
+    /// ç¾åœ¨ã‚¹ãƒ†ãƒ¼ã‚¸ã«å­˜åœ¨ã™ã‚‹NPC(æ•µ)ã®ã‚¿ã‚¤ãƒ—ã‚’å–å¾—
     /// </summary>
     private HashSet<EnemyBase.EnemyType> GetExistingEnemyTypes()
     {
@@ -45,28 +45,28 @@ public class TestRespawn : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒLƒƒƒ‰‘I‘ğUI‚ğ•\¦i“G‚Ìƒ^ƒCƒv‚É‰‚¶‚ÄƒtƒBƒ‹ƒ^j
+    /// ã‚­ãƒ£ãƒ©é¸æŠUIã‚’è¡¨ç¤ºï¼ˆæ•µã®ã‚¿ã‚¤ãƒ—ã«å¿œã˜ã¦ãƒ•ã‚£ãƒ«ã‚¿ï¼‰
     /// </summary>
     private void ShowRespawnUI()
     {
         if (respawnUI == null || buttonPrefab == null)
         {
-            Debug.LogError("Respawn UI ‚Ü‚½‚Í ƒ{ƒ^ƒ“ƒvƒŒƒnƒu ‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñI");
+            Debug.LogError("Respawn UI ã¾ãŸã¯ ãƒœã‚¿ãƒ³ãƒ—ãƒ¬ãƒãƒ– ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ï¼");
             return;
         }
 
-        // Šù‘¶ƒ{ƒ^ƒ“‚ğíœ
+        // æ—¢å­˜ãƒœã‚¿ãƒ³ã‚’å‰Šé™¤
         foreach (Transform child in respawnUI.transform)
         {
             Destroy(child.gameObject);
         }
 
-        // ƒXƒe[ƒWã‚Ì“Gƒ^ƒCƒv‚ğæ“¾
+        // ã‚¹ãƒ†ãƒ¼ã‚¸ä¸Šã®æ•µã‚¿ã‚¤ãƒ—ã‚’å–å¾—
         HashSet<EnemyBase.EnemyType> allowedTypes = GetExistingEnemyTypes();
-        Debug.Log($"[RespawnManager] Œ»İ‚Ì“Gƒ^ƒCƒv: {string.Join(", ", allowedTypes)}");
+        Debug.Log($"[RespawnManager] ç¾åœ¨ã®æ•µã‚¿ã‚¤ãƒ—: {string.Join(", ", allowedTypes)}");
 
-        
-        // ‘Î‰ƒvƒŒƒCƒ„[‚Ì‚İƒ{ƒ^ƒ“¶¬
+
+        // å¯¾å¿œãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã¿ãƒœã‚¿ãƒ³ç”Ÿæˆ
         for (int i = 0; i < playerPrefabs.Count; i++)
         {
             var playerPrefab = playerPrefabs[i];
@@ -74,25 +74,31 @@ public class TestRespawn : MonoBehaviour
 
             if (playerBase == null)
             {
-                Debug.LogWarning($"[{playerPrefab.name}] ‚É PlayerBase ‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+                Debug.LogWarning($"[{playerPrefab.name}] ã« PlayerBase ãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
                 continue;
             }
 
             var pType = playerBase.GetEnemyType();
-            Debug.Log("allowedTypes count = " + allowedTypes.Count);
-            // “G‚Ìƒ^ƒCƒv‚É‘¶İ‚·‚éƒvƒŒƒCƒ„[‚Ì‚İƒ{ƒ^ƒ“¶¬
+
+            // æ•µã®ã‚¿ã‚¤ãƒ—ã«å­˜åœ¨ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã¿ãƒœã‚¿ãƒ³ç”Ÿæˆ
             if (allowedTypes.Contains(pType))
             {
-                
                 var newButton = Instantiate(buttonPrefab, respawnUI.transform);
                 var textComp = newButton.GetComponentInChildren<TMP_Text>();
+                var imageComp = newButton.GetComponentInChildren<Image>();
 
+                // ãƒ†ã‚­ã‚¹ãƒˆè¨­å®š
                 if (textComp != null)
                     textComp.text = playerPrefab.name;
 
-                int index = i; // ƒNƒ[ƒWƒƒ[‘Îô
+                // ç”»åƒè¨­å®šï¼ˆãƒœã‚¿ãƒ³ã« Image ãŒã‚ã‚‹å ´åˆï¼‰
+                var icon = playerBase.GetRespawnIcon();
+                if (imageComp != null && icon != null)
+                    imageComp.sprite = icon;
+
+                int index = i; // ã‚¯ãƒ­ãƒ¼ã‚¸ãƒ£ãƒ¼å¯¾ç­–
                 newButton.onClick.AddListener(() => OnCharacterSelected(index));
-                Debug.Log("ƒŠƒXƒ|[ƒ“ƒ{ƒ^ƒ“¶¬F" + playerPrefab.name);
+                Debug.Log("ãƒªã‚¹ãƒãƒ¼ãƒ³ãƒœã‚¿ãƒ³ç”Ÿæˆï¼š" + playerPrefab.name);
             }
         }
 
@@ -101,20 +107,20 @@ public class TestRespawn : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‘I‘ğŒã‚Ìˆ—
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼é¸æŠå¾Œã®å‡¦ç†
     /// </summary>
     private void OnCharacterSelected(int index)
     {
         if (!isWaitingForSelection) return;
 
-        Debug.Log($"ƒvƒŒƒCƒ„[[{playerPrefabs[index].name}]‚ğ‘I‘ğBƒŠƒXƒ|[ƒ“‚µ‚Ü‚·B");
+        Debug.Log($"ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼[{playerPrefabs[index].name}]ã‚’é¸æŠã€‚ãƒªã‚¹ãƒãƒ¼ãƒ³ã—ã¾ã™ã€‚");
         respawnUI.SetActive(false);
         isWaitingForSelection = false;
         SpawnPlayer(index);
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[¶¬
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”Ÿæˆ
     /// </summary>
     private void SpawnPlayer(int index)
     {
@@ -124,6 +130,6 @@ public class TestRespawn : MonoBehaviour
         GameObject prefab = playerPrefabs[index];
         currentPlayer = Instantiate(prefab, respawnPoint.position, Quaternion.identity);
 
-        Debug.Log($"ƒvƒŒƒCƒ„[[{prefab.name}]‚ğƒŠƒXƒ|[ƒ“‚µ‚Ü‚µ‚½B");
+        Debug.Log($"ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼[{prefab.name}]ã‚’ãƒªã‚¹ãƒãƒ¼ãƒ³ã—ã¾ã—ãŸã€‚");
     }
 }
