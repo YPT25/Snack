@@ -28,6 +28,8 @@ public class Player_Tanabe : CharacterBase
     private PossessionManager_Tanabe m_possessionManager;
     // セットパーツ
     private SetPart_Tanabe m_setPart = null;
+    // 右手に所持しているアイテム
+    private ItemStateMachine m_rightHandsItem = null;
 
     // 現在のステート
     IPlayerState_Tanabe m_currentState;
@@ -254,6 +256,12 @@ public class Player_Tanabe : CharacterBase
         }
     }
 
+    // 右手に持っているアイテムの取得
+    public ItemStateMachine GetRightHandsItem()
+    {
+        return m_rightHandsItem;
+    }
+
     // 着地判定の取得
     public bool GetIsGrounded()
     {
@@ -346,6 +354,12 @@ public class Player_Tanabe : CharacterBase
         }
         // セットパーツを変更・解除する
         m_setPart = _setPart;
+    }
+
+    // 右手に持つアイテムの設定
+    public void SetRightHandsItem(ItemStateMachine _item)
+    {
+        m_rightHandsItem = _item;
     }
 
     // 移動判定フラグの設定

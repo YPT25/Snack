@@ -33,7 +33,7 @@ public class SuckState : IItemState_Tanabe
             item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetPlayerData().GetPossesionManager().IsMaxPossession())
         {
             // ドロップ状態に遷移する
-            item.CmdChangeState(item, ItemStateMachine.ItemStateType.DROP);
+            item.ServerChangeState(item, ItemStateMachine.ItemStateType.DROP);
             return;
         }
 
@@ -55,15 +55,16 @@ public class SuckState : IItemState_Tanabe
             // これがポイントアイテムなら通す
             if(item.GetItemType() == ItemStateMachine.ItemType.POINT)
             {
-                // ポイントに変換する
-                item.GetPlayerData().AddPoint(item.GetPoint());
-                // このオブジェクトを破棄する
-                item.DestroysGameObject();
+                item.ServerAddPoint();
+                //// ポイントに変換する
+                //item.GetPlayerData().AddPoint(item.GetPoint());
+                //// このオブジェクトを破棄する
+                //item.DestroysGameObject();
             }
             else
             {
                 // プレイヤーに所持させる
-                item.CmdChangeState(item, ItemStateMachine.ItemStateType.HANDS);
+                item.ServerChangeState(item, ItemStateMachine.ItemStateType.HANDS);
             }
         }
     }
@@ -76,9 +77,9 @@ public class SuckState : IItemState_Tanabe
     {
         if(item.GetPlayerData() == other.gameObject.GetComponent<Player_Tanabe>())
         {
-            item.SetPlayerData(null);
+            item.RpcSetPlayerData(null);
             // ドロップ状態に遷移させる
-            item.CmdChangeState(item, ItemStateMachine.ItemStateType.DROP);
+            item.ServerChangeState(item, ItemStateMachine.ItemStateType.DROP);
         }
     }
 

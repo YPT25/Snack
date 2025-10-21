@@ -25,14 +25,14 @@ public class HandsState : IItemState_Tanabe
         item.transform.parent = item.GetPlayerTransform();
         item.transform.localPosition = new Vector3(-0.6f, 0.0f, 0.8f);
 
-        item.GetPlayerData().GetPossesionManager().AddItem(item);
+        item.GetPlayerData().GetPossesionManager()?.AddItem(item);
 
         Debug.Log("Hands:ŠJŽn");
     }
 
     public void Update()
     {
-        item.transform.localPosition = new Vector3(-0.6f, 0.0f, 0.8f);
+        //item.transform.localPosition = new Vector3(-0.6f, 0.0f, 0.8f);
     }
 
     public void OnTriggerEnter(GameObject other)

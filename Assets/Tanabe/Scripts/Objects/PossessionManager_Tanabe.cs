@@ -26,6 +26,17 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     {
         if(!m_player.isLocalPlayer) { return; }
 
+        if (m_items[0] != null && m_items[0].GetItemStateType() != ItemStateMachine.ItemStateType.HANDS)
+        {
+            CmdSetItemActive(m_items[0].gameObject, true);
+            m_items[0] = null;
+        }
+        if (m_items[1] != null && m_items[1].GetItemStateType() != ItemStateMachine.ItemStateType.HANDS)
+        {
+            CmdSetItemActive(m_items[1].gameObject, true);
+            m_items[1] = null;
+        }
+
         if (!m_player.GetIsDefaultState())
         {
             if (m_items[0] != null) CmdSetItemActive(m_items[0].gameObject, false);
@@ -84,7 +95,10 @@ public class PossessionManager_Tanabe : NetworkBehaviour
                 {
                     if (!m_player.GetIsThrow())
                     {
-                        m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.PREPARINGTHROW);
+                        CmdChangeState_Item(m_items[_index], ItemStateMachine.ItemStateType.PREPARINGTHROW);
+
+                        //m_items[_index].CmdChangeState(m_items[_index].netIdentity, ItemStateMachine.ItemStateType.PREPARINGTHROW);
+                        m_player.SetRightHandsItem(m_items[_index]);
                         m_player.SetIsThrow(true);
 
                         m_items[_index] = null;
@@ -94,15 +108,18 @@ public class PossessionManager_Tanabe : NetworkBehaviour
                 }
             case ItemStateMachine.ItemType.TRAP:
                 {
-                    m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
+                    CmdChangeState_Item(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
+
+                    //m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
                     m_items[_index] = null;
                     m_leftHand.SetIsHand(false);
                     break;
                 }
             case ItemStateMachine.ItemType.TRAP_BOMB:
                 {
-                    m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
+                    CmdChangeState_Item(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
 
+                    //m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
                     m_items[_index] = null;
                     m_leftHand.SetIsHand(false);
                     break;
@@ -115,13 +132,15 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     // アイテムの追加 ※所持上限に達していたらfalseを返す
     public bool AddItem(ItemStateMachine _item)
     {
-        if (m_items[0] == null)
+        if (!m_player.isLocalPlayer) { return false; }
+
+        if (m_items[0] == null && m_items[1] != _item)
         {
             m_items[0] = _item;
             CmdSetItemActive(m_items[0].gameObject, false);
             return true;
         }
-        else if (m_items[1] == null)
+        else if (m_items[1] == null && m_items[0] != _item)
         {
             m_items[1] = _item;
             CmdSetItemActive(m_items[1].gameObject, false);
@@ -142,5 +161,18 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     private void CmdSetItemActive(GameObject _item, bool _flag)
     {
         _item.SetActive(_flag);
+        RpcSetItemActive(_item, _flag);
+    }
+
+    [ClientRpc]
+    private void RpcSetItemActive(GameObject _item, bool _flag)
+    {
+        _item.SetActive(_flag);
+    }
+
+    [Command]
+    private void CmdChangeState_Item(ItemStateMachine _item, ItemStateMachine.ItemStateType _newStateType)
+    {
+        _item.RpcChangeState(_item, _newStateType);
     }
 }

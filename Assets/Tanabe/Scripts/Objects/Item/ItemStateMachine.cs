@@ -37,21 +37,22 @@ public class ItemStateMachine : NetworkBehaviour
 
     private Rigidbody m_rb = null;
     private Collider m_collider = null;
-    private Transform playerTransform = null;
+    [SyncVar] private Transform playerTransform = null;
     [SyncVar] private Player_Tanabe m_playerData;
+    [SyncVar] private ItemStateType m_stateType;
 
     [Header("バフの種類"), SerializeField] private BuffManager_Tanabe.Buff.BuffType m_buffType;
 
     [Header("エフェクトのオブジェクト"), SerializeField] private GameObject m_effectObject;
 
     // 開始関数
-    public override void OnStartClient()
+    void Start()
     {
         m_rb = GetComponent<Rigidbody>();
         m_collider = GetComponent<Collider>();
         Debug.Log("Item_Start");
         // 初期のステートの設定
-        CmdChangeState(this, ItemStateType.DROP);
+        ChangeState(this, ItemStateType.DROP);
 
         if(m_itemType == ItemType.THROW)
         {
@@ -82,11 +83,47 @@ public class ItemStateMachine : NetworkBehaviour
         currentState?.Update();
     }
 
-    // 現在のステートの変更
-    [Client]
+    [ClientRpc]
+    public void RpcChangeState(ItemStateMachine _item, ItemStateType _newStateType)
+    {
+        //this.ChangeState(_item, _newStateType);
+        if (_item != null)
+        {
+            _item.ChangeState(_item, _newStateType);
+        }
+    }
+
+    [Command]
     public void CmdChangeState(ItemStateMachine _item, ItemStateType _newStateType)
     {
-        Debug.Log("Item_CmdChangeState");
+        //this.ChangeState(_item, _newStateType);
+        if (_item != null)
+        {
+            // サーバー側でも状態変更
+            _item.ChangeState(_item, _newStateType);
+
+            // クライアント全員に反映
+            RpcChangeState(_item, _newStateType);
+        }
+    }
+
+    [ServerCallback]
+    public void ServerChangeState(ItemStateMachine _item, ItemStateType _newStateType)
+    {
+        if (_item != null)
+        {
+            // サーバー側でも状態変更
+            _item.ChangeState(_item, _newStateType);
+
+            // クライアント全員に反映
+            RpcChangeState(_item, _newStateType);
+        }
+    }
+
+    // 現在のステートの変更
+    public void ChangeState(ItemStateMachine _item, ItemStateType _newStateType)
+    {
+        m_stateType = _newStateType;
         switch(_newStateType)
         {
             case ItemStateType.DROP:
@@ -127,49 +164,60 @@ public class ItemStateMachine : NetworkBehaviour
     }
 
     // isTrigger衝突判定
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if(!this.isServer) { return; }
         // 現在のステートにisTrigger衝突が起きたことを通知する
-        CmdOnTriggerEnter(other.gameObject);
+        currentState?.OnTriggerEnter(other.gameObject);
     }
 
-
+    [ServerCallback]
     private void OnTriggerStay(Collider other)
     {
-        if (!this.isServer) { return; }
         // 現在のステートにisTrigger衝突が起きたことを通知する
-        CmdOnTriggerEnter(other.gameObject);
+        currentState?.OnTriggerEnter(other.gameObject);
     }
 
-    [Client]
-    private void CmdOnTriggerEnter(GameObject other)
-    {
-        // 現在のステートにisTrigger衝突が起きたことを通知する
-        currentState?.OnTriggerEnter(other);
-    }
-
+    [ServerCallback]
     private void OnTriggerExit(Collider other)
     {
-        if (!this.isServer) { return; }
         // 現在のステートにisTrigger衝突が外れたことを通知する
         currentState?.OnTriggerExit(other);
     }
 
+    [ServerCallback]
     private void OnCollisionStay(Collision collision)
     {
-        if (!this.isServer) { return; }
         if (m_itemType != ItemType.TRAP && m_itemType != ItemType.TRAP_BOMB) { return; }
-        // 現在のステートに衝突が起きたことを通知する
-        currentState?.OnTriggerEnter(collision.collider.gameObject);
+        // 現在のステートにisTrigger衝突が起きたことを通知する
+        currentState?.OnTriggerEnter(collision.gameObject);
     }
 
+    [ServerCallback]
     private void OnCollisionExit(Collision collision)
     {
-        if (!this.isServer) { return; }
         if (m_itemType != ItemType.TRAP && m_itemType != ItemType.SETPART) { return; }
         // 現在のステートに衝突が離れたことを通知する
         currentState?.OnCollisionExit(collision.collider);
+    }
+
+    [ServerCallback]
+    public void ServerAddPoint()
+    {
+        // ポイントに変換する
+        this.GetPlayerData().AddPoint(this.GetPoint());
+        this.RpcAddPoint();
+        // このオブジェクトを破棄する
+        this.DestroysGameObject();
+    }
+
+    [ClientRpc]
+    private void RpcAddPoint()
+    {
+        // ポイントに変換する
+        this.GetPlayerData().AddPoint(this.GetPoint());
+        // このオブジェクトを破棄する
+        this.DestroysGameObject();
     }
 
     // このオブジェクトを破棄する
@@ -198,6 +246,12 @@ public class ItemStateMachine : NetworkBehaviour
         return m_itemType;
     }
 
+    // このアイテムの現在のステートの取得
+    public ItemStateType GetItemStateType()
+    {
+        return m_stateType;
+    }
+
     public BuffManager_Tanabe.Buff.BuffType GetBuffType()
     {
         return m_buffType;
@@ -206,6 +260,11 @@ public class ItemStateMachine : NetworkBehaviour
     public Rigidbody GetRigidbody()
     {
         return m_rb;
+    }
+
+    public bool GetIsKinematic()
+    {
+        return m_rb.isKinematic;
     }
 
     public Collider GetColiider()
@@ -245,7 +304,8 @@ public class ItemStateMachine : NetworkBehaviour
     }
 
     // プレイヤーデータの設定
-    public void SetPlayerData(Player_Tanabe _playerData)
+    [ClientRpc]
+    public void RpcSetPlayerData(Player_Tanabe _playerData)
     {
         m_playerData = _playerData;
         if(_playerData != null)

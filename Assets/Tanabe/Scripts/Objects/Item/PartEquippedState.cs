@@ -44,7 +44,7 @@ public class PartEquippedState : IItemState_Tanabe
             if(m_removeEquippedTimer <= 0.0f)
             {
                 item.GetPlayerData().SetPart(null);
-                item.CmdChangeState(item, ItemStateMachine.ItemStateType.DROP);
+                item.ChangeState(item, ItemStateMachine.ItemStateType.DROP);
 
                 Vector3 moveVector = new Vector3((float)Random.Range(-10, 11) * 0.1f, 3.0f, (float)Random.Range(-10, 11) * 0.1f);
                 item.GetRigidbody().AddForce(moveVector.normalized * 5.0f, ForceMode.Impulse);

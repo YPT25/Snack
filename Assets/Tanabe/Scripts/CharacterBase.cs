@@ -46,13 +46,14 @@ public class CharacterBase : NetworkBehaviour
     // ŠJnŠÖ”
     public override void OnStartServer()
     {
-        // ‰Šú‰»ˆ—
-        Initialize();
+        base.OnStartServer();
     }
 
     public override void OnStartClient()
     {
-
+        // ‰Šú‰»ˆ—
+        Initialize();
+        base.OnStartClient();
     }
 
     // ‰Šú‰»ŠÖ”

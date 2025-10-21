@@ -49,7 +49,7 @@ public class DropState : IItemState_Tanabe
                 item.GetPlayerData() != null && item.GetPlayerData().GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f && item.GetPlayerData().GetPart() == null)
             {
                 item.GetPlayerData().SetPrevShotButton(Input.GetAxisRaw("Shot"));
-                item.CmdChangeState(item, ItemStateMachine.ItemStateType.PARTEQUIPPED);
+                item.ChangeState(item, ItemStateMachine.ItemStateType.PARTEQUIPPED);
             }
         }
     }
@@ -63,17 +63,17 @@ public class DropState : IItemState_Tanabe
 
         Player_Tanabe player = other.GetComponent<Player_Tanabe>();
 
-        if (player == null ||
+        if (item.GetItemType() != ItemStateMachine.ItemType.POINT && player == null ||
             item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetItemType() != ItemStateMachine.ItemType.SETPART && player.GetPossesionManager().IsMaxPossession())
         {
             return;
         }
 
-        item.SetPlayerData(player);
+        item.RpcSetPlayerData(player);
 
         if(item.GetItemType() != ItemStateMachine.ItemType.SETPART)
         {
-            item.CmdChangeState(item, ItemStateMachine.ItemStateType.SUCK);
+            item.ServerChangeState(item, ItemStateMachine.ItemStateType.SUCK);
         }
     }
 
@@ -81,7 +81,7 @@ public class DropState : IItemState_Tanabe
     {
         if (item.GetItemType() != ItemStateMachine.ItemType.SETPART) { return; }
 
-        item.SetPlayerData(null);
+        item.RpcSetPlayerData(null);
     }
 
     public void OnCollisionExit(Collider other)
