@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class BombExplosion_Tanabe : MonoBehaviour
+public class BombExplosion_Tanabe : NetworkBehaviour
 {
     [SerializeField] private float m_explosionRadius = 5f;   // ”š•—‚Ì”ÍˆÍ
     [SerializeField] private float m_explosionForce = 5f;  // ”š•—‚Ì‹­‚³
@@ -13,6 +14,7 @@ public class BombExplosion_Tanabe : MonoBehaviour
 
     private Player_Tanabe m_player;
 
+    [ServerCallback]
     private void Update()
     {
         if (!m_autoDestroy) { return; }
@@ -20,6 +22,15 @@ public class BombExplosion_Tanabe : MonoBehaviour
         if(m_destroyTimer <= 0.0f)
         {
             Destroy(this.gameObject);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcSetPlayersIsMove(Player_Tanabe _player, bool _flag)
+    {
+        if (_player != null)
+        {
+            _player.SetIsHitBomb(_flag);
         }
     }
 
@@ -57,6 +68,7 @@ public class BombExplosion_Tanabe : MonoBehaviour
         this.Explode(_autoDestroy, _destroyTimer, _isDamage, _damage);
     }
 
+    [ClientCallback]
     public void HammerExplode()
     {
         m_autoDestroy = true;
@@ -77,12 +89,14 @@ public class BombExplosion_Tanabe : MonoBehaviour
                 else
                 {
                     // ”š•—‚Ì—Í‚ð‰Á‚¦‚é
-                    rb.AddExplosionForce(35f, transform.position, 15f, 6f, ForceMode.Impulse);
+                    //rb.AddExplosionForce(35f, transform.position, 15f, 6f, ForceMode.Impulse);
+                    this.CmdAddExplosionForce(rb.gameObject, 35f, transform.position, 15f, 6f, ForceMode.Impulse);
                 }
             }
         }
     }
 
+    [ServerCallback]
     private void ExplosionForce(Collider _hit)
     {
         Rigidbody rb = _hit.attachedRigidbody;
@@ -92,17 +106,34 @@ public class BombExplosion_Tanabe : MonoBehaviour
             {
                 m_player = _hit.gameObject.GetComponent<Player_Tanabe>();
                 m_player.SetIsHitBomb(true);
+                //this.RpcSetPlayersIsMove(m_player, true);
                 // ”š•—‚Ì—Í‚ð‰Á‚¦‚é
-                rb.AddExplosionForce(m_explosionForce * 2.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
+                //rb.AddExplosionForce(m_explosionForce * 2.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
+                this.RpcAddExplosionForce(rb.gameObject, m_explosionForce * 2.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
             }
             else if (_hit.gameObject.GetComponentInParent<Player_Tanabe>() == null)
             {
                 // ”š•—‚Ì—Í‚ð‰Á‚¦‚é
-                rb.AddExplosionForce(m_explosionForce * 5.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
+                //rb.AddExplosionForce(m_explosionForce * 5.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
+                this.RpcAddExplosionForce(rb.gameObject, m_explosionForce * 5.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
             }
         }
     }
 
+    [Command]
+    private void CmdAddExplosionForce(GameObject _gameObject, float _force, Vector3 _position, float _radius, float _upwardsModifier, ForceMode _forceMode)
+    {
+        _gameObject.GetComponent<Rigidbody>().AddExplosionForce(_force, _position, _radius, _upwardsModifier, _forceMode);
+        this.RpcAddExplosionForce(_gameObject, _force, _position, _radius, _upwardsModifier, _forceMode);
+    }
+
+    [ClientRpc]
+    private void RpcAddExplosionForce(GameObject _gameObject, float _force, Vector3 _position, float _radius, float _upwardsModifier, ForceMode _forceMode)
+    {
+        _gameObject.GetComponent<Rigidbody>().AddExplosionForce(_force, _position, _radius, _upwardsModifier, _forceMode);
+    }
+
+    [ServerCallback]
     private void OnDestroy()
     {
         if (m_player != null)

@@ -29,8 +29,8 @@ public class SuckState : IItemState_Tanabe
 
     public void Update()
     {
-        if (item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetPlayerData() == null ||
-            item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetPlayerData().GetPossesionManager().IsMaxPossession())
+        if (item.GetPlayerData() == null ||
+             item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetPlayerData().GetPossesionManager().IsMaxPossession())
         {
             // ƒhƒƒbƒvó‘Ô‚É‘JˆÚ‚·‚é
             item.ServerChangeState(item, ItemStateMachine.ItemStateType.DROP);

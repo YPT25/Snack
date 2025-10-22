@@ -78,6 +78,7 @@ public class ItemStateMachine : NetworkBehaviour
     }
 
     // 更新関数
+    [ServerCallback]
     void Update()
     {
         currentState?.Update();
@@ -220,6 +221,16 @@ public class ItemStateMachine : NetworkBehaviour
         this.DestroysGameObject();
     }
 
+    [ClientRpc]
+    public void RpcExplode()
+    {
+        this.SetIsKinematic(true);
+        this.GetEffectObject().SetActive(true);
+        this.GetEffectObject().transform.parent = null;
+        this.transform.localScale = Vector3.zero;
+        this.GetColiider().enabled = false;
+    }
+
     // このオブジェクトを破棄する
     public void DestroysGameObject(GameObject _gameObject = null)
     {
@@ -301,6 +312,20 @@ public class ItemStateMachine : NetworkBehaviour
     {
         if(playerTransform != null) { return; }
         playerTransform = _transform;
+    }
+
+    // プレイヤーデータの設定
+    public void SetPlayerData(Player_Tanabe _playerData)
+    {
+        m_playerData = _playerData;
+        if(_playerData != null)
+        {
+            playerTransform = m_playerData.transform;
+        }
+        else
+        {
+            playerTransform = null;
+        }
     }
 
     // プレイヤーデータの設定

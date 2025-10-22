@@ -85,6 +85,18 @@ public class CharacterBase : NetworkBehaviour
         SetHp(m_hp - _damage);
     }
 
+    [Command]
+    public void CmdDamage(float _damage)
+    {
+        Damage(_damage);
+    }
+
+    [ClientRpc]
+    public void RpcDamage(float _damage)
+    {
+        Damage(_damage);
+    }
+
     // ＜ゲッター関数＞ーーーーーーーーーーーーーーーーーーーー
 
     // キャラクタータイプの取得

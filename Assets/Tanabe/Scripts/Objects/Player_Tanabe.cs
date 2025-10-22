@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class Player_Tanabe : CharacterBase
 {
@@ -28,6 +29,9 @@ public class Player_Tanabe : CharacterBase
     private PossessionManager_Tanabe m_possessionManager;
     // セットパーツ
     private SetPart_Tanabe m_setPart = null;
+    private float m_removeEquippedTimer = 1.0f;
+    // 装備準備中のアイテム
+    private ItemStateMachine m_equipStandbyItem = null;
     // 右手に所持しているアイテム
     private ItemStateMachine m_rightHandsItem = null;
 
@@ -121,6 +125,39 @@ public class Player_Tanabe : CharacterBase
             m_jumpRequest = true;
         }
 
+        if(m_setPart != null)
+        {
+            if (Input.GetKeyUp(KeyCode.V) || Input.GetKeyUp("joystick button 4"))
+            {
+                m_removeEquippedTimer = 1.0f;
+            }
+            else if (Input.GetKey(KeyCode.V) || Input.GetKey("joystick button 4"))
+            {
+                m_removeEquippedTimer -= Time.deltaTime;
+                if (m_removeEquippedTimer <= 0.0f)
+                {
+                    m_removeEquippedTimer = 1.0f;
+                    ItemStateMachine item = m_setPart.GetComponent<ItemStateMachine>();
+                    this.SetPart(null);
+                    CmdChangeState_Item(item, ItemStateMachine.ItemStateType.DROP);
+
+                    Vector3 moveVector = new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 3.0f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f);
+                    //item.GetRigidbody().AddForce(moveVector.normalized * 5.0f, ForceMode.Impulse);
+                    this.CmdAddForce_Item(item, moveVector.normalized * 5.0f, ForceMode.Impulse);
+                }
+            }
+        }
+        else if (GetIsDefaultState() && m_equipStandbyItem != null && m_equipStandbyItem.GetPlayerData() == this)
+        {
+            if (Input.GetButtonDown("Attack") && m_equipStandbyItem.GetPlayerData() != null && this.GetPart() == null ||
+                m_equipStandbyItem.GetPlayerData() != null && this.GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f && this.GetPart() == null)
+            {
+                this.SetPrevShotButton(Input.GetAxisRaw("Shot"));
+                this.CmdChangeState_Item(m_equipStandbyItem, ItemStateMachine.ItemStateType.PARTEQUIPPED);
+                //m_equipStandbyItem.ChangeState(m_equipStandbyItem, ItemStateMachine.ItemStateType.PARTEQUIPPED);
+                this.CmdSetEquipStandbyItem(m_equipStandbyItem);
+            }
+        }
         if (!base.GetIsMove())
         {
             m_rb.velocity = Vector3.zero;
@@ -192,6 +229,28 @@ public class Player_Tanabe : CharacterBase
         // マネージャ等にポイントを渡す
     }
 
+    // アイテムの状態遷移
+    [Command]
+    public void CmdChangeState_Item(ItemStateMachine _item, ItemStateMachine.ItemStateType _newStateType)
+    {
+        // Throw状態に遷移する
+        _item.RpcChangeState(_item, _newStateType);
+    }
+
+    [Command]
+    private void CmdAddForce_Item(ItemStateMachine _item, Vector3 _moveForce, ForceMode _forceMode)
+    {
+        _item.GetRigidbody().AddForce(_moveForce, _forceMode);
+        this.RpcAddForce_Item(_item, _moveForce, _forceMode);
+    }
+
+    [ClientRpc]
+    private void RpcAddForce_Item(ItemStateMachine _item, Vector3 _moveForce, ForceMode _forceMode)
+    {
+        _item.GetRigidbody().AddForce(_moveForce, _forceMode);
+    }
+
+
     // ＜ゲッター関数＞ーーーーーーーーーーーーーーーーーーーー
 
     // 武器IDの取得
@@ -254,6 +313,12 @@ public class Player_Tanabe : CharacterBase
         {
             return global::SetPart_Tanabe.PartType.NONE_TYPE;
         }
+    }
+
+    // 装備待機アイテムの取得
+    public ItemStateMachine GetEquipStandbyItem()
+    {
+        return m_equipStandbyItem;
     }
 
     // 右手に持っているアイテムの取得
@@ -354,6 +419,25 @@ public class Player_Tanabe : CharacterBase
         }
         // セットパーツを変更・解除する
         m_setPart = _setPart;
+    }
+
+    // 装備待機アイテムの設定
+    public void SetEquipStandbyItem(ItemStateMachine _item)
+    {
+        m_equipStandbyItem = _item;
+    }
+
+    [Command]
+    public void CmdSetEquipStandbyItem(ItemStateMachine _item)
+    {
+        m_equipStandbyItem = _item;
+        RpcSetEquipStandbyItem(_item);
+    }
+
+    [ClientRpc]
+    public void RpcSetEquipStandbyItem(ItemStateMachine _item)
+    {
+        m_equipStandbyItem = _item;
     }
 
     // 右手に持つアイテムの設定

@@ -64,12 +64,13 @@ public class ThrowState : IItemState_Tanabe
 
     private void Explode()
     {
-        item.SetIsKinematic(true);
-        item.GetEffectObject().SetActive(true);
-        item.GetEffectObject().transform.parent = null;
-        item.transform.localScale = Vector3.zero;
-        item.GetColiider().enabled = false;
-        //item.GetComponent<MeshRenderer>().enabled = false;
+        //item.SetIsKinematic(true);
+        //item.GetEffectObject().SetActive(true);
+        //item.GetEffectObject().transform.parent = null;
+        //item.transform.localScale = Vector3.zero;
+        //item.GetColiider().enabled = false;
+        ////item.GetComponent<MeshRenderer>().enabled = false;
+        item.RpcExplode();
 
         BombExplosion_Tanabe test = item.GetComponent<BombExplosion_Tanabe>();
         if (test != null)
