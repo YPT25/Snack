@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class CharacterParameter
+public class CharacterParameterY
 {
     [Header("HP ※デフォルト値:100"), Range(0, 100)] public int hp;
     [Header("攻撃力 ※デフォルト値:20"), Range(0, 50)] public int power;
@@ -11,7 +11,7 @@ public class CharacterParameter
     [Header("スタミナ ※デフォルト値:20.0"), Range(0f, 50f)] public float stamina;
 }
 
-public class CharacterBase : MonoBehaviour
+public class CharacterBaseY : MonoBehaviour
 {
     // ＜列挙型＞ーーーーーーーーーーーーーーーーーーーーーーー
 
@@ -26,7 +26,7 @@ public class CharacterBase : MonoBehaviour
     // ＜パラメータ＞ーーーーーーーーーーーーーーーーーーーーー
 
     [Header("初期パラメータ"), SerializeField]
-    private CharacterParameter m_initialParameter;
+    private CharacterParameterY m_initialParameter;
     // 現在のパラメータ
     private int m_hp;
     private int m_power;
@@ -78,7 +78,7 @@ public class CharacterBase : MonoBehaviour
     }
 
     // 初期パラメータの取得
-    public CharacterParameter GetInitialParameter()
+    public CharacterParameterY GetInitialParameter()
     {
         return m_initialParameter;
     }

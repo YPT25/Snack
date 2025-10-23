@@ -22,11 +22,11 @@ public class CannonBox_NPC : NPCBase
         float dist = Vector3.Distance(transform.position, m_target.position);
         if (dist < 10.0f) // ŽË’ö
         {
-            Attack(m_target.GetComponent<CharacterBase>());
+            Attack(m_target.GetComponent<CharacterBaseY>());
         }
     }
 
-    public override void Attack(CharacterBase target)
+    public override void Attack(CharacterBaseY target)
     {
         if (cannonBallPrefab == null || firePoint == null) return;
 

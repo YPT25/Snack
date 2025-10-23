@@ -72,8 +72,8 @@ public class MPlayerBase : EnemyBase
         if (cam == null) return;
 
         // ƒ}ƒEƒX“ü—Í‚ð‰ñ“]Šp‚É”½‰f
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        float mouseX = Input.GetAxis("Camera X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Camera Y") * mouseSensitivity;
 
         yaw += mouseX;
         pitch -= mouseY;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static CharacterBase;
 
-public class EnemyBase : CharacterBase
+public class EnemyBase : CharacterBaseY
 {
     // ＜列挙型＞ーーーーーーーーーーーーーーーーーーーーーーー
 
@@ -30,7 +30,7 @@ public class EnemyBase : CharacterBase
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
     // Start is called before the first frame update
-    public override void Start()
+    public virtual void Start()
     {
         base.Start();
         SetCharacterType(m_enemyCharacterType);
@@ -39,7 +39,7 @@ public class EnemyBase : CharacterBase
     /// <summary>
     /// 攻撃処理（派生クラスで上書きする想定）
     /// </summary>
-    public virtual void Attack(CharacterBase target)
+    public virtual void Attack(CharacterBaseY target)
     {
         if (target == null) return;
 

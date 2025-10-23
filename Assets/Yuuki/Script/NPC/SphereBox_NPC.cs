@@ -85,7 +85,7 @@ public class SphereBox_NPC : NPCBase
     {
         if (!m_isAttacking) return;
 
-        CharacterBase target = other.GetComponent<CharacterBase>();
+        CharacterBaseY target = other.GetComponent<CharacterBaseY>();
         if (target != null && target != this)
         {
             Attack(target);

@@ -10,7 +10,7 @@ public class EmptyBox_Player : MPlayerBase
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, 2.0f))
         {
-            CharacterBase target = hit.collider.GetComponent<CharacterBase>();
+            CharacterBaseY target = hit.collider.GetComponent<CharacterBaseY>();
             if (target != null)
             {
                 Attack(target);
@@ -18,7 +18,7 @@ public class EmptyBox_Player : MPlayerBase
         }
     }
 
-    public override void Attack(CharacterBase target)
+    public override void Attack(CharacterBaseY target)
     {
         base.Attack(target); // ダメージ処理はベースに任せる（必要ならここで削除）
 

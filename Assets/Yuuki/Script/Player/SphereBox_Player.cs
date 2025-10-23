@@ -81,7 +81,7 @@ public class SphereBox_Player : MPlayerBase
     {
         if (!m_isAttacking) return;
 
-        CharacterBase target = other.GetComponent<CharacterBase>();
+        CharacterBaseY target = other.GetComponent<CharacterBaseY>();
         if (target != null && target != this)
         {
             // EnemyBase‚ÌAttack‚ð—˜—p
