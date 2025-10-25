@@ -29,14 +29,14 @@ public class CharacterBase : NetworkBehaviour
     [SyncVar, Header("初期パラメータ"), SerializeField]
     private CharacterParameter m_initialParameter;
     // 現在のパラメータ
-    [SyncVar] private float m_hp;
+    private float m_hp;
     [SyncVar] private float m_power;
     [SyncVar] private float m_moveSpeed;
     [SyncVar] private float m_stamina;
 
     // フラグ
-    private bool m_isMove = true;
-    private bool m_isAttack = true;
+    [SyncVar] private bool m_isMove = true;
+    [SyncVar] private bool m_isAttack = true;
 
     // 自身のタイプ(分類)
     [SyncVar] private CharacterType m_characterType = CharacterType.NONE_TYPE;
@@ -46,13 +46,14 @@ public class CharacterBase : NetworkBehaviour
     // 開始関数
     public override void OnStartServer()
     {
-        // 初期化処理
-        Initialize();
+        base.OnStartServer();
     }
 
     public override void OnStartClient()
     {
-
+        // 初期化処理
+        Initialize();
+        base.OnStartClient();
     }
 
     // 初期化関数
@@ -82,6 +83,18 @@ public class CharacterBase : NetworkBehaviour
     public virtual void Damage(float _damage)
     {
         SetHp(m_hp - _damage);
+    }
+
+    [Command]
+    public void CmdDamage(float _damage)
+    {
+        Damage(_damage);
+    }
+
+    [ClientRpc]
+    public void RpcDamage(float _damage)
+    {
+        Damage(_damage);
     }
 
     // ＜ゲッター関数＞ーーーーーーーーーーーーーーーーーーーー
@@ -178,8 +191,22 @@ public class CharacterBase : NetworkBehaviour
         m_isMove = _flag;
     }
 
+    // 移動判定フラグの設定
+    [ClientRpc]
+    public void RpcSetIsMove(bool _flag)
+    {
+        m_isMove = _flag;
+    }
+
     // 攻撃可能フラグの設定
     public void SetIsAttack(bool _flag)
+    {
+        m_isAttack = _flag;
+    }
+
+    // 攻撃可能フラグの設定
+    [ClientRpc]
+    public void RpcSetIsAttack(bool _flag)
     {
         m_isAttack = _flag;
     }

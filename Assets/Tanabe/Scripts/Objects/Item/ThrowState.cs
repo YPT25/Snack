@@ -9,6 +9,7 @@ public class ThrowState : IItemState_Tanabe
 
     private float m_deleteTimer = 2.0f;
     private float m_exitTimer = 10.0f;
+    private bool m_isExplode = false;
 
     public ThrowState(ItemStateMachine item)
     {
@@ -58,18 +59,20 @@ public class ThrowState : IItemState_Tanabe
 
     public void OnTriggerEnter(GameObject other)
     {
-        if (other.GetComponentInParent<Player_Tanabe>() != null || other.tag == "Player" || item.GetRigidbody().isKinematic) { return; }
+        if (other.GetComponentInParent<Player_Tanabe>() != null || other.tag == "Player" || m_isExplode) { return; }
         this.Explode();
     }
 
     private void Explode()
     {
-        item.SetIsKinematic(true);
-        item.GetEffectObject().SetActive(true);
-        item.GetEffectObject().transform.parent = null;
-        item.transform.localScale = Vector3.zero;
-        item.GetColiider().enabled = false;
-        //item.GetComponent<MeshRenderer>().enabled = false;
+        m_isExplode = true;
+        //item.SetIsKinematic(true);
+        //item.GetEffectObject().SetActive(true);
+        //item.GetEffectObject().transform.parent = null;
+        //item.transform.localScale = Vector3.zero;
+        //item.GetColiider().enabled = false;
+        ////item.GetComponent<MeshRenderer>().enabled = false;
+        item.RpcExplode();
 
         BombExplosion_Tanabe test = item.GetComponent<BombExplosion_Tanabe>();
         if (test != null)

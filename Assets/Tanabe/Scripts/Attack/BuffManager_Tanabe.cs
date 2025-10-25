@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static BuffManager_Tanabe.Buff;
+using Mirror;
 
-public class BuffManager_Tanabe : MonoBehaviour
+public class BuffManager_Tanabe : NetworkBehaviour
 {
     [System.Serializable]
     public class Buff
@@ -27,16 +28,20 @@ public class BuffManager_Tanabe : MonoBehaviour
 
     private List<Buff> m_buffs = new List<Buff>();
     Player_Tanabe m_playerData;
+    BuffEffectGenerator_Tanabe m_effectGenerator;
 
     // Start is called before the first frame update
     void Start()
     {
         m_playerData = GetComponent<Player_Tanabe>();
+        m_effectGenerator = GameObject.Find("BuffEffectGenerator").GetComponent<BuffEffectGenerator_Tanabe>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(!this.isLocalPlayer) { return; }
+
         for (int i = 0; i < m_buffs.Count; i++)
         {
             if (!m_buffs[i].isUse) { continue; }
@@ -60,6 +65,8 @@ public class BuffManager_Tanabe : MonoBehaviour
     // バフを失う処理
     public void BuffLost(Buff _buff)
     {
+        if(!this.isLocalPlayer) { return; }
+
         switch (_buff.buffType)
         {
             case Buff.BuffType.HEAL_MULTIPLE:
@@ -90,7 +97,8 @@ public class BuffManager_Tanabe : MonoBehaviour
         //    m_playerData.SetMoveSpeed(m_playerData.GetDefaultMoveSpeed() - _buff.value);
         //}
 
-        Destroy(_buff.auraBuff.gameObject);
+        //Destroy(_buff.auraBuff.gameObject);
+        m_playerData.CmdDestroysObject(_buff.auraBuff.gameObject);
         m_buffs.Remove(_buff);
         Debug.Log("バフを１つ失った");
     }
@@ -102,23 +110,49 @@ public class BuffManager_Tanabe : MonoBehaviour
     }
 
     // バフの追加
-    public void AddBuff(Buff.BuffType _buffType)
+    [Command]
+    public void CmdAddBuff(Buff.BuffType _buffType)
     {
         switch (_buffType)
         {
             case Buff.BuffType.HEAL_MULTIPLE:
                 {
-                    Heal_Multiple();
+                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing());
+                    NetworkServer.Spawn(obj);
+                    obj.transform.parent = m_playerData.transform;
+                    obj.transform.localPosition = new Vector3(0f, -1f, 0f);
+                    RpcHeal_Multiple(obj);
                     break;
                 }
             case Buff.BuffType.POWER_UP:
                 {
-                    PowerUp();
+                    int randNum = Random.Range(1, 4);
+                    GameObject obj = null;
+                    // 1～3の間でランダムな値を取得し、1なら通す
+                    if (randNum == 1)
+                    {
+                        obj = Instantiate(m_effectGenerator.GetEffect_PowerDown());
+                        NetworkServer.Spawn(obj);
+                        obj.transform.parent = m_playerData.transform;
+                        obj.transform.localPosition = new Vector3(0f, 1f, 0f);
+                    }
+                    else
+                    {
+                        obj = Instantiate(m_effectGenerator.GetEffect_PowerUp());
+                        NetworkServer.Spawn(obj);
+                        obj.transform.parent = m_playerData.transform;
+                        obj.transform.localPosition = new Vector3(0f, -1f, 0f);
+                    }
+                    RpcPowerUp(obj, randNum);
                     break;
                 }
             case Buff.BuffType.SPEED_UP:
                 {
-                    SpeedUp();
+                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_SpeedUp());
+                    NetworkServer.Spawn(obj);
+                    obj.transform.parent = m_playerData.transform;
+                    obj.transform.localPosition = new Vector3(0f, -1f, 0f);
+                    RpcSpeedUp(obj);
                     break;
                 }
             default:
@@ -139,9 +173,16 @@ public class BuffManager_Tanabe : MonoBehaviour
     }
 
     // HPの継続回復
-    public void Heal_Multiple()
+    [ClientRpc]
+    public void RpcHeal_Multiple(GameObject _effect)
     {
         if (m_playerData == null) { return; }
+
+        //GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing());
+        //NetworkServer.Spawn(obj);
+        _effect.transform.parent = m_playerData.transform;
+        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        if(!this.isLocalPlayer) { return; }
 
         Buff buff = new Buff();
         buff.buffType = Buff.BuffType.HEAL_MULTIPLE;
@@ -151,29 +192,36 @@ public class BuffManager_Tanabe : MonoBehaviour
         buff.duration = 15.1f;
 
         // プレハブをGameObject型で取得
-        GameObject obj = (GameObject)Resources.Load("Healing");
-        buff.auraBuff = Instantiate(obj);
+        //GameObject obj = (GameObject)Resources.Load("Healing");
+        //buff.auraBuff = Instantiate(obj);
+        buff.auraBuff = _effect;
 
-        buff.auraBuff.transform.parent = m_playerData.transform;
-        buff.auraBuff.transform.localPosition = new Vector3(0f, -1f, 0f);
+        //buff.auraBuff.transform.parent = m_playerData.transform;
+        //buff.auraBuff.transform.localPosition = new Vector3(0f, -1f, 0f);
+        //this.CmdAddEffect(buff.auraBuff, new Vector3(0f, -1f, 0f));
 
-        AddBuff(buff);
-    }
-
-    // HPの継続回復
-    public void Heal_Multiple(float _heal, float _duration)
-    {
-        Buff buff = new Buff();
-        buff.buffType = Buff.BuffType.HEAL_MULTIPLE;
-        buff.value = _heal;
-        buff.duration = _duration;
         AddBuff(buff);
     }
 
     // 攻撃力アップ
-    public void PowerUp()
+    [ClientRpc]
+    public void RpcPowerUp(GameObject _effect, int randNum)
     {
         if (m_playerData == null) { return; }
+
+        _effect.transform.parent = m_playerData.transform;
+
+        // 1～3の間でランダムな値を取得し、1なら通す
+        if (randNum == 1)
+        {
+            _effect.transform.localPosition = new Vector3(0f, 1f, 0f);
+        }
+        else
+        {
+            _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        }
+
+        if(!this.isLocalPlayer) { return; }
 
         Buff buff = new Buff();
         buff.buffType = Buff.BuffType.POWER_UP;
@@ -181,28 +229,14 @@ public class BuffManager_Tanabe : MonoBehaviour
         buff.isUse = true;
         buff.value = m_playerData.GetInitialParameter().power * 0.25f;
 
+        buff.auraBuff = _effect;
 
         // 1～3の間でランダムな値を取得し、1なら通す
-        if (Random.Range(1, 4) == 1)
+        if (randNum == 1)
         {
             buff.value *= -1.0f;
-
-            // プレハブをGameObject型で取得
-            GameObject obj = (GameObject)Resources.Load("AuraBuff_PowerDown");
-            buff.auraBuff = Instantiate(obj);
-
-            buff.auraBuff.transform.parent = m_playerData.transform;
-            buff.auraBuff.transform.localPosition = new Vector3(0f, 1f, 0f);
         }
-        else
-        {
-            // プレハブをGameObject型で取得
-            GameObject obj = (GameObject)Resources.Load("AuraBuff_PowerUp");
-            buff.auraBuff = Instantiate(obj);
 
-            buff.auraBuff.transform.parent = m_playerData.transform;
-            buff.auraBuff.transform.localPosition = new Vector3(0f, -1f, 0f);
-        }
         buff.duration = 15.0f;
 
 
@@ -210,22 +244,15 @@ public class BuffManager_Tanabe : MonoBehaviour
         m_playerData.SetPower(m_playerData.GetPower() + buff.value);
     }
 
-    // 攻撃力アップ
-    public void PowerUp(float _power, float _duration)
-    {
-        Buff buff = new Buff();
-        buff.buffType = Buff.BuffType.POWER_UP;
-        buff.value = _power;
-        buff.duration = _duration;
-        AddBuff(buff);
-
-        m_playerData.SetPower(m_playerData.GetPower() + _power);
-    }
-
     // 移動速度アップ
-    public void SpeedUp()
+    [ClientRpc]
+    public void RpcSpeedUp(GameObject _effect)
     {
         if (m_playerData == null) { return; }
+
+        _effect.transform.parent = m_playerData.transform;
+        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        if (!this.isLocalPlayer) { return; }
 
         Buff buff = new Buff();
         buff.buffType = Buff.BuffType.SPEED_UP;
@@ -235,26 +262,13 @@ public class BuffManager_Tanabe : MonoBehaviour
         buff.duration = 10.0f;
 
         // プレハブをGameObject型で取得
-        GameObject obj = (GameObject)Resources.Load("AuraBuff_SpeedUp");
-        buff.auraBuff = Instantiate(obj);
+        //GameObject obj = (GameObject)Resources.Load("AuraBuff_SpeedUp");
+        buff.auraBuff = _effect;
 
-        buff.auraBuff.transform.parent = m_playerData.transform;
-        buff.auraBuff.transform.localPosition = new Vector3(0f, -1f, 0f);
+        //buff.auraBuff.transform.parent = m_playerData.transform;
+        //buff.auraBuff.transform.localPosition = new Vector3(0f, -1f, 0f);
 
         AddBuff(buff);
         m_playerData.SetMoveSpeed(m_playerData.GetDefaultMoveSpeed() + buff.value);
     }
-
-    // 移動速度アップ
-    public void SpeedUp(float _speed, float _duration)
-    {
-        Buff buff = new Buff();
-        buff.buffType = Buff.BuffType.SPEED_UP;
-        buff.value = _speed;
-        buff.duration = _duration;
-        AddBuff(buff);
-
-        m_playerData.SetMoveSpeed(m_playerData.GetDefaultMoveSpeed() + _speed);
-    }
-
 }

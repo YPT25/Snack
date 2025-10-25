@@ -34,22 +34,22 @@ public class PartEquippedState : IItemState_Tanabe
 
     public void Update()
     {
-        if(Input.GetKeyUp(KeyCode.V) || Input.GetKeyUp("joystick button 4"))
-        {
-            m_removeEquippedTimer = 1.0f;
-        }
-        else if(Input.GetKey(KeyCode.V) || Input.GetKey("joystick button 4"))
-        {
-            m_removeEquippedTimer -= Time.deltaTime;
-            if(m_removeEquippedTimer <= 0.0f)
-            {
-                item.GetPlayerData().SetPart(null);
-                item.CmdChangeState(item, ItemStateMachine.ItemStateType.DROP);
+        //if(Input.GetKeyUp(KeyCode.V) || Input.GetKeyUp("joystick button 4"))
+        //{
+        //    m_removeEquippedTimer = 1.0f;
+        //}
+        //else if(Input.GetKey(KeyCode.V) || Input.GetKey("joystick button 4"))
+        //{
+        //    m_removeEquippedTimer -= Time.deltaTime;
+        //    if(m_removeEquippedTimer <= 0.0f)
+        //    {
+        //        item.GetPlayerData().SetPart(null);
+        //        item.ChangeState(item, ItemStateMachine.ItemStateType.DROP);
 
-                Vector3 moveVector = new Vector3((float)Random.Range(-10, 11) * 0.1f, 3.0f, (float)Random.Range(-10, 11) * 0.1f);
-                item.GetRigidbody().AddForce(moveVector.normalized * 5.0f, ForceMode.Impulse);
-            }
-        }
+        //        Vector3 moveVector = new Vector3((float)Random.Range(-10, 11) * 0.1f, 3.0f, (float)Random.Range(-10, 11) * 0.1f);
+        //        item.GetRigidbody().AddForce(moveVector.normalized * 5.0f, ForceMode.Impulse);
+        //    }
+        //}
     }
 
     public void OnTriggerEnter(GameObject other)

@@ -30,7 +30,7 @@ public class PreparingThrowState : IItemState_Tanabe
 
     public void Update()
     {
-        item.transform.localPosition = new Vector3(0.6f, 0.0f, 0.8f);
+        //item.transform.localPosition = new Vector3(0.6f, 0.0f, 0.8f);
 
         if (m_gunHead == null && item.GetPlayerData().GetWeaponID() == Player_Tanabe.WeaponID.GUN && item.GetPlayerData().GetIsAiming())
         {
@@ -43,12 +43,12 @@ public class PreparingThrowState : IItemState_Tanabe
         }
 
         if(!item.GetPlayerData().isLocalPlayer) { return; }
-        // 左クリックを感知したら攻撃ステートに遷移する
-        if (Input.GetButtonDown("Attack") || Input.GetAxisRaw("Shot") != 0.0f)
-        {
-            // Throw状態に遷移する
-            item.CmdChangeState(item, ItemStateMachine.ItemStateType.THROW);
-        }
+        //// 左クリックを感知したら攻撃ステートに遷移する
+        //if (Input.GetButtonDown("Attack") || Input.GetAxisRaw("Shot") != 0.0f)
+        //{
+        //    // Throw状態に遷移する
+        //    item.CmdChangeState(item, ItemStateMachine.ItemStateType.THROW);
+        //}
     }
 
     public void OnTriggerEnter(GameObject other)

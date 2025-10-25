@@ -48,8 +48,10 @@ public class Gun_Tanabe : NetworkBehaviour
 
         if (Input.GetButtonDown("Attack") || Input.GetAxisRaw("Shot") != 0.0f)
         {
-            if (m_player.GetIsThrow())
+            if (m_player.GetIsThrow() && m_player.GetRightHandsItem() != null)
             {
+                CmdChangeState_Item(m_player.GetRightHandsItem(), ItemStateMachine.ItemStateType.THROW);
+                m_player.SetRightHandsItem(null);
                 m_player.SetIsThrow(false);
                 m_interval = 0.2f;
             }
@@ -90,7 +92,6 @@ public class Gun_Tanabe : NetworkBehaviour
         //Instantiate(obj).GetComponent<Bullet_Tanabe>().Shot(this.GetComponentInParent<Player_Tanabe>().GetPower(), m_gunHead.transform);
         //m_interval = m_maxInterval;
 
-        //GameObject obj = m_networkManager.OnCreateObject(m_bulletPrefab, m_player.gameObject);
         GameObject obj = Instantiate(m_bulletPrefab);
         obj.GetComponent<Bullet_Tanabe>().Shot(m_player.GetPower(), m_gunHead.transform);
         NetworkServer.Spawn(obj);
@@ -129,5 +130,13 @@ public class Gun_Tanabe : NetworkBehaviour
     public Transform GetGunHead()
     {
         return m_gunHead.transform;
+    }
+
+    // ÉAÉCÉeÉÄÇÃèÛë‘ëJà⁄
+    [Command]
+    public void CmdChangeState_Item(ItemStateMachine _item, ItemStateMachine.ItemStateType _newStateType)
+    {
+        // ThrowèÛë‘Ç…ëJà⁄Ç∑ÇÈ
+        _item.RpcChangeState(_item, _newStateType);
     }
 }

@@ -14,6 +14,7 @@ public class Bullet_Tanabe : NetworkBehaviour
     [SyncVar] private float m_power;
     // 貫通弾
     [SyncVar] private bool m_isPierce = false;
+    [SyncVar] private bool m_isDestroy = false;
 
     // Start is called before the first frame update
     void Start()
@@ -25,10 +26,12 @@ public class Bullet_Tanabe : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(m_isDestroy) { return; }
         m_activeTime -= Time.deltaTime;
         if (m_activeTime <= 0.0f)
         {
             Destroy(this.gameObject);
+            m_isDestroy = true;
         }
     }
 
@@ -37,8 +40,10 @@ public class Bullet_Tanabe : NetworkBehaviour
         m_rb.MovePosition(this.transform.position + m_forward * m_speed * Time.fixedDeltaTime);
     }
 
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
+        if(m_isDestroy) { return; }
         if (other.gameObject.GetComponent<Bullet_Tanabe>() != null || other.gameObject.tag == "Player") { return; }
         //if(other.gameObject.GetComponent<Player>() != null)
         //{
@@ -48,6 +53,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         if (!m_isPierce || other.gameObject.layer == 3)
         {
             Destroy(this.gameObject);
+            m_isDestroy = true;
         }
 
         // キャラクターデータの取得
@@ -78,6 +84,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
         Debug.Log("Shot");
         this.GetComponent<MeshRenderer>().material.color = Color.gray;
+        this.RpcSetBulletColor(Color.gray);
     }
 
     // ショットガン
@@ -91,6 +98,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
 
         this.GetComponent<MeshRenderer>().material.color = Color.red;
+        this.RpcSetBulletColor(Color.red);
     }
 
     // 尖弾
@@ -103,5 +111,12 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
 
         this.GetComponent<MeshRenderer>().material.color = Color.magenta;
+        this.RpcSetBulletColor(Color.magenta);
+    }
+
+    [ClientRpc]
+    private void RpcSetBulletColor(Color _color)
+    {
+        this.GetComponent<MeshRenderer>().material.color = _color;
     }
 }

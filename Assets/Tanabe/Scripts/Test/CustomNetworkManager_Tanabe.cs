@@ -136,16 +136,4 @@ public class CustomNetworkManager_Tanabe : NetworkManager
     }
 
 
-    //====================
-    // ‚»‚Ì‘¼’Ç‰Áˆ—
-    //====================
-
-    public GameObject OnCreateObject(GameObject _prefab, GameObject _player)
-    {
-        GameObject obj = Instantiate(_prefab);
-        NetworkServer.AddPlayerForConnection(obj.GetComponent<NetworkConnectionToClient>(), _player);
-        return obj;
-    }
-
-
 }
