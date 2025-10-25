@@ -15,6 +15,14 @@ public class HandsState : IItemState_Tanabe
     public void Enter()
     {
         baseScale = item.transform.localScale;
+
+        if (item.GetPlayerData().GetPossesionManager().IsMaxPossession() && !item.GetPlayerData().GetPossesionManager().CheckItem(item))
+        {
+            // ドロップ状態に遷移する
+            item.ChangeState(item, ItemStateMachine.ItemStateType.DROP);
+            return;
+        }
+
         if (item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW)
         {
             item.transform.localScale = baseScale * 0.3f;
@@ -25,7 +33,7 @@ public class HandsState : IItemState_Tanabe
         item.transform.parent = item.GetPlayerTransform();
         item.transform.localPosition = new Vector3(-0.6f, 0.0f, 0.8f);
 
-        item.GetPlayerData().GetPossesionManager()?.AddItem(item);
+        item.GetPlayerData().GetPossesionManager().AddItem(item);
 
         Debug.Log("Hands:開始");
     }

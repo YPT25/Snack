@@ -31,7 +31,7 @@ public class ItemStateMachine : NetworkBehaviour
     // 現在のステート
     private IItemState_Tanabe currentState;
     [SyncVar, Header("アイテムの種類"), SerializeField] private ItemType m_itemType;
-    [Header("移動速度 ※デフォルト値:30.0"), SerializeField, Range(0f, 100f)] public float moveSpeed;
+    [Header("移動速度 ※デフォルト値:8.0"), SerializeField, Range(0f, 100f)] public float moveSpeed;
     [Header("回転速度 ※デフォルト値:30.0"), SerializeField, Range(0f, 100f)] public float rotateSpeed;
     [Header("ポイント"), SerializeField, Range(0f, 100f)] private float m_point;
 
@@ -87,11 +87,7 @@ public class ItemStateMachine : NetworkBehaviour
     [ClientRpc]
     public void RpcChangeState(ItemStateMachine _item, ItemStateType _newStateType)
     {
-        //this.ChangeState(_item, _newStateType);
-        if (_item != null)
-        {
-            _item.ChangeState(_item, _newStateType);
-        }
+        this.ChangeState(this, _newStateType);
     }
 
     [Command]
@@ -101,7 +97,7 @@ public class ItemStateMachine : NetworkBehaviour
         if (_item != null)
         {
             // サーバー側でも状態変更
-            _item.ChangeState(_item, _newStateType);
+            this.ChangeState(this, _newStateType);
 
             // クライアント全員に反映
             RpcChangeState(_item, _newStateType);
@@ -114,7 +110,7 @@ public class ItemStateMachine : NetworkBehaviour
         if (_item != null)
         {
             // サーバー側でも状態変更
-            _item.ChangeState(_item, _newStateType);
+            this.ChangeState(this, _newStateType);
 
             // クライアント全員に反映
             RpcChangeState(_item, _newStateType);
@@ -168,6 +164,7 @@ public class ItemStateMachine : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
+        if(m_stateType == ItemStateType.THROW) { return; }
         // 現在のステートにisTrigger衝突が起きたことを通知する
         currentState?.OnTriggerEnter(other.gameObject);
     }
@@ -224,11 +221,28 @@ public class ItemStateMachine : NetworkBehaviour
     [ClientRpc]
     public void RpcExplode()
     {
+        GetEffectObject().transform.position = this.transform.position;
+
         this.SetIsKinematic(true);
         this.GetEffectObject().SetActive(true);
         this.GetEffectObject().transform.parent = null;
         this.transform.localScale = Vector3.zero;
         this.GetColiider().enabled = false;
+    }
+
+    [ClientRpc]
+    public void RpcExplode(Vector3 _scale, bool _isMeshRenderer)
+    {
+        GetEffectObject().transform.position = this.transform.position;
+        this.SetIsKinematic(true);
+        this.GetEffectObject().SetActive(true);
+        this.GetEffectObject().transform.parent = null;
+        this.transform.localScale = _scale;
+        this.GetColiider().enabled = false;
+        if(_isMeshRenderer)
+        {
+            this.gameObject.GetComponent<MeshRenderer>().enabled = false;
+        }
     }
 
     // このオブジェクトを破棄する

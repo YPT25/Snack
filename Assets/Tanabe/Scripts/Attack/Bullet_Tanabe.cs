@@ -61,7 +61,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         // キャラクターでなければreturnする
         if (characterBase == null || characterBase.GetCharacterType() != CharacterType.ENEMY_TYPE) { return; }
         // 敵から攻撃力を取得してダメージとして計算する
-        characterBase.RpcDamage(m_power);
+        characterBase.Damage(m_power);
 
     }
 
@@ -84,6 +84,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
         Debug.Log("Shot");
         this.GetComponent<MeshRenderer>().material.color = Color.gray;
+        this.RpcSetBulletColor(Color.gray);
     }
 
     // ショットガン
@@ -97,6 +98,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
 
         this.GetComponent<MeshRenderer>().material.color = Color.red;
+        this.RpcSetBulletColor(Color.red);
     }
 
     // 尖弾
@@ -109,5 +111,12 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
 
         this.GetComponent<MeshRenderer>().material.color = Color.magenta;
+        this.RpcSetBulletColor(Color.magenta);
+    }
+
+    [ClientRpc]
+    private void RpcSetBulletColor(Color _color)
+    {
+        this.GetComponent<MeshRenderer>().material.color = _color;
     }
 }

@@ -25,6 +25,7 @@ public class DropState : IItemState_Tanabe
         }
         //item.GetComponent<BoxCollider>().isTrigger = false;
         item.GetColiider().isTrigger = false;
+        item.SetPlayerData(null);
         Debug.Log("Drop:ŠJŽn");
     }
 
@@ -59,12 +60,10 @@ public class DropState : IItemState_Tanabe
         Debug.Log("hit");
         if(other.tag != "Player") { return; }
 
-
-
         Player_Tanabe player = other.GetComponent<Player_Tanabe>();
 
         if (player == null ||
-            item.GetPlayerData() != null && item.GetItemType() != ItemStateMachine.ItemType.POINT ||
+            //item.GetPlayerData() != null && item.GetItemType() != ItemStateMachine.ItemType.POINT ||
             item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetItemType() != ItemStateMachine.ItemType.SETPART && player.GetPossesionManager().IsMaxPossession())
         {
             return;

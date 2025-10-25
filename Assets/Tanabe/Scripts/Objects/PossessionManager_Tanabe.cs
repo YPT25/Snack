@@ -10,6 +10,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     private BuffManager_Tanabe m_buffManager;
 
     private ItemStateMachine[] m_items = new ItemStateMachine[2];
+    private bool m_isMaxItem = false;
 
     private LeftHand_Tanabe m_leftHand;
 
@@ -24,7 +25,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!m_player.isLocalPlayer) { return; }
+        if(!this.isLocalPlayer) { return; }
 
         if (m_items[0] != null && m_items[0].GetItemStateType() != ItemStateMachine.ItemStateType.HANDS)
         {
@@ -50,7 +51,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         {
             if (m_items[0].gameObject.active)
             {
-                UsesItem(0);
+                CmdUsesItem(0);
                 return;
             }
 
@@ -64,7 +65,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         {
             if (m_items[1].gameObject.active)
             {
-                UsesItem(1);
+                CmdUsesItem(1);
                 return;
             }
 
@@ -79,49 +80,59 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         //m_items[0].GetPlayerData().GetPossesionManager().AddItem(m_items[0]);
     }
 
-    private void UsesItem(int _index)
+    [Command]
+    private void CmdUsesItem(int _index)
     {
-        switch (m_items[_index].GetItemType())
+        RpcUsesItem(_index);
+    }
+
+    [ClientRpc]
+    private void RpcUsesItem(int _index)
+    {
+        bool prevFlag = m_isMaxItem;
+        m_isMaxItem = false;
+        if (m_items[_index] != null && m_items[_index].GetItemType() == ItemStateMachine.ItemType.THROW && m_player.GetIsThrow())
+        {
+            // 10月24日ここだけ同期させる
+            m_isMaxItem = prevFlag;
+            return;
+        }
+        Debug.Log("useitem!!!!");
+        ItemStateMachine item = m_items[_index];
+        m_items[_index] = null;
+        if(!this.isLocalPlayer) { return; }
+        m_leftHand.SetIsHand(false);
+
+        switch (item.GetItemType())
         {
             case ItemStateMachine.ItemType.BUFF:
                 {
-                    m_buffManager.AddBuff(m_items[_index].GetBuffType());
-                    Destroy(m_items[_index].gameObject);
-                    m_items[_index] = null;
-                    m_leftHand.SetIsHand(false);
+                    Debug.Log("useitem!!!!!");
+
+                    m_buffManager.CmdAddBuff(item.GetBuffType());
+                    Debug.Log("useitem!!!!!!");
+
+                    m_player.CmdDestroysObject(item.gameObject);
+                    //Destroy(item.gameObject);
                     break;
                 }
             case ItemStateMachine.ItemType.THROW:
                 {
-                    if (!m_player.GetIsThrow())
-                    {
-                        CmdChangeState_Item(m_items[_index], ItemStateMachine.ItemStateType.PREPARINGTHROW);
+                    CmdChangeState_Item(item, ItemStateMachine.ItemStateType.PREPARINGTHROW);
 
-                        //m_items[_index].CmdChangeState(m_items[_index].netIdentity, ItemStateMachine.ItemStateType.PREPARINGTHROW);
-                        m_player.SetRightHandsItem(m_items[_index]);
-                        m_player.SetIsThrow(true);
-
-                        m_items[_index] = null;
-                        m_leftHand.SetIsHand(false);
-                    }
+                    //item.CmdChangeState(item.netIdentity, ItemStateMachine.ItemStateType.PREPARINGTHROW);
+                    m_player.SetRightHandsItem(item);
+                    m_player.SetIsThrow(true);
                     break;
                 }
             case ItemStateMachine.ItemType.TRAP:
                 {
-                    CmdChangeState_Item(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
-
-                    //m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
-                    m_items[_index] = null;
-                    m_leftHand.SetIsHand(false);
+                    CmdChangeState_Item(item, ItemStateMachine.ItemStateType.TRAP);
                     break;
                 }
             case ItemStateMachine.ItemType.TRAP_BOMB:
                 {
-                    CmdChangeState_Item(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
-
-                    //m_items[_index].CmdChangeState(m_items[_index], ItemStateMachine.ItemStateType.TRAP);
-                    m_items[_index] = null;
-                    m_leftHand.SetIsHand(false);
+                    CmdChangeState_Item(item, ItemStateMachine.ItemStateType.TRAP);
                     break;
                 }
             default:
@@ -132,29 +143,49 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     // アイテムの追加 ※所持上限に達していたらfalseを返す
     public bool AddItem(ItemStateMachine _item)
     {
-        if (!m_player.isLocalPlayer) { return false; }
+        bool isAdd = false;
 
         if (m_items[0] == null && m_items[1] != _item)
         {
             m_items[0] = _item;
             CmdSetItemActive(m_items[0].gameObject, false);
-            return true;
+            isAdd = true;
         }
         else if (m_items[1] == null && m_items[0] != _item)
         {
             m_items[1] = _item;
             CmdSetItemActive(m_items[1].gameObject, false);
-            return true;
+            isAdd = true;
         }
 
+        if (m_items[0] == null || m_items[1] == null)
+        {
+            m_isMaxItem = false;
+        }
+        else
+        {
+            m_isMaxItem = true;
+        }
+
+        return isAdd;
+    }
+
+    // 同じオブジェクトを持っているかチェックする ※持っていたらtrueを返す
+    public bool CheckItem(ItemStateMachine _item)
+    {
+        if(_item == m_items[0] || _item == m_items[1])
+        {
+            return true;
+        }
         return false;
     }
 
     // アイテム所持数が最大か ※最大ならtrueを返す
     public bool IsMaxPossession()
     {
-        if (m_items[0] == null || m_items[1] == null) { return false; }
-        return true;
+        return m_isMaxItem;
+        //if (m_items[0] == null || m_items[1] == null) { return false; }
+        //return true;
     }
 
     [Command]

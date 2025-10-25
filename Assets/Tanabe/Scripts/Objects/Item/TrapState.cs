@@ -132,7 +132,7 @@ public class TrapState : IItemState_Tanabe
                 if(!m_characters.Contains(character))
                 {
                     m_characters.Add(character);
-                    character.SetIsMove(false);
+                    character.RpcSetIsMove(false);
                 }
             }
             else if(other.GetComponent<Rigidbody>() != null)
@@ -159,6 +159,7 @@ public class TrapState : IItemState_Tanabe
         item.transform.localScale = Vector3.one * scale.x * 0.1f;
         item.gameObject.GetComponent<MeshRenderer>().enabled = false;
         item.GetComponent<BoxCollider>().enabled = false;
+        item.RpcExplode(Vector3.one * scale.x * 0.1f, true);
 
         BombExplosion_Tanabe test = item.GetComponent<BombExplosion_Tanabe>();
         if (test != null)
@@ -183,7 +184,7 @@ public class TrapState : IItemState_Tanabe
             {
                 if (m_characters.Contains(character))
                 {
-                    character.SetIsMove(true);
+                    character.RpcSetIsMove(true);
                     Rigidbody charcterRB = character.gameObject.GetComponent<Rigidbody>();
                     if (charcterRB != null)
                     {
@@ -204,7 +205,7 @@ public class TrapState : IItemState_Tanabe
             for(int i = 0; i < m_characters.Count; i++)
             {
                 if (m_characters[i] == null) { continue; }
-                m_characters[i].SetIsMove(true);
+                m_characters[i].RpcSetIsMove(true);
             }
         }
         item.transform.localScale = baseScale;

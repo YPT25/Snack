@@ -19,7 +19,7 @@ public class Player_Tanabe : CharacterBase
     // ＜パラメータ＞ーーーーーーーーーーーーーーーーーーーーー
 
     [Header("カメラ")]
-    public Transform m_cameraTransform;
+    private Transform m_cameraTransform;
     [SyncVar, Header("武器ID"), SerializeField] private WeaponID m_weaponID;
     [Header("武器オブジェクト"), SerializeField] private GameObject m_weaponObject;
     [Header("武器"), SerializeField] private Hammer_Tanabe m_hammer;
@@ -34,6 +34,9 @@ public class Player_Tanabe : CharacterBase
     private ItemStateMachine m_equipStandbyItem = null;
     // 右手に所持しているアイテム
     private ItemStateMachine m_rightHandsItem = null;
+
+    // 共有用カメラベクトル
+    [SyncVar] private Vector3 m_notLocalCameraForward;
 
     // 現在のステート
     IPlayerState_Tanabe m_currentState;
@@ -64,6 +67,9 @@ public class Player_Tanabe : CharacterBase
     // 重力
     [SyncVar] private float m_prevGravity = 0.0f;
 
+    // デバッグ用パラメーターテキスト
+    private DebugParameterText_Tanabe m_debugParameterText;
+
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
     // 開始関数
@@ -75,11 +81,16 @@ public class Player_Tanabe : CharacterBase
         // Rigidbodyをアタッチする
         m_rb = GetComponent<Rigidbody>();
 
-        if (!this.isLocalPlayer) { return; }
-        m_cameraTransform = GameObject.FindWithTag("MainCamera").transform;
-
         // アイテムマネージャをアタッチする
         m_possessionManager = GetComponent<PossessionManager_Tanabe>();
+
+        if (!this.isLocalPlayer) { return; }
+
+        // デバッグ時のみ
+        m_debugParameterText = GameObject.Find("DebugParameterText")?.GetComponent<DebugParameterText_Tanabe>();
+        if(m_debugParameterText != null) { m_debugParameterText.SetCharacter(this); }
+
+        m_cameraTransform = GameObject.FindWithTag("MainCamera").transform;
 
         // 初期のステートの設定
         ChangeState(new IdleState(this));
@@ -95,7 +106,7 @@ public class Player_Tanabe : CharacterBase
     public override void Update()
     {
         if (!this.isLocalPlayer) { return; }
-
+        m_notLocalCameraForward = m_cameraTransform.forward;
         if (Input.GetKeyDown(KeyCode.P))
         {
             this.transform.position = new Vector3(0f, 2f, 0f);
@@ -250,6 +261,12 @@ public class Player_Tanabe : CharacterBase
         _item.GetRigidbody().AddForce(_moveForce, _forceMode);
     }
 
+    [Command]
+    public void CmdDestroysObject(GameObject _gameObject)
+    {
+        Destroy(_gameObject);
+    }
+
 
     // ＜ゲッター関数＞ーーーーーーーーーーーーーーーーーーーー
 
@@ -262,7 +279,14 @@ public class Player_Tanabe : CharacterBase
     // CameraTransform.forwardの取得
     public Vector3 GetCameraForward()
     {
-        return m_cameraTransform.forward;
+        if(this.isLocalPlayer)
+        {
+            return m_cameraTransform.forward;
+        }
+        else
+        {
+            return m_notLocalCameraForward;
+        }
     }
 
     // 銃口の取得
