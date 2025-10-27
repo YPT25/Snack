@@ -3,7 +3,7 @@ using Mirror; // Mirrorネットワーキング機能
 using TMPro; // TextMeshProを使用するために追加
 
 // ネットワーク対応のプレイヤームーブメント
-public class PlayerScript : NetworkBehaviour
+public class PlayerScript_Ashuri : NetworkBehaviour
 {
     [Header("UIの参照場所")] // UI参照のセクションヘッダー
     [Tooltip("プレイヤーの頭上に表示される名前のTextMeshProコンポーネント。")] // playerNameTextのツールチップ
@@ -22,6 +22,12 @@ public class PlayerScript : NetworkBehaviour
     [SyncVar(hook = nameof(OncolorChanged))] // 色変更を同期
     public Color playerColor = Color.white;
 
+    /// <summary>
+    /// サーバーで割り当てられるプレイヤー番号。
+    /// [SyncVar] により全クライアントに自動で同期されます。
+    /// </summary>
+    [SyncVar]
+    public int playerNumber;
     // 名前変更時に呼ばれる
     void OnNameChanged(string _oldName, string _newName)
     {
