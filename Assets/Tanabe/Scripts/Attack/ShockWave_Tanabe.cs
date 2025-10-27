@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class ShockWave_Tanabe : MonoBehaviour
+public class ShockWave_Tanabe : NetworkBehaviour
 {
     private float m_explosionForce = 7.3f;  // ”š•—‚Ì‹­‚³
     private float m_upwardsModifier = 1f;   // ã•ûŒü‚Ì•â³i‚¿ã‚ª‚éŠ´‚¶j
 
     private float m_waveTimer = 0.0f;
-    private bool m_isFall = false;
-    private float m_wavePower = 1.0f;
+    [SyncVar] private bool m_isFall = false;
+    [SyncVar] private float m_wavePower = 1.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +19,7 @@ public class ShockWave_Tanabe : MonoBehaviour
     }
 
     // Update is called once per frame
+    [ServerCallback]
     void Update()
     {
         m_waveTimer += Time.deltaTime;
@@ -47,6 +49,7 @@ public class ShockWave_Tanabe : MonoBehaviour
         m_wavePower = _wavePower;
     }
 
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.GetComponentInParent<Player_Tanabe>() != null) { return; }

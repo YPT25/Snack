@@ -18,6 +18,13 @@ public class Player_Tanabe : CharacterBase
 
     // ＜パラメータ＞ーーーーーーーーーーーーーーーーーーーーー
 
+    /// <summary>
+    /// サーバーで割り当てられるプレイヤー番号。
+    /// [SyncVar] により全クライアントに自動で同期されます。
+    /// </summary>
+    [SyncVar]
+    public int playerNumber;
+
     [Header("カメラ")]
     private Transform m_cameraTransform;
     [SyncVar, Header("武器ID"), SerializeField] private WeaponID m_weaponID;
@@ -49,6 +56,8 @@ public class Player_Tanabe : CharacterBase
     private bool m_isMoving = false;
     // デフォルト状態かの判定フラグ
     private bool m_isDefaultState = true;
+    // ハンマーのチャージ中か
+    private bool m_isAttackCharge = false;
 
     private float m_prevShotButton = 0.0f;
 
@@ -160,8 +169,8 @@ public class Player_Tanabe : CharacterBase
         }
         else if (GetIsDefaultState() && m_equipStandbyItem != null && m_equipStandbyItem.GetPlayerData() == this)
         {
-            if (Input.GetButtonDown("Attack") && m_equipStandbyItem.GetPlayerData() != null && this.GetPart() == null ||
-                m_equipStandbyItem.GetPlayerData() != null && this.GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f && this.GetPart() == null)
+            if (Input.GetButtonDown("Attack")                                           && this.GetPart() == null ||
+                this.GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f    && this.GetPart() == null)
             {
                 this.SetPrevShotButton(Input.GetAxisRaw("Shot"));
                 this.CmdChangeState_Item(m_equipStandbyItem, ItemStateMachine.ItemStateType.PARTEQUIPPED);
@@ -377,6 +386,10 @@ public class Player_Tanabe : CharacterBase
     // デフォルト状態かの判定フラグの取得
     public bool GetIsDefaultState()
     {
+        if(m_weaponID == WeaponID.HAMMER && m_isAttackCharge)
+        {
+            return true;
+        }
         return m_isDefaultState;
     }
 
@@ -480,6 +493,12 @@ public class Player_Tanabe : CharacterBase
     public void SetIsDefaultState(bool _flag)
     {
         m_isDefaultState = _flag;
+    }
+
+    // ハンマーのチャージ中か
+    public void SetIsAttackCharge(bool _flag)
+    {
+        m_isAttackCharge = _flag;
     }
 
     public void SetPrevShotButton(float _shot)
