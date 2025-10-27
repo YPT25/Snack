@@ -84,8 +84,6 @@ public class DropState : IItemState_Tanabe
 
     public void OnTriggerExit(Collider other)
     {
-        if (item.GetItemType() != ItemStateMachine.ItemType.SETPART) { return; }
-
         item.SetPlayerData(null);
         item.RpcSetPlayerData(null);
     }

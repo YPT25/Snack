@@ -68,7 +68,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
         this.Explode(_autoDestroy, _destroyTimer, _isDamage, _damage);
     }
 
-    [ClientCallback]
+    [ServerCallback]
     public void HammerExplode()
     {
         m_autoDestroy = true;
@@ -90,7 +90,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
                 {
                     // ”š•—‚Ì—Í‚ð‰Á‚¦‚é
                     //rb.AddExplosionForce(35f, transform.position, 15f, 6f, ForceMode.Impulse);
-                    this.CmdAddExplosionForce(rb.gameObject, 35f, transform.position, 15f, 6f, ForceMode.Impulse);
+                    this.RpcAddExplosionForce(rb.gameObject, 35f, transform.position, 15f, 6f, ForceMode.Impulse);
                 }
             }
         }

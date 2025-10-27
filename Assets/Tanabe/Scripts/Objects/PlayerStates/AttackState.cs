@@ -56,8 +56,11 @@ public class AttackState : IPlayerState_Tanabe
             return;
         }
 
-        if (m_player.GetIsThrow())
+        if (m_player.GetIsThrow() && m_player.GetRightHandsItem() != null)
         {
+            m_player.CmdChangeState_Item(m_player.GetRightHandsItem(), ItemStateMachine.ItemStateType.THROW);
+            m_player.SetRightHandsItem(null);
+
             m_isExitAttack = true;
             m_player.ChangeState(new IdleState(m_player));
             m_player.SetIsThrow(false);

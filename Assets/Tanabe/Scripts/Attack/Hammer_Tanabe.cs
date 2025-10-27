@@ -2,13 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class Hammer_Tanabe : MonoBehaviour
+public class Hammer_Tanabe : NetworkBehaviour
 {
     private Player_Tanabe m_player;
 
     [SerializeField] private HammerObject_Tanabe m_weaponTest;
     [Header("攻撃判定"), SerializeField] private Collider m_attackCollider;
+    [Header("衝撃波オブジェクト"), SerializeField] private GameObject m_shockWavePrefab;
+    [Header("爆発オブジェクト"), SerializeField] private GameObject m_bombExplosionPrefab;
 
     private Vector3 m_defaultPosition;
 
@@ -51,6 +54,7 @@ public class Hammer_Tanabe : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!this.isLocalPlayer) { return; }
         if (!m_player.GetIsAttack())
         {
             if (m_player.GetPartType() == global::SetPart_Tanabe.PartType.NONE_TYPE)
@@ -98,7 +102,7 @@ public class Hammer_Tanabe : MonoBehaviour
             // 攻撃判定を有効にするタイミング
             if (m_attackTimer >= 0.3f && m_attackTimer - Time.deltaTime * 4.0f <= 0.3f)
             {
-                m_attackCollider.enabled = true;
+                CmdSetAttackColliderEnabled(true);
             }
         }
         // 攻撃状態からデフォルトに戻す動き
@@ -106,7 +110,8 @@ public class Hammer_Tanabe : MonoBehaviour
         {
             if (m_attackCollider.enabled)
             {
-                m_attackCollider.enabled = false;
+                CmdSetAttackColliderEnabled(false);
+                //m_attackCollider.enabled = false;
             }
 
             m_attackTimer += Time.deltaTime * 2.0f;
@@ -186,7 +191,8 @@ public class Hammer_Tanabe : MonoBehaviour
 
                     if (m_attackTimer >= 1.0f)
                     {
-                        m_attackCollider.enabled = false;
+                        CmdSetAttackColliderEnabled(false);
+                        //m_attackCollider.enabled = false;
 
                         if (!m_isSharpAttack)
                         {
@@ -246,7 +252,8 @@ public class Hammer_Tanabe : MonoBehaviour
         if (m_player.GetPartType() == global::SetPart_Tanabe.PartType.SHARPBULLET)
         {
             m_isSharpAttack = !m_isSharpAttack;
-            m_attackCollider.enabled = true;
+            CmdSetAttackColliderEnabled(true);
+            //m_attackCollider.enabled = true;
             return;
         }
 
@@ -274,40 +281,83 @@ public class Hammer_Tanabe : MonoBehaviour
         {
             m_isShockWave = true;
             // プレハブをGameObject型で取得
-            GameObject obj = (GameObject)Resources.Load("ShockWave");
+            //GameObject obj = (GameObject)Resources.Load("ShockWave");
 
-            //GameObject shockWave = Instantiate(obj);
 
-            RaycastHit hit;
+            this.CmdShockWave(m_chargeTimer, m_player.GetGravity(), m_weaponTest.GetPosition_HammerHead(), m_player.transform.forward);
 
-            // 着地判定処理
-            bool isGrounded = Physics.Raycast(m_weaponTest.GetPosition_HammerHead(), Vector3.down, out hit, 2.1f, 9);
+            //RaycastHit hit;
 
-            if (isGrounded)
-            {
-                GameObject shockWave = Instantiate(obj);
+            //// 着地判定処理
+            //bool isGrounded = Physics.Raycast(m_weaponTest.GetPosition_HammerHead(), Vector3.down, out hit, 2.1f, 9);
 
-                Vector3 wavePosition = m_weaponTest.GetPosition_HammerHead();
-                wavePosition.y = hit.point.y + 0.1f;
-                shockWave.transform.position = wavePosition;
-                //if (m_player.GetGravity() < -0.2f)
+            //if (isGrounded)
+            //{
+
+                //GameObject shockWave = Instantiate(m_shockWavePrefab);
+
+                //Vector3 wavePosition = m_weaponTest.GetPosition_HammerHead();
+                //wavePosition.y = hit.point.y + 0.1f;
+                //shockWave.transform.position = wavePosition;
+                ////if (m_player.GetGravity() < -0.2f)
+                ////{
+                ////    shockWave.GetComponent<ShockWave>().Fall(m_player.GetGravity() * (-2.0f) + m_chargeTimer * 2.0f);
+                ////}
+
+                //shockWave.GetComponent<ShockWave_Tanabe>().Fall(1f + m_player.GetGravity() * (-2.0f) + m_chargeTimer * 20.0f);
+
+                ////shockWave.transform.localPosition = m_weaponTest.GetPosition_HammerHead() - new Vector3(0f, hit.transform.position.y, 0f);
+                //Debug.Log("衝撃波の生成");
+
+                //if (m_player.GetGravity() < -13f)
                 //{
-                //    shockWave.GetComponent<ShockWave>().Fall(m_player.GetGravity() * (-2.0f) + m_chargeTimer * 2.0f);
+                //    ExplodeTest();
                 //}
-
-                shockWave.GetComponent<ShockWave_Tanabe>().Fall(1f + m_player.GetGravity() * (-2.0f) + m_chargeTimer * 20.0f);
-
-                //shockWave.transform.localPosition = m_weaponTest.GetPosition_HammerHead() - new Vector3(0f, hit.transform.position.y, 0f);
-                Debug.Log("衝撃波の生成");
-
-                if (m_player.GetGravity() < -13f)
-                {
-                    ExplodeTest();
-                }
-            }
+            //}
 
         }
         m_isExitAttack = true;
+    }
+
+    [Command]
+    private void CmdShockWave(float _chargeTimer, float _playersGravity, Vector3 _hammerHeadPosition, Vector3 _playersForward)
+    {
+        RaycastHit hit;
+
+        // 着地判定処理
+        bool isGrounded = Physics.Raycast(_hammerHeadPosition, Vector3.down, out hit, 2.1f, 9);
+
+        if (!isGrounded) { return; }
+
+        GameObject shockWave = Instantiate(m_shockWavePrefab);
+
+        Vector3 wavePosition = _hammerHeadPosition;
+        wavePosition.y = hit.point.y + 0.1f;
+        shockWave.transform.position = wavePosition;
+
+        shockWave.GetComponent<ShockWave_Tanabe>().Fall(1f + _playersGravity * (-2.0f) + _chargeTimer * 20.0f);
+
+        NetworkServer.Spawn(shockWave);
+
+        Debug.Log("衝撃波の生成");
+
+        if (_playersGravity < -13f)
+        {
+            ExplodeTest(_hammerHeadPosition, _playersForward);
+        }
+    }
+
+    [Command]
+    private void CmdSetAttackColliderEnabled(bool _flag)
+    {
+        m_attackCollider.enabled = _flag;
+        this.RpcSetAttackColliderEnabled(_flag);
+    }
+
+    [ClientRpc]
+    private void RpcSetAttackColliderEnabled(bool _flag)
+    {
+        m_attackCollider.enabled = _flag;
     }
 
     public void SetPartType(SetPart_Tanabe.PartType _setPartType)
@@ -341,7 +391,7 @@ public class Hammer_Tanabe : MonoBehaviour
             case global::SetPart_Tanabe.PartType.SHARPBULLET:
                 {
                     m_weaponTest.gameObject.transform.localScale = new Vector3(1.47f, 1.47f, 1.47f);
-                    transform.localRotation = m_defaultRotation;
+                    transform.localRotation = m_defaultRotation2;
                     break;
                 }
             default:
@@ -361,13 +411,15 @@ public class Hammer_Tanabe : MonoBehaviour
         }
     }
 
-    private void ExplodeTest()
+    private void ExplodeTest(Vector3 _hammerHeadPosition, Vector3 _playersForward)
     {
-        // プレハブをGameObject型で取得
-        GameObject obj = (GameObject)Resources.Load("DebugExplode");
+        //GameObject explode = Instantiate(m_bombExplosionPrefab);
+        //explode.transform.position = m_weaponTest.GetPosition_HammerHead() + m_player.transform.forward * 2.0f;
+        //explode.GetComponent<BombExplosion_Tanabe>().HammerExplode();
 
-        GameObject explode = Instantiate(obj);
-        explode.transform.position = m_weaponTest.GetPosition_HammerHead() + m_player.transform.forward * 2.0f;
+        GameObject explode = Instantiate(m_bombExplosionPrefab);
+        explode.transform.position = _hammerHeadPosition + _playersForward * 2.0f;
+        NetworkServer.Spawn(explode);
         explode.GetComponent<BombExplosion_Tanabe>().HammerExplode();
 
     }
