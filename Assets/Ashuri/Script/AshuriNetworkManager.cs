@@ -26,9 +26,7 @@ public class AshuriNetworkManager : NetworkManager
     {
         GameObject playerobj;
 
-        PlayerScript_Ashuri playerScript;
-
-        PlayerControl_Tanabe playerScript_Tanabe;
+        Player_Tanabe playerScript_Tanabe;
 
         // 1人目はplayerPrefab1、それ以降はplayerPrefab2
         if (nextPlayerNumber == 1)
@@ -36,18 +34,20 @@ public class AshuriNetworkManager : NetworkManager
             playerobj = Instantiate(playerPrefab1);
 
             // InstantiateしたオブジェクトからPlayerScriptを取得
-            playerScript_Tanabe = playerobj.GetComponent<PlayerControl_Tanabe>();
-            //playerScript_Tanabe.playerNumber = nextPlayerNumber;
+            playerScript_Tanabe = playerobj.GetComponent<Player_Tanabe>();
+            playerScript_Tanabe.playerNumber = nextPlayerNumber;
+
+            Debug.Log($"プレイヤー番号{playerScript_Tanabe.playerNumber}が参加しました");
         }
         else
         {
             playerobj = Instantiate(playerPrefab2);
 
             // InstantiateしたオブジェクトからPlayerScriptを取得
-            playerScript = playerobj.GetComponent<PlayerScript_Ashuri>();
-            playerScript.playerNumber = nextPlayerNumber;
+            playerScript_Tanabe = playerobj.GetComponent<Player_Tanabe>();
+            playerScript_Tanabe.playerNumber = nextPlayerNumber;
 
-            Debug.Log($"プレイヤー番号{playerScript.playerNumber}が参加しました");
+            Debug.Log($"プレイヤー番号{playerScript_Tanabe.playerNumber}が参加しました");
         }
 
         // Mirrorに登録
