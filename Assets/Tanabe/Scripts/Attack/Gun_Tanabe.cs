@@ -11,13 +11,11 @@ public class Gun_Tanabe : NetworkBehaviour
     [SerializeField] GameObject m_gunHead;
     private float m_interval = 0.0f;
     private float m_maxInterval = 0.5f;
-    private CustomNetworkManager_Tanabe m_networkManager;
 
     // Start is called before the first frame update
     void Start()
     {
         m_player = GetComponentInParent<Player_Tanabe>();
-        m_networkManager = GameObject.Find("NetworkManager").GetComponent<CustomNetworkManager_Tanabe>();
     }
 
     // Update is called once per frame

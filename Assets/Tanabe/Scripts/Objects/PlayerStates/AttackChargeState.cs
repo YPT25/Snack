@@ -20,6 +20,7 @@ public class AttackChargeState : IPlayerState_Tanabe
         {
             m_player.AttackCharge();
         }
+        m_player.SetIsAttackCharge(true);
 
         Debug.Log("AttackCharge:äJén");
     }
@@ -60,6 +61,7 @@ public class AttackChargeState : IPlayerState_Tanabe
 
     public void Exit()
     {
+        m_player.SetIsAttackCharge(false);
         Debug.Log("AttackCharge:èIóπ");
     }
 
