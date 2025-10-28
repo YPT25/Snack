@@ -30,14 +30,14 @@ public class RespawnManager : MonoBehaviour
     /// <summary>
     /// 現在ステージに存在するNPC(敵)のタイプを取得
     /// </summary>
-    private HashSet<EnemyBase.EnemyType> GetExistingEnemyTypes()
+    private HashSet<NPCBase.EnemyType> GetExistingEnemyTypes()
     {
-        HashSet<EnemyBase.EnemyType> existingTypes = new HashSet<EnemyBase.EnemyType>();
-        var enemies = FindObjectsOfType<EnemyBase>();
+        HashSet<NPCBase.EnemyType> existingTypes = new();
+        var enemies = FindObjectsOfType<NPCBase>();
 
         foreach (var enemy in enemies)
         {
-            if (enemy.GetEnemyType() != EnemyBase.EnemyType.TYPE_NULL)
+            if (enemy.GetEnemyType() != NPCBase.EnemyType.TYPE_NULL)
                 existingTypes.Add(enemy.GetEnemyType());
         }
 
@@ -62,7 +62,7 @@ public class RespawnManager : MonoBehaviour
         }
 
         // ステージ上の敵タイプを取得
-        HashSet<EnemyBase.EnemyType> allowedTypes = GetExistingEnemyTypes();
+        HashSet<NPCBase.EnemyType> allowedTypes = GetExistingEnemyTypes();
         Debug.Log($"[RespawnManager] 現在の敵タイプ: {string.Join(", ", allowedTypes)}");
 
 
@@ -70,9 +70,8 @@ public class RespawnManager : MonoBehaviour
         for (int i = 0; i < playerPrefabs.Count; i++)
         {
             var playerPrefab = playerPrefabs[i];
-            var playerBase = playerPrefab.GetComponent<MPlayerBase>();
-
-            if (playerBase == null)
+            
+            if (!playerPrefab.TryGetComponent<MPlayerBase>(out var playerBase))
             {
                 Debug.LogWarning($"[{playerPrefab.name}] に PlayerBase がアタッチされていません。");
                 continue;

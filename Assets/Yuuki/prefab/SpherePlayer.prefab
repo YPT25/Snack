@@ -155,7 +155,7 @@ MonoBehaviour:
   m_enemyType: 2
   mouseSensitivity: 3
   rotationSmooth: 10
-  m_respawnIcon: {fileID: 21300000, guid: 573e845e8ce42ff46aa8474262411549, type: 3}
+  m_respawnIcon: {fileID: 21300000, guid: e8c1fd16d7c3e6642b1589a149044c94, type: 3}
   m_attackCollider: {fileID: 0}
   m_rollDuration: 1
   m_rollForce: 15

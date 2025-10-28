@@ -17,7 +17,7 @@ public class MPlayerBase : EnemyBase
     protected float yaw;   // ‰¡‰ñ“]
     protected float pitch; // c‰ñ“]
     protected Camera cam;
-    private TestRespawn respawnManager;
+    private RespawnManager respawnManager;
 
     public override void Start()
     {
@@ -26,7 +26,7 @@ public class MPlayerBase : EnemyBase
         cam = Camera.main;
 
         // RespawnManager‚ğ©“®æ“¾
-        respawnManager = FindObjectOfType<TestRespawn>();
+        respawnManager = FindObjectOfType<RespawnManager>();
         if (respawnManager == null)
         {
             Debug.LogWarning("[MPlayerBase] RespawnManager‚ªƒV[ƒ“‚É‘¶İ‚µ‚Ü‚¹‚ñB");
