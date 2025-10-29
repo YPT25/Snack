@@ -108,7 +108,217 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: "\uFF10_0"
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 84
+        width: 96
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72e6f4bbe18482945aaec72945a47b41
+      internalID: -224399264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_1"
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 83
+        width: 89
+        height: 123
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4298a5a08f8f8a64e8a32b7ec4f18c90
+      internalID: 2048852294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_2"
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 82
+        width: 90
+        height: 123
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3eccae720e96f147bfbf831358271df
+      internalID: -2011601186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_3"
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 81
+        width: 91
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07922fbd9400dda43ab0b54af91bc3c2
+      internalID: 377457489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_4"
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 79
+        width: 93
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b68b6bd2f54c1e34d81cbaa1e6762480
+      internalID: 716538551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_5"
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 79
+        width: 96
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50ef7c91fc37b9842bd42b7475d7da00
+      internalID: 1257904483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_6"
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 78
+        width: 93
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1048e64c0e4dd4449f770802c998ab8
+      internalID: 1433486428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_7"
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 79
+        width: 97
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 814b1a54ed4feb84486594c570eff18d
+      internalID: -679473627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_8"
+      rect:
+        serializedVersion: 2
+        x: 754
+        y: 78
+        width: 98
+        height: 127
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54ac97c5ddb5d5342be4168a1e0531d2
+      internalID: 1257979623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uFF10_9"
+      rect:
+        serializedVersion: 2
+        x: 852
+        y: 78
+        width: 88
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49aa701a05521af45964b2795b4986ee
+      internalID: 174187816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -119,7 +329,17 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "\uFF10_0": -224399264
+      "\uFF10_1": 2048852294
+      "\uFF10_2": -2011601186
+      "\uFF10_3": 377457489
+      "\uFF10_4": 716538551
+      "\uFF10_5": 1257904483
+      "\uFF10_6": 1433486428
+      "\uFF10_7": -679473627
+      "\uFF10_8": 1257979623
+      "\uFF10_9": 174187816
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
