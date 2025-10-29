@@ -27,7 +27,12 @@ public class NPCBase : EnemyBase
     public override void Update()
     {
         base.Update();
-
+        // ‰¼FƒV[ƒ““à‚ÌPlayerBase‚ğ’T‚·
+        MPlayerBase player = FindObjectOfType<MPlayerBase>();
+        if (player != null)
+        {
+            m_target = player.transform;
+        }
         if (m_target != null)
         {
             MoveTowardsTarget();
