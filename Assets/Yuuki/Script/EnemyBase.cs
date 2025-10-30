@@ -1,9 +1,10 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CharacterBase;
 
-public class EnemyBase : CharacterBaseY
+public class EnemyBase : CharacterBase
 {
     // ＜列挙型＞ーーーーーーーーーーーーーーーーーーーーーーー
 
@@ -32,14 +33,14 @@ public class EnemyBase : CharacterBaseY
     // Start is called before the first frame update
     public virtual void Start()
     {
-        base.Start();
+        base.Initialize();
         SetCharacterType(m_enemyCharacterType);
     }
 
     /// <summary>
     /// 攻撃処理（派生クラスで上書きする想定）
     /// </summary>
-    public virtual void Attack(CharacterBaseY target)
+    public virtual void Attack(CharacterBase target)
     {
         if (target == null) return;
 
@@ -50,7 +51,7 @@ public class EnemyBase : CharacterBaseY
         }
         else
         {
-            target.Damage(GetPower());
+            target.RpcDamage(GetPower());
             Debug.Log($"{name} が {target.name} に攻撃！ ダメージ:{GetPower()}");
         }
     }
@@ -61,7 +62,11 @@ public class EnemyBase : CharacterBaseY
     public virtual void Die()
     {
         Debug.Log($"{name} は倒れた！");
-        Destroy(gameObject);
+        // ネットワークオブジェクトなのでMirror経由で削除
+        if (isServer)
+        {
+            NetworkServer.Destroy(gameObject);
+        }
     }
 
     // ＜アクセッサ―＞ーーーーーーーーーーーーーーーーーーーーーーーー
