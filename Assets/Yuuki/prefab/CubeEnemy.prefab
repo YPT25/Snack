@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8198396165514937863}
   - component: {fileID: 8795147558150678940}
   - component: {fileID: 4313061029336918565}
+  - component: {fileID: 4283686179284586304}
   m_Layer: 0
   m_Name: CubeEnemy
   m_TagString: Untagged
@@ -119,6 +120,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca18ea9e2ac7bea469a1751d86d73f9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   m_initialParameter:
     hp: 100
     power: 20
@@ -128,6 +132,12 @@ MonoBehaviour:
   m_enemyType: 1
   m_attackCollider: {fileID: 0}
   m_attackDuration: 0.5
+  m_attackCooldown: 1
+  m_detectRange: 10
+  m_attackRange: 2
+  m_waypoints: []
+  m_patrolSpeed: 2
+  m_chaseSpeed: 3.5
 --- !u!54 &4313061029336918565
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -155,3 +165,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &4283686179284586304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909810242615913557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 656343316
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

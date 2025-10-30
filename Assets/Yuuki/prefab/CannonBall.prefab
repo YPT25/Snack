@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7762650914640578241}
   - component: {fileID: 6669243059383584837}
   - component: {fileID: 792988358766016602}
+  - component: {fileID: -5049848154854230244}
   m_Layer: 0
   m_Name: CannonBall
   m_TagString: Untagged
@@ -147,3 +148,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 20
+--- !u!114 &-5049848154854230244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4539971892963465637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 75356247
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
