@@ -68,5 +68,8 @@ public class GameStartButton : NetworkBehaviour // NetworkBehaviourを継承
                 NetworkManager.singleton.ServerChangeScene(nextSceneName);
             }
         }
+        // プレイヤー番号をリセット
+        ((AshuriNetworkManager)NetworkManager.singleton).PlayerNumberReset();
+
     }
 }

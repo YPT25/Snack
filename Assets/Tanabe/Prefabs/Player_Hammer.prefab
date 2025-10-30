@@ -186,6 +186,7 @@ MonoBehaviour:
     power: 20
     moveSpeed: 8
     stamina: 5
+  playerNumber: 0
   m_weaponID: 1
   m_weaponObject: {fileID: 3077580793436803532}
   m_hammer: {fileID: 4701147402128973306}

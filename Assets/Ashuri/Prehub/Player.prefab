@@ -376,10 +376,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  playerNameText: {fileID: 0}
+  playerNameText: {fileID: 8759295479255562479}
   floatingInfo: {fileID: 9077567550312746598}
   playerName: 
   playerColor: {r: 1, g: 1, b: 1, a: 1}
+  playerNumber: 0
 --- !u!1 &9077567550312746598
 GameObject:
   m_ObjectHideFlags: 0
