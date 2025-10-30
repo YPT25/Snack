@@ -1,33 +1,38 @@
-using UnityEngine; // Unity‚ÌŠî–{‹@”\
-using UnityEngine.SceneManagement; // ƒV[ƒ“ŠÇ—
-using Mirror; // Mirrorƒlƒbƒgƒ[ƒN
-using System.Collections; // ƒRƒ‹[ƒ`ƒ“g—p
+ï»¿using UnityEngine;
+using UnityEngine.SceneManagement;
+using Mirror;
+using System.Collections;
 
 /// <summary>
-/// Mirror‚ÌNetworkManager‚ğŠg’£‚µ‚½ƒJƒXƒ^ƒ€ƒNƒ‰ƒX
-/// ƒvƒŒƒCƒ„[ŠÇ— + ƒtƒF[ƒh•t‚«ƒV[ƒ“‘JˆÚ‹@”\‚ğ’Ç‰Á
+/// Mirrorã®NetworkManagerã‚’æ‹¡å¼µã—ãŸã‚«ã‚¹ã‚¿ãƒ ã‚¯ãƒ©ã‚¹
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç®¡ç† + ãƒ•ã‚§ãƒ¼ãƒ‰ä»˜ãã‚·ãƒ¼ãƒ³é·ç§»æ©Ÿèƒ½ã‚’è¿½åŠ 
+/// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³å¯¾å¿œ
 /// </summary>
 public class AshuriNetworkManager : NetworkManager
 {
-    [Header("ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg")]
-    [Tooltip("1lƒ`[ƒ€‚ÌƒIƒuƒWƒFƒNƒg")]
+
+    // ------------------------------
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼é–¢é€£
+    // ------------------------------
+    [Header("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ")]
+    [Tooltip("1äººãƒãƒ¼ãƒ ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ")]
     public GameObject playerPrefab1;
-    [Tooltip("3lƒ`[ƒ€‚ÌƒIƒuƒWƒFƒNƒg")]
+    [Tooltip("3äººãƒãƒ¼ãƒ ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ")]
     public GameObject playerPrefab2;
 
-    // Ÿ‚ÌƒvƒŒƒCƒ„[”Ô†
+    // æ¬¡ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·
     private int nextPlayerNumber = 1;
 
     /// <summary>
-    /// ƒNƒ‰ƒCƒAƒ“ƒg‚ªƒT[ƒo[‚ÉÚ‘±‚µ‚ÄuƒvƒŒƒCƒ„[‚ğ’Ç‰Áv‚·‚é‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
-    /// Mirror“à•”ƒCƒxƒ“ƒg
+    /// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒã‚µãƒ¼ãƒãƒ¼ã«æ¥ç¶šã—ã¦ã€Œãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¿½åŠ ã€ã™ã‚‹ã¨ãã«å‘¼ã°ã‚Œã‚‹
+    /// Mirrorå†…éƒ¨ã‚¤ãƒ™ãƒ³ãƒˆ
     /// </summary>
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         GameObject playerobj;
         Player_Tanabe playerScript_Tanabe;
 
-        // 1l–Ú‚ÍplayerPrefab1A‚»‚êˆÈ~‚ÍplayerPrefab2
+        // 1äººç›®ã¯playerPrefab1ã€ãã‚Œä»¥é™ã¯playerPrefab2
         if (nextPlayerNumber == 1)
         {
             playerobj = Instantiate(playerPrefab1);
@@ -37,21 +42,21 @@ public class AshuriNetworkManager : NetworkManager
             playerobj = Instantiate(playerPrefab2);
         }
 
-        // ƒvƒŒƒCƒ„[ƒXƒNƒŠƒvƒg‚É”Ô†‚ğŠ„‚è“–‚Ä
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¹ã‚¯ãƒªãƒ—ãƒˆã«ç•ªå·ã‚’å‰²ã‚Šå½“ã¦
         playerScript_Tanabe = playerobj.GetComponent<Player_Tanabe>();
         playerScript_Tanabe.playerNumber = nextPlayerNumber;
 
-        Debug.Log($"ƒvƒŒƒCƒ„[”Ô†{playerScript_Tanabe.playerNumber}‚ªQ‰Á‚µ‚Ü‚µ‚½");
+        Debug.Log($"ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·{playerScript_Tanabe.playerNumber}ãŒå‚åŠ ã—ã¾ã—ãŸ");
 
-        // Mirror‚ÉƒvƒŒƒCƒ„[‚ğ“o˜^
+        // Mirrorã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç™»éŒ²
         NetworkServer.AddPlayerForConnection(conn, playerobj);
 
-        // Ÿ‚ÌƒvƒŒƒCƒ„[”Ô†‚ğ‘‚â‚·
+        // æ¬¡ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã‚’å¢—ã‚„ã™
         nextPlayerNumber++;
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ªØ’f‚µ‚½‚Æ‚«
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒåˆ‡æ–­ã—ãŸã¨ã
     /// </summary>
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
@@ -59,14 +64,20 @@ public class AshuriNetworkManager : NetworkManager
     }
 
     /// <summary>
-    /// ƒT[ƒo[‚ğ’â~‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
+    /// ã‚µãƒ¼ãƒãƒ¼ã‚’åœæ­¢ã—ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹
     /// </summary>
     public override void OnStopServer()
     {
         base.OnStopServer();
-        // V‚µ‚¢ƒZƒbƒVƒ‡ƒ“—p‚É”Ô†ƒŠƒZƒbƒg
+        // æ–°ã—ã„ã‚»ãƒƒã‚·ãƒ§ãƒ³ç”¨ã«ç•ªå·ãƒªã‚»ãƒƒãƒˆ
         nextPlayerNumber = 1;
     }
 
-   
+    /// <summary>
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã‚’æ‰‹å‹•ãƒªã‚»ãƒƒãƒˆ
+    /// </summary>
+    public void PlayerNumberReset()
+    {
+        nextPlayerNumber = 1;
+    }
 }
