@@ -31,6 +31,9 @@ public class Player_Tanabe : CharacterBase
     [Header("武器オブジェクト"), SerializeField] private GameObject m_weaponObject;
     [Header("武器"), SerializeField] private Hammer_Tanabe m_hammer;
     [Header("武器"), SerializeField] private Gun_Tanabe m_gun;
+    [Header("頭のオブジェクト"), SerializeField] private GameObject m_headObject;
+    [Header("カメラ制御スクリプト"), SerializeField] private TPSCameraController_Tanabe m_cameraController;
+    [Header("爆発オブジェクト"), SerializeField] private GameObject m_bombObject;
 
     // アイテムマネージャ
     private PossessionManager_Tanabe m_possessionManager;
@@ -79,13 +82,33 @@ public class Player_Tanabe : CharacterBase
     // デバッグ用パラメーターテキスト
     private DebugParameterText_Tanabe m_debugParameterText;
 
+    private PlayerManager_Tanabe m_playerManager;
+
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
     // 開始関数
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+
+        // Rigidbodyをアタッチする
+        m_rb = GetComponent<Rigidbody>();
+        if (m_bombObject != null)
+        {
+            m_bombObject.SetActive(false);
+        }
+        m_headObject = this.GetComponentInChildren<HeadObject_Tanabe>()?.gameObject;
+    }
+
     public override void OnStartClient()
     {
         // キャラクタータイプの設定
         base.SetCharacterType(CharacterType.HERO_TYPE);
+        if(GameObject.Find("BattleMode") != null)
+        {
+            // キャラクタータイプの設定
+            base.SetCharacterType(CharacterType.ENEMY_TYPE);
+        }
         base.OnStartClient();
         // Rigidbodyをアタッチする
         m_rb = GetComponent<Rigidbody>();
@@ -93,7 +116,27 @@ public class Player_Tanabe : CharacterBase
         // アイテムマネージャをアタッチする
         m_possessionManager = GetComponent<PossessionManager_Tanabe>();
 
-        if (!this.isLocalPlayer) { return; }
+        if (m_bombObject != null)
+        {
+            m_bombObject.SetActive(false);
+        }
+        m_headObject = this.GetComponentInChildren<HeadObject_Tanabe>()?.gameObject;
+
+        m_playerManager = GameObject.Find("PlayerManager")?.GetComponent<PlayerManager_Tanabe>();
+
+        if (!this.isLocalPlayer)
+        {
+            if(m_playerManager != null) { m_playerManager.SetPlayer(this); }
+            return;
+        }
+        if (m_playerManager != null)
+        {
+            m_playerManager.SetLocalPlayer(this);
+            if(m_cameraController != null)
+            {
+                m_playerManager.SetCameraController(m_cameraController);
+            }
+        }
 
         // デバッグ時のみ
         m_debugParameterText = GameObject.Find("DebugParameterText")?.GetComponent<DebugParameterText_Tanabe>();
@@ -106,8 +149,28 @@ public class Player_Tanabe : CharacterBase
 
         if (m_weaponID == WeaponID.HAMMER)
         {
-            //一時停止 this.gameObject.GetComponentInChildren<DebugAttacker>().SetParentCharacter(this);
+            this.gameObject.GetComponentInChildren<DebugAttackTest_Tanabe>()?.CmdSetParentCharacter(this);
         }
+    }
+
+    [Command]
+    private void CmdDeadExplosion(GameObject _headObject, Vector3 _randomVector1, Vector3 _randomVector2)
+    {
+        RpcDeadExplosion(_headObject, _randomVector1, _randomVector2);
+        HeadObject_Tanabe head = this.GetComponentInChildren<HeadObject_Tanabe>();
+        if(head == null) { return; }
+        head.GetComponent<BoxCollider>().enabled = true;
+        head.transform.parent = null;
+    }
+
+    [ClientRpc]
+    private void RpcDeadExplosion(GameObject _headObject, Vector3 _randomVector1, Vector3 _randomVector2)
+    {
+        m_bombObject.SetActive(true);
+        HeadObject_Tanabe head = this.GetComponentInChildren<HeadObject_Tanabe>();
+        if (head == null) { return; }
+        head.GetComponent<BoxCollider>().enabled = true;
+        head.transform.parent = null;
     }
 
     // 更新関数
@@ -115,6 +178,38 @@ public class Player_Tanabe : CharacterBase
     public override void Update()
     {
         if (!this.isLocalPlayer) { return; }
+        if (GetHp() <= 0.0f && m_headObject != null)
+        {
+            Debug.Log($"[Update] bomb:{m_bombObject != null}, head:{m_headObject != null}, rb:{m_rb != null}");
+
+            if (m_bombObject == null || m_headObject == null || m_rb == null)
+            {
+                Debug.LogError("[Update] Null detected! 処理中断や！");
+                return;
+            }
+
+            //m_cameraController.SetTarget(m_headObject.transform);
+            Vector3 randomVector1 = new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f);
+            Vector3 randomVector2 = new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f);
+            //this.CmdDeadExplosion(randomVector1, randomVector2);
+            //m_headObject.transform.parent = null;
+            //m_headObject = null;
+
+            m_bombObject.SetActive(true);
+            m_cameraController.SetTarget(m_headObject.transform);
+            m_headObject.GetComponent<BoxCollider>().enabled = true;
+            Rigidbody rb = m_headObject.GetComponent<Rigidbody>();
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            //rb.AddExplosionForce(300f, m_headObject.transform.position - new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f), 5f, 1f);
+            m_rb.freezeRotation = false;
+            m_rb.AddExplosionForce(5f, this.transform.position - new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f), 5f, 1f);
+            this.CmdDeadExplosion(this.gameObject, randomVector1, randomVector2);
+            //m_headObject.transform.parent = null;
+            m_headObject = null;
+        }
+        if (GetHp() <= 0.0f) { return; }
+
         m_notLocalCameraForward = m_cameraTransform.forward;
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -190,6 +285,7 @@ public class Player_Tanabe : CharacterBase
     public override void FixedUpdate()
     {
         if (!this.isLocalPlayer) { return; }
+        if (GetHp() <= 0.0f) { return; }
 
         base.FixedUpdate();
         // 現在のステートの更新処理

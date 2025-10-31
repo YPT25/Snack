@@ -97,6 +97,27 @@ public class CharacterBase : NetworkBehaviour
         Damage(_damage);
     }
 
+    /// <summary>
+    /// 回復処理
+    /// </summary>
+    /// <param name="_heal">回復する値</param>
+    public void Heal(float _heal)
+    {
+        SetHp(m_hp + _heal);
+    }
+
+    [Command]
+    public void CmdHeal(float _heal)
+    {
+        Heal(_heal);
+    }
+
+    [ClientRpc]
+    public void RpcHeal(float _heal)
+    {
+        Heal(_heal);
+    }
+
     // ＜ゲッター関数＞ーーーーーーーーーーーーーーーーーーーー
 
     // キャラクタータイプの取得

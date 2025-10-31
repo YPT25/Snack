@@ -51,7 +51,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
             if (m_buffs[i].buffType == BuffType.HEAL_MULTIPLE && (int)m_buffs[i].duration % 3 != 0 && (int)(m_buffs[i].duration + Time.deltaTime) % 3 == 0)
             {
-                Heal_Once(m_buffs[i].value);
+                CmdHeal_Once(m_buffs[i].value);
             }
 
             // Œø‰ÊŠÔ‚ªØ‚ê‚½‚çƒoƒt‚ğ¸‚¤
@@ -161,15 +161,11 @@ public class BuffManager_Tanabe : NetworkBehaviour
     }
 
     // HP‚Ì‰ñ•œ
-    public void Heal_Once(float _heal)
+    [Command]
+    public void CmdHeal_Once(float _heal)
     {
-        m_playerData.SetHp(m_playerData.GetHp() + _heal);
-
-        //Buff buff = new Buff();
-        //buff.buffType = Buff.BuffType.HEAL_ONCE;
-        //buff.value = _heal;
-        //buff.duration = 0.0f;
-        //AddBuff(buff);
+        m_playerData.RpcHeal(_heal);
+        //m_playerData.SetHp(m_playerData.GetHp() + _heal);
     }
 
     // HP‚ÌŒp‘±‰ñ•œ
