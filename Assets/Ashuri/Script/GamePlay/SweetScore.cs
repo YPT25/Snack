@@ -15,7 +15,7 @@ public class SweetScore : MonoBehaviour
 
     [Header("スコア設定")]
     [Tooltip("現在のスコア。ゲーム開始時は0にリセットされる。")]
-    [SerializeField] private int currentScore = 0;
+    [SerializeField] public int currentScore = 0;
 
     void Start()
     {

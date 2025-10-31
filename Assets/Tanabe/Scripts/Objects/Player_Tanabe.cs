@@ -247,6 +247,8 @@ public class Player_Tanabe : CharacterBase
     public void AddPoint(float point)
     {
         // マネージャ等にポイントを渡す
+        SweetScore sweetScore = FindObjectOfType<SweetScore>();
+        sweetScore.AddScore(10);
     }
 
     // アイテムの状態遷移

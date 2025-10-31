@@ -343,6 +343,7 @@ GameObject:
   - component: {fileID: 7543835189238821348}
   - component: {fileID: 6962702140480567274}
   - component: {fileID: 8948210737498569273}
+  - component: {fileID: 4002685003605446452}
   m_Layer: 0
   m_Name: pancake2
   m_TagString: Untagged
@@ -420,3 +421,24 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!65 &4002685003605446452
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7204288867658869598}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.87, y: 0.9, z: 2.2}
+  m_Center: {x: 0, y: 0.72, z: 0}

@@ -42,6 +42,9 @@ public class SweetObjectPool : NetworkBehaviour
     // 正規化された確率リスト
     private List<float> _normalizedProbabilities;
 
+    //ゲームマネジャー
+    private GameManager gameManager;
+
     public override void OnStartServer()
     {
         base.OnStartServer();
@@ -66,6 +69,9 @@ public class SweetObjectPool : NetworkBehaviour
         );
 
         _timer = _spawnInterval;
+        
+        //ゲームマネジャーを取得
+        gameManager = FindObjectOfType<GameManager>();
 
         // 頂点チェック
         if (_spawnAreaVertices == null || _spawnAreaVertices.Length != 4)
@@ -84,6 +90,7 @@ public class SweetObjectPool : NetworkBehaviour
     [ServerCallback]
     void Update()
     {
+        if (!gameManager.gameStarted) return;
         if (!isServer) return;
 
         _timer -= Time.deltaTime;
