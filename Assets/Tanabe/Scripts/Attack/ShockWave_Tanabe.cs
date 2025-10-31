@@ -12,6 +12,8 @@ public class ShockWave_Tanabe : NetworkBehaviour
     [SyncVar] private bool m_isFall = false;
     [SyncVar] private float m_wavePower = 1.0f;
 
+    private GameObject m_parentPlayer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,22 +51,37 @@ public class ShockWave_Tanabe : NetworkBehaviour
         m_wavePower = _wavePower;
     }
 
+    public void SetParentPlayer(GameObject _parentPlayer)
+    {
+        m_parentPlayer = _parentPlayer;
+    }
+
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponentInParent<Player_Tanabe>() != null) { return; }
-
         CharacterBase characterBase = other.gameObject.GetComponent<CharacterBase>();
-        if (characterBase != null && !other.isTrigger)
+        if (other.GetComponent<NetworkIdentity>() == null || other.isTrigger || characterBase == null || characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE) { return; }
+
+        if(other.gameObject == m_parentPlayer) { return; }
+
+        if (characterBase.GetCharacterType() == CharacterBase.CharacterType.ENEMY_TYPE)
         {
-            characterBase.Damage(10);
+            characterBase.RpcDamage(10);
         }
 
         Rigidbody rb = other.attachedRigidbody;
         if (rb != null)
         {
             // ”š•—‚Ì—Í‚ð‰Á‚¦‚é
-            rb.AddExplosionForce(m_explosionForce, transform.position, this.transform.localScale.x, m_upwardsModifier, ForceMode.Impulse);
+            //rb.AddExplosionForce(m_explosionForce, transform.position, this.transform.localScale.x, m_upwardsModifier, ForceMode.Impulse);
+            this.RpcAddExplosionForce(other.gameObject);
         }
+    }
+
+    [ClientRpc]
+    private void RpcAddExplosionForce(GameObject _gameObject)
+    {
+        // ”š•—‚Ì—Í‚ð‰Á‚¦‚é
+        _gameObject.GetComponent<Rigidbody>().AddExplosionForce(m_explosionForce, transform.position, this.transform.localScale.x, m_upwardsModifier, ForceMode.Impulse);
     }
 }

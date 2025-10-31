@@ -91,4 +91,9 @@ public class TPSCameraController_Tanabe : MonoBehaviour
             transform.LookAt(target.position + Vector3.up * 1.5f);  // ƒvƒŒƒCƒ„[‚Ì‹¹or“ª‚ ‚½‚èŒ©‚é‚æ‚¤‚É
         }
     }
+
+    public void SetTarget(Transform _target)
+    {
+        target = _target;
+    }
 }

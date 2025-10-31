@@ -22,6 +22,7 @@ public class Gun_Tanabe : NetworkBehaviour
     void Update()
     {
         if (!m_player.isLocalPlayer) { return; }
+        if(m_player.GetHp() <= 0.0f) { return; }
 
         if (m_player.GetIsAiming())
         {

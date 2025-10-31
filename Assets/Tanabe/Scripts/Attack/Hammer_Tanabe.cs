@@ -336,6 +336,7 @@ public class Hammer_Tanabe : NetworkBehaviour
         shockWave.transform.position = wavePosition;
 
         shockWave.GetComponent<ShockWave_Tanabe>().Fall(1f + _playersGravity * (-2.0f) + _chargeTimer * 20.0f);
+        shockWave.GetComponent<ShockWave_Tanabe>().SetParentPlayer(m_player.gameObject);
 
         NetworkServer.Spawn(shockWave);
 
@@ -420,7 +421,7 @@ public class Hammer_Tanabe : NetworkBehaviour
         GameObject explode = Instantiate(m_bombExplosionPrefab);
         explode.transform.position = _hammerHeadPosition + _playersForward * 2.0f;
         NetworkServer.Spawn(explode);
-        explode.GetComponent<BombExplosion_Tanabe>().HammerExplode();
+        explode.GetComponent<BombExplosion_Tanabe>().HammerExplode(m_player.gameObject);
 
     }
 

@@ -39,12 +39,14 @@ public class BombExplosion_Tanabe : NetworkBehaviour
         m_autoDestroy = _autoDestroy;
         m_destroyTimer = _destroyTimer;
 
+        this.RpcNoneIdentityExplode();
+
         // 爆風の範囲内にあるコライダーを全部取る
         Collider[] colliders = Physics.OverlapSphere(transform.position, m_explosionRadius);
 
         foreach (Collider hit in colliders)
         {
-            if (hit.isTrigger) { continue; }
+            if (hit.isTrigger || hit.GetComponent<NetworkIdentity>() == null) { continue; }
 
             if(_isDamage)
             {
@@ -59,6 +61,20 @@ public class BombExplosion_Tanabe : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void RpcNoneIdentityExplode()
+    {
+        // 爆風の範囲内にあるコライダーを全部取る
+        Collider[] colliders = Physics.OverlapSphere(transform.position, m_explosionRadius);
+
+        foreach (Collider hit in colliders)
+        {
+            if (hit.isTrigger || hit.GetComponent<NetworkIdentity>() != null) { continue; }
+            if (hit.attachedRigidbody == null) { continue; }
+            hit.attachedRigidbody.AddExplosionForce(m_explosionForce * 5.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
+        }
+    }
+
     public void Explode(float _explosionRadius, float _explosionForce, float _upwardsModifier, bool _autoDestroy = false, float _destroyTimer = 2f, bool _isDamage = false, float _damage = 35f)
     {
         m_explosionRadius = _explosionRadius;
@@ -69,17 +85,24 @@ public class BombExplosion_Tanabe : NetworkBehaviour
     }
 
     [ServerCallback]
-    public void HammerExplode()
+    public void HammerExplode(GameObject _parentPlayer)
     {
         m_autoDestroy = true;
         m_destroyTimer = 2f;
+
+        this.RpcNoneIdentityExplode();
 
         // 爆風の範囲内にあるコライダーを全部取る
         Collider[] colliders = Physics.OverlapSphere(transform.position, 15f);
 
         foreach (Collider hit in colliders)
         {
+            if(hit.gameObject == _parentPlayer) { continue; }
+
             Rigidbody rb = hit.attachedRigidbody;
+
+            if (hit.GetComponent<NetworkIdentity>() == null) { continue; }
+
             if (rb != null)
             {
                 if (hit.gameObject.GetComponentInParent<Player_Tanabe>() != null)

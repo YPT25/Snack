@@ -10,12 +10,23 @@ public class NetworkManagerUI_Tanabe : MonoBehaviour
     private CustomNetworkManager_Tanabe m_networkManager;
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject[] buttons;
+    [SerializeField] private GameObject[] m_playerPrefabs;
     [SerializeField] private GameObject parameterText;
 
     private void Start()
     {
         m_networkManager = GetComponent<CustomNetworkManager_Tanabe>();
         parameterText.SetActive(false);
+    }
+
+    public void Player1()
+    {
+        m_networkManager.playerPrefab = m_playerPrefabs[0];
+    }
+
+    public void Player2()
+    {
+        m_networkManager.playerPrefab = m_playerPrefabs[1];
     }
 
     // ホストボタン押下時に呼ばれる

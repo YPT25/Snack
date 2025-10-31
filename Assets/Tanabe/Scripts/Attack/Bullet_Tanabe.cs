@@ -44,11 +44,7 @@ public class Bullet_Tanabe : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if(m_isDestroy) { return; }
-        if (other.gameObject.GetComponent<Bullet_Tanabe>() != null || other.gameObject.tag == "Player") { return; }
-        //if(other.gameObject.GetComponent<Player>() != null)
-        //{
-        //    other.gameObject.GetComponent<Player>().SetHp(other.gameObject.GetComponent<Player>().GetHp() - 1);
-        //}
+        if (other.gameObject.GetComponent<Bullet_Tanabe>() != null) { return; }
 
         if (!m_isPierce || other.gameObject.layer == 3)
         {
@@ -59,9 +55,9 @@ public class Bullet_Tanabe : NetworkBehaviour
         // キャラクターデータの取得
         CharacterBase characterBase = other.GetComponent<CharacterBase>();
         // キャラクターでなければreturnする
-        if (characterBase == null || characterBase.GetCharacterType() != CharacterType.ENEMY_TYPE) { return; }
+        if (other.isTrigger || characterBase == null || characterBase.GetCharacterType() != CharacterType.ENEMY_TYPE) { return; }
         // 敵から攻撃力を取得してダメージとして計算する
-        characterBase.Damage(m_power);
+        characterBase.RpcDamage(m_power);
 
     }
 
