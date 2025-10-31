@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1444015947438287721}
   - component: {fileID: 5728092037489883706}
   - component: {fileID: 1301045589643395433}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u7403.001"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 4409018692771512112}
   - component: {fileID: 1172517377595516258}
   - component: {fileID: 8874661185088448211}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u7403"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -180,7 +180,8 @@ GameObject:
   - component: {fileID: 261601714740154240}
   - component: {fileID: -5026076673887838401}
   - component: {fileID: 1144062066407176667}
-  m_Layer: 0
+  - component: {fileID: -635727152165105054}
+  m_Layer: 6
   m_Name: candy_RO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,8 +268,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.17, y: 1.84, z: 1.66}
-  m_Center: {x: -0.4, y: 0.53, z: -0.23}
+  m_Size: {x: 2.8, y: 2.5, z: 2}
+  m_Center: {x: -0.5, y: 0.65, z: -0.25}
 --- !u!114 &-5026076673887838401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,3 +319,24 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+--- !u!114 &-635727152165105054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5048152657659312577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b85e8c7e5789f0479f72f9f0be49f72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  m_itemType: 1
+  moveSpeed: 16
+  rotateSpeed: 30
+  m_point: 0
+  m_buffType: 0
+  m_effectObject: {fileID: 0}

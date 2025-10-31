@@ -22,7 +22,7 @@ public class TimeText : NetworkBehaviour
         // 初期表示を一度更新
         if (gameManager != null)
         {
-            UpdateTimeDisplay(gameManager.GetRemainingTime);
+            UpdateTimeDisplay(gameManager.remainingGameTime);
         }
         else
         {
@@ -45,7 +45,7 @@ public class TimeText : NetworkBehaviour
             // GameManagerが見つかれば残り時間を表示
             if (gameManager != null)
             {
-                UpdateTimeDisplay(gameManager.GetRemainingTime);
+                UpdateTimeDisplay(gameManager.remainingGameTime);
             }
         }
     }
