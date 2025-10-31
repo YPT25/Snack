@@ -207,6 +207,7 @@ public class Player_Tanabe : CharacterBase
             this.CmdDeadExplosion(this.gameObject, randomVector1, randomVector2);
             //m_headObject.transform.parent = null;
             m_headObject = null;
+            m_isAiming = false;
         }
         if (GetHp() <= 0.0f) { return; }
 

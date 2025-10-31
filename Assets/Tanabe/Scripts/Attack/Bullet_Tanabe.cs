@@ -86,7 +86,7 @@ public class Bullet_Tanabe : NetworkBehaviour
     // ƒVƒ‡ƒbƒgƒKƒ“
     public void ShotGun(float _power, Transform _gunHead, Vector3 _moveVector)
     {
-        m_power = _power;
+        m_power = _power / 2f;
         this.transform.localScale = this.transform.localScale * 0.6f;
         m_activeTime = 0.4f;
         m_speed *= 0.7f;
