@@ -15,7 +15,7 @@ public class SweetScore : MonoBehaviour
 
     [Header("スコア設定")]
     [Tooltip("現在のスコア。ゲーム開始時は0にリセットされる。")]
-    [SerializeField] public int currentScore = 0;
+    [SerializeField] public float currentScore = 0.0f;
 
     void Start()
     {
@@ -25,30 +25,16 @@ public class SweetScore : MonoBehaviour
 
     void Update()
     {
-        // Oキーを押したときにスコアを加算
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            AddScore(10); // 例：10点追加
-        }
+
     }
 
     /// <summary>
-    /// スコアを加算する関数。
+    /// スコアを取得する関数。
     /// </summary>
     /// <param name="amount">加算するスコアの値。</param>
-    public void AddScore(int amount)
+    public void AddScore(float amount)
     {
-        currentScore += amount;
-        UpdateScoreDisplay();
-    }
-
-    /// <summary>
-    /// スコアを減少する関数。
-    /// </summary>
-    /// <param name="amount">減少するスコアの値。</param>
-    public void SubtractScore(int amount)
-    {
-        currentScore -= amount;
+        currentScore = amount;
         UpdateScoreDisplay();
     }
 

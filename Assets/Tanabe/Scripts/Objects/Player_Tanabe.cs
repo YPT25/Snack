@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
+using TMPro;
 
 public class Player_Tanabe : CharacterBase
 {
@@ -25,6 +26,9 @@ public class Player_Tanabe : CharacterBase
     [SyncVar]
     public int playerNumber;
 
+    [SyncVar]
+    public string playerName = "Player"; 
+
     [Header("カメラ")]
     private Transform m_cameraTransform;
     [SyncVar, Header("武器ID"), SerializeField] private WeaponID m_weaponID;
@@ -44,6 +48,8 @@ public class Player_Tanabe : CharacterBase
     private ItemStateMachine m_equipStandbyItem = null;
     // 右手に所持しているアイテム
     private ItemStateMachine m_rightHandsItem = null;
+    //プレイヤーのスコア
+    public float m_sweetScore = 0.0f;
 
     // 共有用カメラベクトル
     [SyncVar] private Vector3 m_notLocalCameraForward;
@@ -281,6 +287,9 @@ public class Player_Tanabe : CharacterBase
         }
 
         m_prevGravity = m_rb.velocity.y;
+
+        //スコアの変動の表示
+        this.AddPoint();
     }
 
     public override void FixedUpdate()
@@ -341,11 +350,30 @@ public class Player_Tanabe : CharacterBase
     }
 
     // お菓子のポイントを受け取る
-    public void AddPoint(float point)
+    public void AddPoint()
     {
         // マネージャ等にポイントを渡す
         SweetScore sweetScore = FindObjectOfType<SweetScore>();
-        sweetScore.AddScore(10);
+        if (sweetScore != null)
+        {
+            sweetScore.AddScore(m_sweetScore);
+        }
+    }
+
+    /// <summary>
+    /// スコアを増やす関数
+    /// </summary>
+    public void AddScore(float _score)
+    {
+        m_sweetScore += _score;
+    }
+
+    /// <summary>
+    /// スコアを減らす関数
+    /// </summary>
+    public void SubmitScore(float _score)
+    {
+        m_sweetScore -= _score;
     }
 
     // アイテムの状態遷移

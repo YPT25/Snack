@@ -203,7 +203,7 @@ public class ItemStateMachine : NetworkBehaviour
     public void ServerAddPoint()
     {
         // ポイントに変換する
-        this.GetPlayerData().AddPoint(this.GetPoint());
+        this.GetPlayerData().AddScore(this.GetPoint());
         this.RpcAddPoint();
         // このオブジェクトを破棄する
         this.DestroysGameObject();
@@ -213,7 +213,7 @@ public class ItemStateMachine : NetworkBehaviour
     private void RpcAddPoint()
     {
         // ポイントに変換する
-        this.GetPlayerData().AddPoint(this.GetPoint());
+        this.GetPlayerData().AddScore(this.GetPoint());
         // このオブジェクトを破棄する
         this.DestroysGameObject();
     }

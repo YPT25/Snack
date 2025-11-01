@@ -337,6 +337,6 @@ MonoBehaviour:
   m_itemType: 1
   moveSpeed: 16
   rotateSpeed: 30
-  m_point: 0
+  m_point: 75
   m_buffType: 0
   m_effectObject: {fileID: 0}
