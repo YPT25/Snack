@@ -156,6 +156,10 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
+      propertyPath: _spawnAreaVertices.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _spawnAreaVertices.Array.data[0].x
       value: 50
       objectReference: {fileID: 0}
@@ -185,6 +189,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _spawnAreaVertices.Array.data[3].z
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
+      propertyPath: _spawnAreaVertices.Array.data[4].x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
+      propertyPath: _spawnAreaVertices.Array.data[4].z
       value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
@@ -480,8 +492,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  remainingGameTime: 10
-  initialGameTime: 10
+  remainingGameTime: 60
+  initialGameTime: 60
   preGameCountdownTime: 3
   gameStarted: 0
 --- !u!4 &375496455
