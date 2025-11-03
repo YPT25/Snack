@@ -263,6 +263,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 3258291491
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3 (7)"
@@ -541,7 +545,7 @@ PrefabInstance:
       objectReference: {fileID: 572097243}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _spawnInterval
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.size
@@ -684,6 +688,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 2729458368
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3 (2)"
@@ -1315,6 +1323,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 1590688793
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3 (3)"
@@ -1509,6 +1521,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 2144173761
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3 (4)"
@@ -1747,6 +1763,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 998422472
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3"
@@ -2127,6 +2147,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 4184179323
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3 (6)"
@@ -2189,6 +2213,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 3544690332
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3 (1)"
@@ -3217,6 +3245,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 164486733}
     m_Modifications:
+    - target: {fileID: -7241305402749513155, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
+      propertyPath: sceneId
+      value: 220419500
+      objectReference: {fileID: 0}
     - target: {fileID: 7244758098172347386, guid: 7dfcf63c538721e42a6f75e8230fd00a, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3 (5)"

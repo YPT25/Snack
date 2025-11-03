@@ -1,97 +1,120 @@
-using Mirror;     // Mirrorƒlƒbƒgƒ[ƒN‹@”\
-using TMPro;      // TextMeshPro‚ğg—p
-using UnityEngine; // Unity‚ÌŠî–{ƒNƒ‰ƒXg—p
+ï»¿using Mirror;     // Mirrorãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯æ©Ÿèƒ½
+using TMPro;      // TextMeshProã‚’ä½¿ç”¨
+using UnityEngine; // Unityã®åŸºæœ¬ã‚¯ãƒ©ã‚¹ä½¿ç”¨
 
 /// <summary>
-/// ƒQ[ƒ€I—¹Œã‚ÌƒXƒRƒAUI‚ğŠÇ—‚·‚éƒNƒ‰ƒX
-/// GameManager‚©‚çŒÄ‚Ño‚³‚ê‚ÄUI‚ğ•\¦‚µAƒQ[ƒ€‚ğ’â~‚³‚¹‚é
+/// ã‚²ãƒ¼ãƒ çµ‚äº†å¾Œã®ã‚¹ã‚³ã‚¢UIã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// GameManagerã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã¦UIã‚’è¡¨ç¤ºã—ã€ã‚²ãƒ¼ãƒ ã‚’åœæ­¢ã•ã›ã‚‹
 /// </summary>
 public class ResultUIScore : NetworkBehaviour
 {
-    [Header("ƒXƒRƒAUIŠÖ˜A")]
-    [Tooltip("ƒXƒRƒA‚ğ•\¦‚·‚éTextMeshProUGUI")]
-    [SerializeField] private TextMeshProUGUI scoreText; // ƒXƒRƒAƒeƒLƒXƒg
+    [Header("ã‚¹ã‚³ã‚¢UIé–¢é€£")]
+    [Tooltip("ã‚¹ã‚³ã‚¢ã‚’è¡¨ç¤ºã™ã‚‹TextMeshProUGUI")]
+    [SerializeField] private TextMeshProUGUI scoreText; // ã‚¹ã‚³ã‚¢ãƒ†ã‚­ã‚¹ãƒˆ
 
-    [Tooltip("ƒXƒRƒAƒpƒlƒ‹i”ñ•\¦¨•\¦Ø‚è‘Ö‚¦j")]
-    [SerializeField] private GameObject scorePanel; // ƒXƒRƒAƒpƒlƒ‹ƒIƒuƒWƒFƒNƒg
+    [Tooltip("ã‚¹ã‚³ã‚¢ãƒ‘ãƒãƒ«ï¼ˆéè¡¨ç¤ºâ†’è¡¨ç¤ºåˆ‡ã‚Šæ›¿ãˆï¼‰")]
+    [SerializeField] private GameObject scorePanel; // ã‚¹ã‚³ã‚¢ãƒ‘ãƒãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
-    // ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•Û
+    // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä¿æŒ
     public static ResultUIScore Instance { get; private set; }
 
     // ===============================
-    // ƒNƒ‰ƒCƒAƒ“ƒgŠJn‚Ìˆ—
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé–‹å§‹æ™‚ã®å‡¦ç†
     // ===============================
     public override void OnStartClient()
     {
-        // eƒNƒ‰ƒX‚Ìˆ—‚ğŒÄ‚Ô
+        // è¦ªã‚¯ãƒ©ã‚¹ã®å‡¦ç†ã‚’å‘¼ã¶
         base.OnStartClient();
 
-        // ƒVƒ“ƒOƒ‹ƒgƒ““o˜^id•¡–h~j
+        // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ç™»éŒ²ï¼ˆé‡è¤‡é˜²æ­¢ï¼‰
         if (Instance == null) Instance = this;
 
-        // ƒQ[ƒ€ŠJn‚ÍƒXƒRƒAƒpƒlƒ‹‚ğ”ñ•\¦‚É‚µ‚Ä‚¨‚­
+        // ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚ã¯ã‚¹ã‚³ã‚¢ãƒ‘ãƒãƒ«ã‚’éè¡¨ç¤ºã«ã—ã¦ãŠã
         if (scorePanel != null)
             scorePanel.SetActive(false);
     }
 
     // ===============================
-    // ƒNƒ‰ƒCƒAƒ“ƒgRPCFƒXƒRƒA‚ğ‘SƒNƒ‰ƒCƒAƒ“ƒg‚É•\¦
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆRPCï¼šã‚¹ã‚³ã‚¢ã‚’å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«è¡¨ç¤º
     // ===============================
     [ClientRpc]
     public void RpcShowScore(float finalScore)
     {
-        // ƒNƒ‰ƒCƒAƒ“ƒg‚ÅƒXƒRƒA•\¦‚ğŠJn
+        // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã§ã‚¹ã‚³ã‚¢è¡¨ç¤ºã‚’é–‹å§‹
         ShowScore(finalScore);
     }
 
     // ===============================
-    // ƒNƒ‰ƒCƒAƒ“ƒg‘¤FƒXƒRƒAUI•\¦ˆ—
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ï¼šã‚¹ã‚³ã‚¢UIè¡¨ç¤ºå‡¦ç†
     // ===============================
     public void ShowScore(float finalScore)
     {
-        // ƒfƒoƒbƒOƒƒO‚ğ•\¦
+        // ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã‚’è¡¨ç¤º
         Debug.Log("Game Over! Showing Score (Client)");
 
-        // ‚·‚×‚Ä‚ÌƒvƒŒƒCƒ„[‚ğæ“¾
+        // ã™ã¹ã¦ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å–å¾—
         Player_Tanabe[] players = FindObjectsOfType<Player_Tanabe>();
 
-        // ƒXƒRƒAƒpƒlƒ‹‚ğ•\¦
+        // ã‚¹ã‚³ã‚¢ãƒ‘ãƒãƒ«ã‚’è¡¨ç¤º
         if (scorePanel != null)
             scorePanel.SetActive(true);
 
-        // ƒXƒRƒAƒeƒLƒXƒg‚ª‘¶İ‚·‚éê‡
+        // ã‚¹ã‚³ã‚¢ãƒ†ã‚­ã‚¹ãƒˆãŒå­˜åœ¨ã™ã‚‹å ´åˆ
         if (scoreText != null)
         {
-            // ƒXƒRƒA•\¦—p•¶š—ñ‚ğì‚é
+            // ã‚¹ã‚³ã‚¢è¡¨ç¤ºç”¨æ–‡å­—åˆ—ã‚’ä½œã‚‹
             string allScores = "";
 
-            // ŠeƒvƒŒƒCƒ„[‚ÌƒXƒRƒA‚ğ’Ç‰Á
+            // å„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ã‚³ã‚¢ã‚’è¿½åŠ 
             for (int i = 0; i < players.Length; i++)
             {
                 Player_Tanabe p = players[i];
-                allScores += $"Player{p.playerNumber}: {p.m_sweetScore}\n";
+                //allScores += $"Player{p.playerNumber}: {p.m_sweetScore}\n";
             }
 
-            // ƒ`[ƒ€‘S‘ÌƒXƒRƒA‚ğÅŒã‚É’Ç‰Á
-            allScores += $"\nYour team Score: {finalScore}";
+            // ãƒãƒ¼ãƒ å…¨ä½“ã‚¹ã‚³ã‚¢ã‚’æœ€å¾Œã«è¿½åŠ 
+            //allScores += $"\nYour team Score: {finalScore}";
 
-            // ƒeƒLƒXƒg‚É”½‰f
+            // ãƒ†ã‚­ã‚¹ãƒˆã«åæ˜ 
             scoreText.text = allScores;
         }
 
-        // ‘SƒNƒ‰ƒCƒAƒ“ƒg‚ÅƒQ[ƒ€‚ğ’â~‚³‚¹‚é
+        // ===============================
+        // ğŸ”½ã€è¿½åŠ æ©Ÿèƒ½ã€‘ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤ºå‡¦ç†
+        // ===============================
+
+        // å„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ã‚¹ã‚³ã‚¢ã®é™é †ã§ä¸¦ã³æ›¿ãˆã‚‹
+        System.Array.Sort(players, (a, b) => b.m_sweetScore.CompareTo(a.m_sweetScore));
+
+        // ãƒ©ãƒ³ã‚­ãƒ³ã‚°çµæœã‚’æ–‡å­—åˆ—ã¨ã—ã¦ä½œæˆ
+        string rankingText = "\n\n--- Ranking ---\n";
+
+        // å„é †ä½ã‚’é †ã«è¿½åŠ 
+        for (int i = 0; i < players.Length; i++)
+        {
+            Player_Tanabe p = players[i];
+            rankingText += $"Number{i + 1}: Player{p.playerNumber} - {p.m_sweetScore}PT\n";
+        }
+
+        // æ—¢å­˜ã®ã‚¹ã‚³ã‚¢ãƒ†ã‚­ã‚¹ãƒˆã®å¾Œã‚ã«ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’è¿½è¨˜
+        if (scoreText != null)
+        {
+            scoreText.text += rankingText;
+        }
+
+        // å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã§ã‚²ãƒ¼ãƒ ã‚’åœæ­¢ã•ã›ã‚‹
         Time.timeScale = 0f;
     }
 
     // ===============================
-    // ƒNƒ‰ƒCƒAƒ“ƒg’â~FƒVƒ“ƒOƒ‹ƒgƒ“‰ğœ
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåœæ­¢æ™‚ï¼šã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³è§£é™¤
     // ===============================
     public override void OnStopClient()
     {
-        // eƒNƒ‰ƒX‚Ì’â~ˆ—‚ğŒÄ‚Ô
+        // è¦ªã‚¯ãƒ©ã‚¹ã®åœæ­¢å‡¦ç†ã‚’å‘¼ã¶
         base.OnStopClient();
 
-        // “o˜^Ï‚İ‚È‚ç‰ğœ
+        // ç™»éŒ²æ¸ˆã¿ãªã‚‰è§£é™¤
         if (Instance == this)
             Instance = null;
     }
