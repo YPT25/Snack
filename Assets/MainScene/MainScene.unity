@@ -3054,6 +3054,10 @@ PrefabInstance:
       value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: blockedScenes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: spawnPrefabs.Array.data[1]
       value: 
       objectReference: {fileID: 8767693467662694358, guid: c43b6bcf1a68a8840856de52088baaa2, type: 3}
@@ -3090,6 +3094,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3352013568955876611, guid: ec43046cd9730794d865354a6cbe3304, type: 3}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: blockedScenes.Array.data[0]
+      value: 
+      objectReference: {fileID: 102900000, guid: 572f03ab82493d74fae2ca86fd67b1cc, type: 3}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: spawnPrefabs.Array.data[10]
       value: 
       objectReference: {fileID: 2166806784736826698, guid: f943b4fcb175a1c4baffa9c4a45f4be3, type: 3}
@@ -3113,6 +3121,14 @@ PrefabInstance:
       propertyPath: spawnPrefabs.Array.data[15]
       value: 
       objectReference: {fileID: 375347522431727860, guid: 4156302c3784f514fbbc722ee8c287f7, type: 3}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: blockedSceneNames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: blockedSceneNames.Array.data[0]
+      value: GameScene
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
     - {fileID: 0}

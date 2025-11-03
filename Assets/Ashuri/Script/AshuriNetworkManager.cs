@@ -1,38 +1,102 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using Mirror;
-using System.Collections;
 
 /// <summary>
-/// MirrorのNetworkManagerを拡張したカスタムクラス
-/// プレイヤー管理 + フェード付きシーン遷移機能を追加
-/// シングルトン対応
+/// MirrorのNetworkManagerを拡張したクラス
+/// シーン名リストによって「途中参加できる／できない」を制御する
 /// </summary>
 public class AshuriNetworkManager : NetworkManager
 {
-
     // ------------------------------
-    // プレイヤー関連
+    // プレイヤー関連設定
     // ------------------------------
     [Header("プレイヤーオブジェクト")]
-    [Tooltip("1人チームのオブジェクト")]
+    [Tooltip("1人チーム用のプレイヤープレハブ")]
     public GameObject playerPrefab1;
-    [Tooltip("3人チームのオブジェクト")]
+
+    [Tooltip("3人チーム用のプレイヤープレハブ")]
     public GameObject playerPrefab2;
 
-    // 次のプレイヤー番号
+    // ------------------------------
+    // ゲーム状態管理
+    // ------------------------------
+    [Header("ゲーム状態管理")]
+    [Tooltip("trueの時、途中参加を禁止します")]
+    public bool gameInProgress = false;
+
+    // ------------------------------
+    // 途中参加禁止シーンの設定（インスペクターから入力）
+    // ------------------------------
+    [Header("途中参加禁止シーン設定（シーン名で入力）")]
+    [Tooltip("ここに途中参加を禁止したいシーン名を文字で入力してください")]
+    public List<string> blockedSceneNames = new List<string>();
+
+    // 次に割り当てるプレイヤー番号
     private int nextPlayerNumber = 1;
 
-    /// <summary>
-    /// クライアントがサーバーに接続して「プレイヤーを追加」するときに呼ばれる
-    /// Mirror内部イベント
-    /// </summary>
+    // ----------------------------------------------------
+    // 起動時に初期化処理を行う
+    // ----------------------------------------------------
+    public override void Awake()
+    {
+        base.Awake();
+
+        // blockedSceneNamesリストが空なら警告を表示
+        if (blockedSceneNames.Count == 0)
+        {
+            Debug.LogWarning("途中参加禁止シーンのリストが空です。インスペクターで設定してください。");
+        }
+    }
+
+    // ----------------------------------------------------
+    // 毎フレーム、現在のシーン名をチェックして参加可否を切り替える
+    // ----------------------------------------------------
+    public override void Update()
+    {
+        base.Update();
+
+        // 現在のシーン名を取得
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        // 現在のシーンが「禁止リスト」に含まれている場合、途中参加を禁止
+        if (blockedSceneNames.Contains(currentScene))
+        {
+            gameInProgress = true;
+        }
+        else
+        {
+            gameInProgress = false;
+        }
+    }
+
+    // ----------------------------------------------------
+    // クライアントがサーバーに接続してきたときの処理
+    // ----------------------------------------------------
+    public override void OnServerConnect(NetworkConnectionToClient conn)
+    {
+        // 現在のシーンで途中参加が禁止されている場合、接続を拒否する
+        if (gameInProgress)
+        {
+            Debug.Log($"シーン '{SceneManager.GetActiveScene().name}' は途中参加禁止です。接続を拒否します。");
+            conn.Disconnect();
+            return;
+        }
+
+        // 通常の接続処理を継続
+        base.OnServerConnect(conn);
+    }
+
+    // ----------------------------------------------------
+    // プレイヤー追加時の処理
+    // ----------------------------------------------------
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         GameObject playerobj;
         Player_Tanabe playerScript_Tanabe;
 
-        // 1人目はplayerPrefab1、それ以降はplayerPrefab2
+        // 1人目はplayerPrefab1、それ以降はplayerPrefab2を使用
         if (nextPlayerNumber == 1)
         {
             playerobj = Instantiate(playerPrefab1);
@@ -46,7 +110,7 @@ public class AshuriNetworkManager : NetworkManager
         playerScript_Tanabe = playerobj.GetComponent<Player_Tanabe>();
         playerScript_Tanabe.playerNumber = nextPlayerNumber;
 
-        Debug.Log($"プレイヤー番号{playerScript_Tanabe.playerNumber}が参加しました");
+        Debug.Log($"プレイヤー番号 {playerScript_Tanabe.playerNumber} が参加しました。");
 
         // Mirrorにプレイヤーを登録
         NetworkServer.AddPlayerForConnection(conn, playerobj);
@@ -55,27 +119,28 @@ public class AshuriNetworkManager : NetworkManager
         nextPlayerNumber++;
     }
 
-    /// <summary>
-    /// プレイヤーが切断したとき
-    /// </summary>
+    // ----------------------------------------------------
+    // クライアントが切断したとき
+    // ----------------------------------------------------
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         base.OnServerDisconnect(conn);
     }
 
-    /// <summary>
-    /// サーバーを停止したときに呼ばれる
-    /// </summary>
+    // ----------------------------------------------------
+    // サーバーを停止したときに番号をリセット
+    // ----------------------------------------------------
     public override void OnStopServer()
     {
         base.OnStopServer();
-        // 新しいセッション用に番号リセット
+
+        // 新しいセッション用に番号をリセット
         nextPlayerNumber = 1;
     }
 
-    /// <summary>
-    /// プレイヤー番号を手動リセット
-    /// </summary>
+    // ----------------------------------------------------
+    // プレイヤー番号を手動でリセットしたい場合
+    // ----------------------------------------------------
     public void PlayerNumberReset()
     {
         nextPlayerNumber = 1;
