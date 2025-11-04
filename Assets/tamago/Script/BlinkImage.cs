@@ -15,13 +15,10 @@ public class BlinkImage : MonoBehaviour
         originalColor = targetImage.color;
     }
 
-    void Update()
+    // HPが減ったときに呼び出すメソッド
+    public void OnHPChanged()
     {
-        // スペースキーが押されたときに点滅を開始
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(Blink());
-        }
+        StartCoroutine(Blink());
     }
 
     private IEnumerator Blink()
