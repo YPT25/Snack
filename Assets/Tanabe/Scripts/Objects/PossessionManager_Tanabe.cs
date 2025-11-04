@@ -26,7 +26,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     void Update()
     {
         if(!this.isLocalPlayer) { return; }
-        if (m_player.GetHp() <= 0.0f) { return; }
+        if (m_player.GetHp() <= 0.0f || m_player.IsPause()) { return; }
 
         if (m_items[0] != null && m_items[0].GetItemStateType() != ItemStateMachine.ItemStateType.HANDS)
         {
