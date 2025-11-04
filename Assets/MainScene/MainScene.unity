@@ -923,9 +923,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 0.49803922, a: 1}
+    m_PressedColor: {r: 0.74430186, g: 0.4532307, b: 0.990566, a: 1}
+    m_SelectedColor: {r: 0.514151, g: 0.7561956, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1192,9 +1192,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 0.495283, a: 1}
+    m_PressedColor: {r: 0.74411476, g: 0.3537736, b: 1, a: 1}
+    m_SelectedColor: {r: 0.5330188, g: 0.7237046, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1675,7 +1675,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1935564033}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1730,6 +1730,7 @@ GameObject:
   - component: {fileID: 1207380698}
   - component: {fileID: 1207380697}
   - component: {fileID: 1207380696}
+  - component: {fileID: 1207380701}
   - component: {fileID: 1207380700}
   m_Layer: 5
   m_Name: Network_Canvas
@@ -1842,6 +1843,21 @@ MonoBehaviour:
   serverListContent: {fileID: 1599513458}
   serverItemPrefab: {fileID: 3905385759640866662, guid: ec6130f401e483b4599dd023b30e15b1, type: 3}
   networkPanel: {fileID: 1416743271}
+--- !u!114 &1207380701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207380695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b93a8dc14e88f6f4691633c705eedd19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstSelectedButton: {fileID: 608667358}
+  targetCanvas: {fileID: 1207380698}
+  rescanButton: {fileID: 476130281}
 --- !u!1 &1222980614
 GameObject:
   m_ObjectHideFlags: 0
