@@ -83,6 +83,7 @@ public class Player_Tanabe : CharacterBase
     private DebugParameterText_Tanabe m_debugParameterText;
 
     private PlayerManager_Tanabe m_playerManager;
+    private GameOption_Tanabe m_gameOption;
 
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
@@ -151,6 +152,8 @@ public class Player_Tanabe : CharacterBase
         {
             this.gameObject.GetComponentInChildren<DebugAttackTest_Tanabe>()?.CmdSetParentCharacter(this);
         }
+
+        m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
     }
 
     [Command]
@@ -209,7 +212,25 @@ public class Player_Tanabe : CharacterBase
             m_headObject = null;
             m_isAiming = false;
         }
-        if (GetHp() <= 0.0f) { return; }
+
+        if(m_gameOption != null && m_gameOption.IsPause())
+        {
+            if (m_hammer != null && m_hammer.IsAttack())
+            {
+                // 現在のステートの更新処理
+                m_currentState?.Update();
+
+                // 移動していない状態ならスタミナを回復する
+                if (!m_isMoving)
+                {
+                    base.SetStamina(GetStamina() + Time.deltaTime);
+                }
+            }
+            // 着地判定処理
+            isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
+        }
+
+        if (GetHp() <= 0.0f || m_gameOption != null && m_gameOption.IsPause()) { return; }
 
         m_notLocalCameraForward = m_cameraTransform.forward;
         if (Input.GetKeyDown(KeyCode.P))
@@ -287,6 +308,21 @@ public class Player_Tanabe : CharacterBase
     {
         if (!this.isLocalPlayer) { return; }
         if (GetHp() <= 0.0f) { return; }
+
+        if (m_gameOption != null && m_gameOption.IsPause())
+        {
+            if(!m_isHitBomb)
+            {
+                m_rb.velocity = new Vector3(0f, m_rb.velocity.y, 0f);
+            }
+            // ジャンプの指示が出たときのみ通す
+            if (m_jumpRequest)
+            {
+                m_rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+                m_jumpRequest = false;
+            }
+            return;
+        }
 
         base.FixedUpdate();
         // 現在のステートの更新処理
@@ -505,6 +541,13 @@ public class Player_Tanabe : CharacterBase
     public bool GetIsHitBomb()
     {
         return m_isHitBomb;
+    }
+
+    // ポーズ中か
+    public bool IsPause()
+    {
+        if(m_gameOption == null) { return false; }
+        return m_gameOption.IsPause();
     }
 
 

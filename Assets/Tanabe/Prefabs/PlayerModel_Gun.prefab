@@ -5185,7 +5185,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3322310586902897171}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 305f3135e5729c94f94aa18f9b2b12b8, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -5293,7 +5293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 0
-  _assetId: 293602212
+  _assetId: 3341671494
   serverOnly: 0
   visibility: 0
   hasSpawned: 0

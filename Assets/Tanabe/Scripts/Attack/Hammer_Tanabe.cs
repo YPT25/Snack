@@ -348,6 +348,11 @@ public class Hammer_Tanabe : NetworkBehaviour
         }
     }
 
+    public bool IsAttack()
+    {
+        return m_isAttack;
+    }
+
     [Command]
     private void CmdSetAttackColliderEnabled(bool _flag)
     {

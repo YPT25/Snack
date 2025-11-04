@@ -11,12 +11,16 @@ public class NetworkManagerUI_Tanabe : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject[] buttons;
     [SerializeField] private GameObject[] m_playerPrefabs;
+    [SerializeField] private GameObject[] m_debugUI;
     [SerializeField] private GameObject parameterText;
 
     private void Start()
     {
         m_networkManager = GetComponent<CustomNetworkManager_Tanabe>();
-        parameterText.SetActive(false);
+        for (int i = 0; i < m_debugUI.Length; i++)
+        {
+            m_debugUI[i].SetActive(false);
+        }
     }
 
     public void Player1()
@@ -60,6 +64,9 @@ public class NetworkManagerUI_Tanabe : MonoBehaviour
         {
             buttons[i].SetActive(false);
         }
-        parameterText.SetActive(true);
+        for(int i = 0; i < m_debugUI.Length; i++)
+        {
+            m_debugUI[i].SetActive(true);
+        }
     }
 }
