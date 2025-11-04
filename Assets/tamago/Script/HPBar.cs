@@ -8,52 +8,40 @@ public class HPBar : MonoBehaviour
     public float maxHP = 100f;
     // 現在のHP
     public float currentHP;
-    // 一回あたりの減少量
-    public float decreaseAmount = 20f;
-    // 減少にかかる時間
-    public float decreaseDuration = 1f; // 1秒で減少
     // 初期位置（HPが満タンのときの位置）
     public Vector2 initialPosition;
 
     // HPバーのRectTransform
     private RectTransform rectTransform;
 
+    // CharacterBaseの参照
+    private CharacterBase characterBase;
+
     void Start()
     {
-        // 現在のHPを最大HPで初期化
-        currentHP = maxHP;
+        // HPバーの初期化
         rectTransform = GetComponent<RectTransform>();
         initialPosition = rectTransform.anchoredPosition; // 初期位置を保存
-        UpdateHPBar();
+
+        // CharacterBaseのコンポーネントを取得
+        characterBase = FindObjectOfType<CharacterBase>();
+        if (characterBase != null)
+        {
+            // 初期最大HPを設定
+            maxHP = characterBase.GetMaxHP();
+            currentHP = characterBase.GetHp();
+            UpdateHPBar();
+        }
     }
 
     void Update()
     {
-        // スペースキーが押されたか確認
-        if (Input.GetKeyDown(KeyCode.Space))
+        // プレイヤーの現在のHPを取得して更新
+        if (characterBase != null)
         {
-            StartCoroutine(DecreaseHPOverTime(decreaseAmount, decreaseDuration));
+            currentHP = characterBase.GetHp();
+            UpdateHPBar();
         }
-    }
-
-    // HPを少しずつ減少させるコルーチン
-    private IEnumerator DecreaseHPOverTime(float amount, float duration)
-    {
-        float startHP = currentHP;
-        float targetHP = Mathf.Max(0, currentHP - amount); // HPが0未満にならないようにする
-
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime; // 経過時間を更新
-            currentHP = Mathf.Lerp(startHP, targetHP, elapsed / duration); // 線形補間でHPを減少させる
-            UpdateHPBar(); // HPバーを更新
-            yield return null; // 次のフレームまで待機
-        }
-
-        currentHP = targetHP; // 最終的なHPを設定
-        UpdateHPBar(); // 最終的なHPバーを更新
     }
 
     // HPバーの表示を更新するメソッド
