@@ -11,7 +11,7 @@ public class DamageTest : MonoBehaviour
     {
 
             // CharacterBaseを継承したクラスを取得
-            CharacterBase player = other.GetComponent<CharacterBase>();
+            CharacterBaseY player = other.GetComponent<CharacterBaseY>();
             if (player != null)
             {
                 // ダメージ処理を呼び出す
