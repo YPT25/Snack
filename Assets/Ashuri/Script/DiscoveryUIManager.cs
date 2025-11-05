@@ -25,8 +25,15 @@ public class DiscoveryUIManager : MonoBehaviour
     [Tooltip("サーバー情報を表示するUIプレハブ（ボタンなど）")]
     [SerializeField] private GameObject serverItemPrefab;
 
+    [Tooltip("ユーザーネームを決めるボタン")]
+    [SerializeField] private Button userNameButton;
+
     [Tooltip("後ろの背景パネル")]
     [SerializeField] private GameObject networkPanel;
+
+    [Header("YouserNameを操作するCanvas")]
+    [Tooltip("ユーザネームを決めているCanvas")]
+    [SerializeField] private Canvas userNameCanvas;
 
     // 見つかったサーバーを記録する辞書（重複防止用）
     private readonly Dictionary<long, ServerResponse> discoveredServers = new();
@@ -38,6 +45,7 @@ public class DiscoveryUIManager : MonoBehaviour
         // ------------------------------
         hostButton.onClick.AddListener(OnHostClicked);
         clientButton.onClick.AddListener(OnClientClicked);
+        userNameButton.onClick.AddListener(OnUserNameClicked);
 
         // ------------------------------
         // NetworkDiscoveryのイベント登録
@@ -57,6 +65,7 @@ public class DiscoveryUIManager : MonoBehaviour
         // ボタンを非表示にする
         hostButton.gameObject.SetActive(false);
         clientButton.gameObject.SetActive(false);
+        userNameButton.gameObject.SetActive(false);
         // ScrollView の Content を非表示にする
         serverListContent.gameObject.SetActive(false);
         // UIパネルを非表示にする
@@ -82,6 +91,17 @@ public class DiscoveryUIManager : MonoBehaviour
         networkDiscovery.StartDiscovery();
 
         Debug.Log("サーバーを検索しています...");
+    }
+
+    /// <summary>
+    ///  ユーザネームボタンが押されたとき
+    /// </summary>
+    private void OnUserNameClicked()
+    {
+        //このCanvasを非表示
+        this.gameObject.SetActive(false);
+        //NameCanvasを表示
+        userNameCanvas.gameObject.SetActive(true);
     }
 
     // ------------------------------
@@ -132,6 +152,7 @@ public class DiscoveryUIManager : MonoBehaviour
         // ボタンを非表示にする
         hostButton.gameObject.SetActive(false);
         clientButton.gameObject.SetActive(false);
+        userNameButton.gameObject.SetActive(false);
         // ScrollView の Content を非表示にする
         serverListContent.gameObject.SetActive(false);
         // UIパネルを非表示にする

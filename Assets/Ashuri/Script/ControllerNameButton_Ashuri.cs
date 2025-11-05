@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ControllerButton_Ashuri : MonoBehaviour
+public class ControllerNameButton_Ashuri : MonoBehaviour
 {
     [Header("最初に選択するボタン")]
     [Tooltip("ゲーム開始時にフォーカスを当てるボタン")]
@@ -13,13 +13,13 @@ public class ControllerButton_Ashuri : MonoBehaviour
     [Tooltip("このCanvas内のボタンを自動認識します")]
     [SerializeField] private Canvas targetCanvas;
 
-    [Header("再スキャン用ボタン")]
-    [Tooltip("このボタンが押されたらCanvasのボタンを再スキャンします")]
-    [SerializeField] private Button rescanButton;
+    [Header("名前入力するボタンCanvas")]
+    [Tooltip("このCanvas内の文字ボタンを自動認識します")]
+    [SerializeField] private Canvas StringCanvas;
 
-    [Header("ユーザーネームを決めるボタン")]
-    [Tooltip("ユーザーネームを決めるとこに行きます")]
-    [SerializeField] private Button nameModeButton;
+    [Header("ネットワークに戻るボタン")]
+    [Tooltip("ネットワークモードに戻るためのボタン")]
+    [SerializeField] private Button BackButton;
 
     // --- Canvas内のボタンリスト ---
     private List<Button> canvasButtons = new List<Button>();
@@ -43,7 +43,7 @@ public class ControllerButton_Ashuri : MonoBehaviour
         // Canvas内のボタンを初回スキャン
         FindAllButtonsInCanvas();
 
-        // 最初のボタンを選択状態に設定
+        // 最初に選択するボタンを設定
         if (canvasButtons.Count > 0 && firstSelectedButton != null)
         {
             EventSystem.current.SetSelectedGameObject(firstSelectedButton);
@@ -52,21 +52,17 @@ public class ControllerButton_Ashuri : MonoBehaviour
             if (currentIndex == -1) currentIndex = 0;
         }
 
-        // 再スキャンボタンが設定されている場合のみイベントを登録
-        if (rescanButton != null)
+        // BackButtonが設定されていない場合は警告を出す
+        if (BackButton == null)
         {
-            rescanButton.onClick.AddListener(OnRescanButtonPressed);
-        }
-        else
-        {
-            Debug.LogWarning("再スキャンボタンが指定されていません。Inspectorで設定してください。");
+            Debug.LogWarning("BackButtonが指定されていません。Inspectorで設定してください。");
         }
     }
 
-    // --- 毎フレームの処理 ---
+    // --- 毎フレームごとの処理 ---
     void Update()
     {
-        // 一定間隔でCanvas内のボタンを自動的に再スキャン
+        // 一定時間ごとにCanvas内のボタンを自動的に再スキャン
         if (Time.time - lastRescanTime > rescanInterval)
         {
             lastRescanTime = Time.time;
@@ -80,20 +76,20 @@ public class ControllerButton_Ashuri : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal Pad");
         float vertical = Input.GetAxisRaw("Vertical Pad");
 
-        // 入力が有効なときにのみ移動処理を受け付ける
+        // 入力受付が有効な場合にのみ上下移動を処理
         if (canMove)
         {
             if (vertical > 0.5f)
-                MoveSelection(-1);
+                MoveSelection(-1); // 上に移動
             else if (vertical < -0.5f)
-                MoveSelection(1);
+                MoveSelection(1); // 下に移動
         }
 
-        // スティックが中央に戻ったら再び入力受付を許可
+        // スティックが中央に戻ったら再度入力を受付
         if (Mathf.Abs(vertical) < 0.1f)
             canMove = true;
 
-        // === Aボタンで選択中のボタンを押す処理 ===
+        // Aボタン（Submit）で現在選択中のボタンを押す処理
         if (Input.GetButtonDown("Submit"))
         {
             if (currentSelectedButton != null)
@@ -101,58 +97,81 @@ public class ControllerButton_Ashuri : MonoBehaviour
                 Button button = currentSelectedButton.GetComponent<Button>();
                 if (button != null)
                 {
+                    // ボタンのクリックイベントを実行
                     button.onClick.Invoke();
                     Debug.Log(currentSelectedButton.name + " が押されました");
 
-                    // ボタン押下後にCanvasを再スキャンして新規ボタンも検出
+                    // 押した後にCanvasのボタンを再スキャン
                     FindAllButtonsInCanvas();
                 }
             }
         }
     }
-    // --- 再スキャンボタンが押されたときの処理 ---
-    private void OnRescanButtonPressed()
+
+    // --- 画面が有効化されたときに最初のボタンを自動選択 ---
+    void OnEnable()
     {
-        Debug.Log("再スキャンボタンが押されました。Canvas内のボタンを再検出します。");
-        FindAllButtonsInCanvas();
+        // 移動入力をすぐに受け付けられるようにリセット
+        canMove = true;
+
+        // 少し遅らせて選択する（UIの初期化が終わるまで待つため）
+        StartCoroutine(SelectFirstButtonNextFrame());
+    }
+
+    // --- 次のフレームで最初のボタンを選択するコルーチン ---
+    private System.Collections.IEnumerator SelectFirstButtonNextFrame()
+    {
+        // 1フレーム待つ（Canvas切り替え後にUI初期化を完了させるため）
+        yield return null;
+
+        // 最初のボタンが設定されていれば選択状態にする
+        if (firstSelectedButton != null)
+        {
+            EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+            Debug.Log($"[{gameObject.name}] 最初のボタン {firstSelectedButton.name} を選択しました。");
+        }
     }
 
     // --- Canvas内のボタンを探してリストに追加する処理 ---
     private void FindAllButtonsInCanvas()
     {
+        // Canvasが設定されていない場合は警告を出す
         if (targetCanvas == null)
         {
             Debug.LogWarning("ターゲットCanvasが設定されていません。");
             return;
         }
 
-        // Canvas内のボタンを全て取得
+        // Canvas内のボタンをすべて取得
         Button[] foundButtons = targetCanvas.GetComponentsInChildren<Button>(true);
 
-        // 古いリストをクリアして新しい情報に更新
+        // 古いリストをクリア
         canvasButtons.Clear();
 
-        // 新しく見つけたボタンをリストに登録
+        // 新しく見つけたボタンを登録
         foreach (Button b in foundButtons)
         {
             if (b != null)
                 canvasButtons.Add(b);
         }
 
+        // 検出されたボタン数をログ表示
         Debug.Log($"Canvas内で {canvasButtons.Count} 個のボタンを検出しました。");
     }
 
-    // --- Canvas内のボタンが増減していたら自動でスキャンし直す処理 ---
+    // --- Canvas内のボタンが増減していたら自動で再スキャンする処理 ---
     private void AutoRescanButtons()
     {
+        // Canvasが設定されていない場合はスキップ
         if (targetCanvas == null) return;
 
+        // 現在のボタン一覧を取得
         Button[] foundButtons = targetCanvas.GetComponentsInChildren<Button>(true);
 
-        // 現在のボタン数と違っていたらリストを再作成
+        // ボタン数が変化していたら再スキャンを実行
         if (foundButtons.Length != canvasButtons.Count)
         {
-            Debug.Log("Canvas内のボタン数が変化したため自動再スキャンを実行します。");
+            Debug.Log("Canvas内のボタン数が変化したため、自動再スキャンを実行します。");
             FindAllButtonsInCanvas();
         }
     }
@@ -160,20 +179,20 @@ public class ControllerButton_Ashuri : MonoBehaviour
     // --- 現在の選択ボタンを移動させる処理 ---
     private void MoveSelection(int direction)
     {
-        // ボタンが存在しない場合は処理しない
+        // ボタンが存在しない場合は処理を行わない
         if (canvasButtons.Count == 0) return;
 
-        // 1回の入力で1つだけ移動するように制御
+        // 1回の入力で1つだけ移動できるようにする
         canMove = false;
 
         // 現在のインデックスを更新
         currentIndex += direction;
 
-        // 範囲外になったらループさせる
+        // インデックスが範囲外になったらループさせる
         if (currentIndex >= canvasButtons.Count) currentIndex = 0;
         if (currentIndex < 0) currentIndex = canvasButtons.Count - 1;
 
-        // 無効なボタン（削除済み）をスキップ
+        // 無効なボタン（削除済みなど）があればスキップ
         while (canvasButtons[currentIndex] == null)
         {
             FindAllButtonsInCanvas();
@@ -184,6 +203,7 @@ public class ControllerButton_Ashuri : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(canvasButtons[currentIndex].gameObject);
         currentSelectedButton = canvasButtons[currentIndex].gameObject;
 
+        // 現在選択中のボタン名をログ出力
         Debug.Log("選択中のボタン: " + currentSelectedButton.name);
     }
 }
