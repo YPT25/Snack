@@ -9,40 +9,41 @@ public class StaminaBar : MonoBehaviour
     // 現在のスタミナ
     public float currentStamina;
     // スタミナ消費量（ボタン押下時）
-    public float staminaDecreaseAmount = 10f;
+    public float staminaDecreaseAmount = 15f;
     // スタミナ回復量（ボタン放した時）
-    public float staminaIncreaseAmount = 3f;
+    public float staminaIncreaseAmount = 7f;
     // スタミナバーのRectTransform
     private RectTransform rectTransform;
 
     // 初期位置（スタミナが満タンのときの位置）
-    public Vector2 initialPosition;
+    public float initialPositionX = 100f; // 初期位置を100に設定
+    private float targetPositionX; // 目標位置
 
     void Start()
     {
         // スタミナバーの初期化
         rectTransform = GetComponent<RectTransform>();
-        initialPosition = rectTransform.anchoredPosition; // 初期位置を保存
-
-        // スタミナを最大値で初期化
-        currentStamina = maxStamina;
-        //UpdateStaminaBar();
+        currentStamina = maxStamina; // スタミナを最大値で初期化
+        targetPositionX = initialPositionX; // 目標位置を初期位置に設定
     }
 
     void Update()
     {
         // 左シフトキーまたはコントローラーのAボタンが押されているか確認
-        if (Input.GetKey(KeyCode.LeftShift) || Input.GetButton("Fire1")) // "Fire1"はデフォルトでAボタンにマッピングされています
+        if (Input.GetKey(KeyCode.LeftShift)) // "Fire1"はデフォルトでAボタンにマッピングされています
         {
-            DecreaseStamina();
+            DecreaseStamina(); // スタミナを減少させる
         }
         else
         {
             RecoverStamina(); // ボタンを離したときにスタミナを回復
         }
 
-        //// スタミナバーを更新
-        //UpdateStaminaBar();
+        // 現在の位置を徐々に目標位置に移動させる
+        rectTransform.anchoredPosition = new Vector2(
+            Mathf.Lerp(rectTransform.anchoredPosition.x, targetPositionX, Time.deltaTime * 5f),
+            rectTransform.anchoredPosition.y
+        );
     }
 
     private void DecreaseStamina()
@@ -51,10 +52,10 @@ public class StaminaBar : MonoBehaviour
         {
             currentStamina -= staminaDecreaseAmount * Time.deltaTime; // 時間に基づいて減少
             currentStamina = Mathf.Max(0, currentStamina); // スタミナが0未満にならないように
+
+            // 目標位置を設定（スタミナが減少した場合）
+            targetPositionX = initialPositionX - (maxStamina - currentStamina); // スタミナに基づく目標位置
         }
-        // 現在のスタミナに基づいてポジションを更新
-        float normalizedStamina = currentStamina / maxStamina; // 0から1の範囲に正規化
-        rectTransform.anchoredPosition = new Vector2(initialPosition.x - (1 - normalizedStamina) * 100, initialPosition.y);
     }
 
     private void RecoverStamina()
@@ -63,17 +64,14 @@ public class StaminaBar : MonoBehaviour
         {
             currentStamina += staminaIncreaseAmount * Time.deltaTime; // 時間に基づいて回復
             currentStamina = Mathf.Min(maxStamina, currentStamina); // スタミナが最大値を超えないように
-        }
-        // 現在のスタミナに基づいてポジションを更新
-        float normalizedStamina = currentStamina / maxStamina; // 0から1の範囲に正規化
-        rectTransform.anchoredPosition = new Vector2(initialPosition.x + (1 + normalizedStamina) * 100, initialPosition.y);
-    }
 
-    //// スタミナバーの表示を更新するメソッド
-    //private void UpdateStaminaBar()
-    //{
-    //    // 現在のスタミナに基づいてポジションを更新
-    //    float normalizedStamina = currentStamina / maxStamina; // 0から1の範囲に正規化
-    //    rectTransform.anchoredPosition = new Vector2(initialPosition.x - (1 - normalizedStamina) * 100, initialPosition.y); 
-    //}
+            // 目標位置を設定（スタミナが回復した場合）
+            targetPositionX = initialPositionX - (maxStamina - currentStamina); // スタミナに基づく目標位置
+        }
+        else
+        {
+            // スタミナが満タンのときは目標位置を初期位置に戻す
+            targetPositionX = initialPositionX;
+        }
+    }
 }
