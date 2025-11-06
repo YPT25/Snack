@@ -4,23 +4,23 @@ using UnityEngine;
 using TMPro;
 using Mirror;
 
-public class PlayerListDisplay_Ashuri : MonoBehaviour
+public class PlayerListDisplay_Ashuri : NetworkBehaviour
 {
     [Header("表示するテキスト")]
-    [Tooltip("モニターにユーザー名を表示するTextMeshPro（3DTextでもOK）")]
+    [Tooltip("全員の名前を表示するTextMeshPro（UIでも3DTextでもOK）")]
     [SerializeField] private TextMeshPro userNameText;
 
-    // ------------------------------------------
-    // 定期的にプレイヤー一覧を更新
-    // ------------------------------------------
-    void Start()
+    // ----------------------------------------
+    // 起動時に定期更新を開始
+    // ----------------------------------------
+    private void Start()
     {
         StartCoroutine(UpdatePlayerListRoutine());
     }
 
-    // ------------------------------------------
-    // プレイヤーリストを1秒ごとに更新する
-    // ------------------------------------------
+    // ----------------------------------------
+    // 1秒ごとに全プレイヤー名を更新
+    // ----------------------------------------
     private IEnumerator UpdatePlayerListRoutine()
     {
         while (true)
@@ -30,38 +30,26 @@ public class PlayerListDisplay_Ashuri : MonoBehaviour
         }
     }
 
-    // ------------------------------------------
-    // Mirrorで接続している全プレイヤーの名前を取得して表示
-    // ------------------------------------------
+    // ----------------------------------------
+    // Mirrorのspawnedリストから全プレイヤーの名前を取得
+    // ----------------------------------------
     private void UpdatePlayerListDisplay()
     {
-        // 接続済みプレイヤーを格納するリスト
-        List<string> playerNames = new List<string>();
+        if (userNameText == null) return;
 
-        // NetworkClientに存在する全プレイヤーを探索
+        // 表示を初期化
+        userNameText.text = "";
+
+        // クライアント上で現在Spawnされている全プレイヤーを確認
         foreach (NetworkIdentity identity in NetworkClient.spawned.Values)
         {
-            // Player_Tanabeを取得
             Player_Tanabe player = identity.GetComponent<Player_Tanabe>();
+
+            // 有効なプレイヤーのみ表示
             if (player != null && !string.IsNullOrEmpty(player.playerName))
             {
-                // 名前をリストに追加
-                if (!playerNames.Contains(player.playerName))
-                    playerNames.Add(player.playerName);
+                userNameText.text += player.playerName + "\n";
             }
-        }
-
-        // 名前を縦に並べる
-        string displayText = "";
-        foreach (string name in playerNames)
-        {
-            displayText += name + "\n";
-        }
-
-        // TextMeshProに表示
-        if (userNameText != null)
-        {
-            userNameText.text = displayText;
         }
     }
 }
