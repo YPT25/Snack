@@ -26,7 +26,7 @@ public class Player_Tanabe : CharacterBase
     [SyncVar]
     public int playerNumber;
 
-    [SyncVar(hook = nameof(OnPlayerNameChanged))]
+    [SyncVar]
     public string playerName = "Player";
 
     [Header("カメラ")]
@@ -160,48 +160,6 @@ public class Player_Tanabe : CharacterBase
         }
 
         m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
-    }
-
-    // ---------------------------------------
-    // クライアント開始時、自分の名前をサーバーに送る
-    // ---------------------------------------
-    public override void OnStartLocalPlayer()
-    {
-        base.OnStartLocalPlayer();
-        Debug.Log("OnStartLocalPlayer が呼ばれました: " + PlayerNameHolder.GetPlayerName());
-
-        if (PlayerNameHolder.HasPlayerName())
-        {
-            string name = PlayerNameHolder.GetPlayerName();
-            CmdSetPlayerName(name);
-        }
-        else
-        {
-            CmdSetPlayerName($"Player_999");
-        }
-    }
-
-    // ------------------------------------------
-    // サーバーに名前を送るコマンド
-    // ------------------------------------------
-    [Command]
-    private void CmdSetPlayerName(string name)
-    {
-        Debug.Log($"[CmdSetPlayerName] 実行されました: {name}");
-        playerName = name;
-    }
-
-    // 名前がサーバーで変更された時、全クライアントに同期される
-    private void OnPlayerNameChanged(string oldName, string newName)
-    {
-        Debug.Log($"[OnPlayerNameChanged] {oldName} → {newName}");
-
-        // ここに3Dテキストを反映する処理を入れてOK
-        var nameTag = GetComponentInChildren<TextMeshPro>();
-        if (nameTag != null)
-        {
-            nameTag.text = newName;
-        }
     }
 
     [Command]

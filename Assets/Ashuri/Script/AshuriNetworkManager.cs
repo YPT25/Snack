@@ -71,6 +71,18 @@ public class AshuriNetworkManager : NetworkManager
         }
     }
 
+    /// <summary>
+    /// Host時に自分のプレイヤーをSpawnさせる関数
+    /// </summary>
+    public void SpawnLocalPlayer()
+    {
+        if (NetworkServer.active && NetworkClient.isConnected)
+        {
+            // Hostの場合、自分のプレイヤーを追加
+            OnServerAddPlayer(NetworkServer.localConnection);
+        }
+    }
+
     // ----------------------------------------------------
     // クライアントがサーバーに接続してきたときの処理
     // ----------------------------------------------------
@@ -87,6 +99,24 @@ public class AshuriNetworkManager : NetworkManager
         // 通常の接続処理を継続
         base.OnServerConnect(conn);
     }
+
+    // ----------------------------------------------
+    // サーバーが起動したときに呼ばれる処理
+    // ----------------------------------------------
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        Debug.Log("サーバーが起動しました");
+    }
+
+    // ----------------------------------------------
+    // クライアントが接続したときに呼ばれる処理
+    // ----------------------------------------------
+    public override void OnClientConnect()
+    {
+        base.OnClientConnect();
+        Debug.Log("クライアントがサーバーに接続しました");
+    }   
 
     // ----------------------------------------------------
     // プレイヤー追加時の処理
@@ -110,8 +140,8 @@ public class AshuriNetworkManager : NetworkManager
         playerScript_Tanabe = playerobj.GetComponent<Player_Tanabe>();
         playerScript_Tanabe.playerNumber = nextPlayerNumber;
 
-        string currentPlayerName = PlayerNameHolder.GetPlayerName();
-        Debug.Log($"プレイヤー {playerScript_Tanabe.playerNumber} が参加しました。名前: {currentPlayerName}");
+        //string currentPlayerName = PlayerNameHolder.GetPlayerName();
+        //Debug.Log($"プレイヤー {playerScript_Tanabe.playerNumber} が参加しました。名前: {currentPlayerName}");
 
 
         // Mirrorにプレイヤーを登録
