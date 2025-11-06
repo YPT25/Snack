@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class EnemyBase : CharacterBaseY
+public class EnemyBase : CharacterBase
 {
     // ＜列挙型＞ーーーーーーーーーーーーーーーーーーーーーーー
-
-    // 敵ごとの細かい分類
     public enum EnemyType
     {
         TYPE_NULL,
@@ -17,28 +16,25 @@ public class EnemyBase : CharacterBaseY
     }
 
     // ＜パラメータ＞ーーーーーーーーーーーーーーーーーーーーー
-
     [Header("味方への攻撃を許可するか？")]
     [SerializeField] private bool m_canFriendlyFire = false;
 
     [Header("エネミータイプ(各プレハブで設定)")]
-    [SerializeField] private EnemyType m_enemyType = EnemyType.TYPE_A; // Inspectorで設定
+    [SyncVar][SerializeField] private EnemyType m_enemyType = EnemyType.TYPE_A;
 
     protected CharacterType m_enemyCharacterType = CharacterType.ENEMY_TYPE;
 
-    // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
-
-    // Start is called before the first frame update
     public virtual void Start()
     {
-        base.Start();
-        SetCharacterType(m_enemyCharacterType);
+        if (isServer)
+            SetCharacterType(m_enemyCharacterType);
     }
 
     /// <summary>
-    /// 攻撃処理（派生クラスで上書きする想定）
+    /// 攻撃処理（サーバーで実行）
     /// </summary>
-    public virtual void Attack(CharacterBaseY target)
+    [Server]
+    public virtual void Attack(CharacterBase target)
     {
         if (target == null) return;
 
@@ -47,31 +43,21 @@ public class EnemyBase : CharacterBaseY
             Debug.Log($"{name} → 味方への攻撃は禁止");
             return;
         }
-        else
-        {
-            target.Damage(GetPower());
-            Debug.Log($"{name} が {target.name} に攻撃！ ダメージ:{GetPower()}");
-        }
+
+        target.Damage(GetPower());
+        Debug.Log($"{name} が {target.name} に攻撃！ ダメージ:{GetPower()}");
     }
 
     /// <summary>
     /// 共通の死亡処理
     /// </summary>
+    [Server]
     public virtual void Die()
     {
         Debug.Log($"{name} は倒れた！");
-        Destroy(gameObject);
+        NetworkServer.Destroy(gameObject);
     }
 
-    // ＜アクセッサ―＞ーーーーーーーーーーーーーーーーーーーーーーーー
-    public EnemyType GetEnemyType()
-    {
-        return m_enemyType;
-    }
-
-    public void SetEnemyType(EnemyType _enemyType)
-    {
-        m_enemyType = _enemyType;
-    }
-
+    public EnemyType GetEnemyType() => m_enemyType;
+    public void SetEnemyType(EnemyType _enemyType) => m_enemyType = _enemyType;
 }
