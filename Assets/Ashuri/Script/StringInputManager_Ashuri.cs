@@ -51,6 +51,22 @@ public class StringInputManager_Ashuri : MonoBehaviour
             return;
         }
 
+        if(index == 27)
+        {
+            // Œ»İ‚Ì•¶š‚ğæ“¾
+            string currentText = inputField.text;
+
+            // Å‘å•¶š”‚ğ’´‚¦‚Ä‚¢‚½‚ç’Ç‰Á‚µ‚È‚¢
+            if (currentText.Length >= maxCharacterCount)
+                return;
+
+            // “ü—Í—“‚É•¶š‚ğ’Ç‰Á
+            inputField.text = currentText + " ";
+
+            // ˆ—‚ğI—¹
+            return;
+        }
+
         // Œ»İ‚Ì“ü—Í“à—e‚ğæ“¾
         string text = inputField.text;
 

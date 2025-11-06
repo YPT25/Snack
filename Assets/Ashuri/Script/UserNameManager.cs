@@ -29,7 +29,10 @@ public class UserNameManager : MonoBehaviour
         // ボタンのクリックイベント登録
         // ------------------------------
         NetworkModeButton.onClick.AddListener(OnNetworkClick);
-        NameSetButton.onClick.AddListener(OnNetworkClick);
+        // ------------------------------
+        // 名前セットボタンに専用処理を登録
+        // ------------------------------
+        NameSetButton.onClick.AddListener(OnSetNameOnClick);
     }
 
     // Update is called once per frame
@@ -37,20 +40,43 @@ public class UserNameManager : MonoBehaviour
     {
         
     }
-
     /// <summary>
     /// ネットワークボタンが押されたとき
     /// </summary>
     private void OnNetworkClick()
     {
-        //このCanvasを非表示
+        // このCanvasを非表示
         this.gameObject.SetActive(false);
-        //NetworkCanvasを表示
+
+        // NetworkCanvasを表示
         networkModeCanvas.gameObject.SetActive(true);
     }
 
+    // ------------------------------------------------
+    // 名前セットボタンが押されたときの処理
+    // ------------------------------------------------
     private void OnSetNameOnClick()
     {
+        // 入力欄の文字を取得
+        string enteredName = nameInput.text;
 
+        // 入力が空なら処理を終了（警告ログを表示）
+        if (string.IsNullOrEmpty(enteredName))
+        {
+            Debug.LogWarning("名前が入力されていません。");
+            return;
+        }
+
+        // PlayerNameHolder に保存
+        PlayerNameHolder.SetPlayerName(enteredName);
+
+        // コンソールに保存確認を表示
+        Debug.Log($"プレイヤー名を保存しました: {enteredName}");
+
+        //// 名前パネルを非表示
+        //namePanel.SetActive(false);
+
+        //// ネットワーク画面を表示
+        //networkModeCanvas.gameObject.SetActive(true);
     }
 }

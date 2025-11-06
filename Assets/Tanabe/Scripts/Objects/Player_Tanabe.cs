@@ -162,6 +162,29 @@ public class Player_Tanabe : CharacterBase
         m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
     }
 
+    // ------------------------------------------
+    // プレイヤー生成時に名前をサーバーへ送る
+    // ------------------------------------------
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+
+        // ローカルプレイヤーのみ、自分の名前を送信
+        if (PlayerNameHolder.HasPlayerName())
+        {
+            CmdSetPlayerName(PlayerNameHolder.GetPlayerName());
+        }
+    }
+
+    // ------------------------------------------
+    // サーバーに名前を送るコマンド
+    // ------------------------------------------
+    [Command]
+    private void CmdSetPlayerName(string name)
+    {
+        playerName = name;
+    }
+
     [Command]
     private void CmdDeadExplosion(GameObject _headObject, Vector3 _randomVector1, Vector3 _randomVector2)
     {

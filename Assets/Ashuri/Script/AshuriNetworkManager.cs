@@ -110,7 +110,9 @@ public class AshuriNetworkManager : NetworkManager
         playerScript_Tanabe = playerobj.GetComponent<Player_Tanabe>();
         playerScript_Tanabe.playerNumber = nextPlayerNumber;
 
-        Debug.Log($"プレイヤー番号 {playerScript_Tanabe.playerNumber} が参加しました。");
+        string currentPlayerName = PlayerNameHolder.GetPlayerName();
+        Debug.Log($"プレイヤー {playerScript_Tanabe.playerNumber} が参加しました。名前: {currentPlayerName}");
+
 
         // Mirrorにプレイヤーを登録
         NetworkServer.AddPlayerForConnection(conn, playerobj);

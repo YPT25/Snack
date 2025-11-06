@@ -35,6 +35,11 @@ public class DiscoveryUIManager : MonoBehaviour
     [Tooltip("ユーザネームを決めているCanvas")]
     [SerializeField] private Canvas userNameCanvas;
 
+    // ------------------------------
+    // すでに使われているプレイヤー名のリスト
+    // ------------------------------
+    private List<string> usedNames = new List<string>();
+
     // 見つかったサーバーを記録する辞書（重複防止用）
     private readonly Dictionary<long, ServerResponse> discoveredServers = new();
 
@@ -58,6 +63,22 @@ public class DiscoveryUIManager : MonoBehaviour
     // ------------------------------
     private void OnHostClicked()
     {
+        // 名前がセットされているかチェック
+        if (!PlayerNameHolder.HasPlayerName())
+        {
+            Debug.LogWarning("名前が設定されていません。先にプレイヤー名を決めてください。");
+            return;
+        }
+
+        // プレイヤー名の重複チェック
+        string playerName = PlayerNameHolder.GetPlayerName();
+        if (usedNames.Contains(playerName))
+        {
+            Debug.LogWarning("この名前はすでに使用されています。別の名前を入力してください。");
+            return;
+        }
+        // 重複していない場合は登録
+        usedNames.Add(playerName);
         // NetworkManagerを使ってホスト起動
         NetworkManager.singleton.StartHost();
         // LAN内へ自分をブロードキャスト
@@ -79,6 +100,12 @@ public class DiscoveryUIManager : MonoBehaviour
     // ------------------------------
     private void OnClientClicked()
     {
+        // 名前がセットされているかチェック
+        if (!PlayerNameHolder.HasPlayerName())
+        {
+            Debug.LogWarning("名前が設定されていません。先にプレイヤー名を決めてください。");
+            return;
+        }
         // 既にリストがある場合はクリア
         foreach (Transform child in serverListContent)
         {
@@ -145,6 +172,18 @@ public class DiscoveryUIManager : MonoBehaviour
     // ------------------------------
     private void ConnectToServer(ServerResponse info)
     {
+        // 名前がセットされていない場合の安全チェック
+        if (!PlayerNameHolder.HasPlayerName())
+        {
+            Debug.LogWarning("名前が設定されていません。先にプレイヤー名を決めてください。");
+            return;
+        }
+
+        // 名前を取得
+        string playerName = PlayerNameHolder.GetPlayerName();
+
+        // 接続先情報を表示
+        Debug.Log($"サーバーに接続します。接続先: {info.EndPoint.Address}, 名前: {playerName}");
         // 検索停止
         networkDiscovery.StopDiscovery();
         // クライアントとして接続
