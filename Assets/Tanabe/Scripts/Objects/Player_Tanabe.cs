@@ -117,6 +117,8 @@ public class Player_Tanabe : CharacterBase
             base.SetCharacterType(CharacterType.ENEMY_TYPE);
         }
         base.OnStartClient();
+        // サーバーに自分の名前を登録する
+        CmdReportNameToServer(PlayerNameHolder.PlayerName);
         // Rigidbodyをアタッチする
         m_rb = GetComponent<Rigidbody>();
 
@@ -160,6 +162,24 @@ public class Player_Tanabe : CharacterBase
         }
 
         m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
+    }
+
+    [Command]
+    private void CmdReportNameToServer(string name)
+    {
+        // ここでサーバーが全員に通知する
+        RpcSendNameToDisplay(name);
+    }
+
+    [ClientRpc]
+    private void RpcSendNameToDisplay(string name)
+    {
+        // モニターにある PlayerListDisplay_Ashuri 
+        PlayerListDisplay_Ashuri display = GetComponent<PlayerListDisplay_Ashuri>();
+        if (display != null)
+        {
+            display.RespownName(name);
+        }
     }
 
     [Command]
@@ -696,5 +716,11 @@ public class Player_Tanabe : CharacterBase
     public void SetIsHitBomb(bool _flag)
     {
         m_isHitBomb = _flag;
+    }
+
+    // プレイヤーの名前の設定
+    public void SetPlayerName(string name)
+    {
+        playerName = name;
     }
 }

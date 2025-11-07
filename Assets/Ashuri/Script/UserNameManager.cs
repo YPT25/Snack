@@ -1,33 +1,34 @@
-using Mirror;
+ï»¿using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 /// <summary>
-/// ƒ†[ƒU[ƒl[ƒ€“ü—Í‚ÆA“ü—ÍŒã‚ÌƒvƒŒƒCƒ„[ƒXƒ|[ƒ“‚ğ§Œä‚·‚éƒNƒ‰ƒX
-/// Host / Client —¼‘Î‰
+/// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒãƒ¼ãƒ å…¥åŠ›ã¨ã€å…¥åŠ›å¾Œã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¹ãƒãƒ¼ãƒ³ã‚’åˆ¶å¾¡ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// Host / Client ä¸¡å¯¾å¿œ
 /// </summary>
 public class UserNameManager : MonoBehaviour
 {
-    [Header("UI QÆ")]
-    [Tooltip("–¼‘OƒZƒbƒgƒ{ƒ^ƒ“")]
+    [Header("UI å‚ç…§")]
+    [Tooltip("åå‰ã‚»ãƒƒãƒˆãƒœã‚¿ãƒ³")]
     [SerializeField] private Button NameSetButton;
 
-    [Tooltip("–¼‘O“ü—Í—“")]
+    [Tooltip("åå‰å…¥åŠ›æ¬„")]
     [SerializeField] private TMP_InputField nameInput;
 
-    [Tooltip("–¼‘O“ü—Íƒpƒlƒ‹")]
+    [Tooltip("åå‰å…¥åŠ›ãƒ‘ãƒãƒ«")]
     [SerializeField] private GameObject namePanel;
 
-    [Tooltip("ƒ{ƒ^ƒ“‚ÌUI")]
+    [Tooltip("ãƒœã‚¿ãƒ³ã®UI")]
     [SerializeField] private Canvas stringButton;
 
-    // “ü—Í‚³‚ê‚½ƒvƒŒƒCƒ„[–¼
+    // å…¥åŠ›ã•ã‚ŒãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å
     private string playerName;
 
     /// <summary>
-    /// ‰Šú‰»ˆ—
-    /// –¼‘OƒZƒbƒgƒ{ƒ^ƒ“‚ÉƒNƒŠƒbƒNƒCƒxƒ“ƒg‚ğ“o˜^
+    /// åˆæœŸåŒ–å‡¦ç†
+    /// åå‰ã‚»ãƒƒãƒˆãƒœã‚¿ãƒ³ã«ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™»éŒ²
     /// </summary>
     private void Start()
     {
@@ -35,58 +36,89 @@ public class UserNameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// –¼‘OƒZƒbƒgƒ{ƒ^ƒ“‰Ÿ‰º‚Ìˆ—
-    /// –¼‘Oƒ`ƒFƒbƒNŒãAƒvƒŒƒCƒ„[‚ğSpawn
+    /// åå‰ã‚»ãƒƒãƒˆãƒœã‚¿ãƒ³æŠ¼ä¸‹æ™‚ã®å‡¦ç†
+    /// åå‰ãƒã‚§ãƒƒã‚¯å¾Œã€ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’Spawn
     /// </summary>
     private void OnSetNameOnClick()
     {
-        // “ü—Í—“‚Ì•¶š‚ğæ“¾
+        // å…¥åŠ›æ¬„ã®æ–‡å­—ã‚’å–å¾—
         playerName = nameInput.text;
 
-        // “ü—Í‚ª‹ó‚È‚çˆ—‚ğI—¹
+        // å…¥åŠ›ãŒç©ºãªã‚‰å‡¦ç†ã‚’çµ‚äº†
         if (string.IsNullOrEmpty(playerName))
         {
-            Debug.LogWarning("–¼‘O‚ª“ü—Í‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+            Debug.LogWarning("åå‰ãŒå…¥åŠ›ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
             return;
         }
 
-        // –¼‘Oƒpƒlƒ‹‚ğ”ñ•\¦
+        // åå‰ãƒ‘ãƒãƒ«ã‚’éè¡¨ç¤º
         namePanel.SetActive(false);
         NameSetButton.gameObject.SetActive(false);
         nameInput.gameObject.SetActive(false);
         stringButton.gameObject.SetActive(false);
 
         // ------------------------------
-        // ƒvƒŒƒCƒ„[Spawnˆ—
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼Spawnå‡¦ç†
         // ------------------------------
 
-        // Host‚Ìê‡
-        if (NetworkServer.active && NetworkClient.isConnected)
+        // Host / Client ã©ã¡ã‚‰ã®å ´åˆã§ã‚‚ Mirror æ¨™æº–ã® AddPlayer ã‚’ä½¿ç”¨
+        if (NetworkClient.active)
         {
-            // NetworkManager ‚ğ AshuriNetworkManager ‚ÉƒLƒƒƒXƒg
-            var customNM = NetworkManager.singleton as AshuriNetworkManager;
-            if (customNM != null)
+            // ã™ã§ã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ãªã„å ´åˆã®ã¿ AddPlayer ã‚’å®Ÿè¡Œ
+            if (NetworkClient.localPlayer == null)
             {
-                // Host—pSpawnŠÖ”‚ğŒÄ‚Ô
-                customNM.SpawnLocalPlayer();
+                NetworkClient.AddPlayer();
+                Debug.Log("AddPlayer() ã‚’å‘¼ã³å‡ºã—ã¾ã—ãŸï¼ˆHost/Client å…±é€šå‡¦ç†ï¼‰");
+
+                // ğŸ”¹ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”Ÿæˆå®Œäº†ã‚’å¾…ã£ã¦ã‹ã‚‰åå‰ã‚’è¨­å®šã™ã‚‹ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’é–‹å§‹
+                StartCoroutine(SetPlayerNameToPlayer());
+            }
+            else
+            {
+                Debug.LogWarning("ã™ã§ã«ãƒ­ãƒ¼ã‚«ãƒ«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ã¦ã„ã¾ã™ã€‚AddPlayer() ã¯å‘¼ã³å‡ºã•ã‚Œã¾ã›ã‚“ã€‚");
             }
         }
-        // Client‚Ìê‡
-        else if (NetworkClient.active)
+        else
         {
-            // Client‘¤‚ÅAddPlayer‚ğŒÄ‚Ô
-            NetworkClient.AddPlayer();
+            Debug.LogError("NetworkClient ãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚æ¥ç¶šçŠ¶æ…‹ã‚’ç¢ºèªã—ã¦ãã ã•ã„ã€‚");
         }
 
-        Debug.Log($"–¼‘O“ü—ÍŠ®—¹: {playerName}iƒvƒŒƒCƒ„[‚ğSpawn‚µ‚Ü‚µ‚½j");
+        Debug.Log($"åå‰å…¥åŠ›å®Œäº†: {playerName}ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’Spawnã—ã¾ã—ãŸï¼‰");
     }
 
     /// <summary>
-    /// “ü—Í‚³‚ê‚½ƒvƒŒƒCƒ„[–¼‚ğæ“¾
+    /// å…¥åŠ›ã•ã‚ŒãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åã‚’å–å¾—
     /// </summary>
-    /// <returns>ƒvƒŒƒCƒ„[–¼</returns>
+    /// <returns>ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å</returns>
     public string GetPlayerName()
     {
         return playerName;
     }
+
+    // ----------------------------------------------
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”Ÿæˆå¾Œã«åå‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹å‡¦ç†
+    // ----------------------------------------------
+    private IEnumerator SetPlayerNameToPlayer()
+    {
+        // ç”Ÿæˆå®Œäº†ã‚’å¾…ã¤
+        yield return new WaitUntil(() => NetworkClient.localPlayer != null);
+
+        // ãƒ­ãƒ¼ã‚«ãƒ«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å–å¾—
+        var player = NetworkClient.localPlayer.gameObject;
+
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å´ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆï¼ˆä¾‹: Player_Tanabeï¼‰ã‚’å–å¾—
+        var playerScript = player.GetComponent<Player_Tanabe>();
+
+        // ã‚¹ã‚¯ãƒªãƒ—ãƒˆãŒå­˜åœ¨ã™ã‚‹å ´åˆã®ã¿åå‰ã‚’è¨­å®š
+        if (playerScript != null)
+        {
+            playerScript.SetPlayerName(playerName);
+            Debug.Log($"ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åã‚’è¨­å®šã—ã¾ã—ãŸ: {playerName}");
+        }
+        else
+        {
+            Debug.LogWarning("Player_Tanabe ãŒãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚");
+        }
+    }
+
 }
