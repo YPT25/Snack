@@ -149,6 +149,9 @@ public class AshuriNetworkManager : NetworkManager
 
         // 次のプレイヤー番号を増やす
         nextPlayerNumber++;
+
+        // 🔹これを追加
+        base.OnServerAddPlayer(conn);
     }
 
     // ----------------------------------------------------
