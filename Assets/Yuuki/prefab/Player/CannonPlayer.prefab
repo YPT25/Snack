@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 1562690791427100428}
   - component: {fileID: 1650346521820248515}
   - component: {fileID: 465672498256672838}
+  - component: {fileID: 453920773266669686}
+  - component: {fileID: -3575082157776207888}
   m_Layer: 0
   m_Name: CannonPlayer
   m_TagString: Untagged
@@ -148,6 +150,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 347bf6af4d072014f8495dbccdf92523, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   m_initialParameter:
     hp: 0
     power: 0
@@ -158,6 +163,54 @@ MonoBehaviour:
   mouseSensitivity: 3
   rotationSmooth: 10
   m_respawnIcon: {fileID: 0}
-  cannonBallPrefab: {fileID: 0}
-  firePoint: {fileID: 0}
-  fireSpeed: 0
+--- !u!114 &453920773266669686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7933255854399697930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 487808676
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &-3575082157776207888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7933255854399697930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 8577554813394073149}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 0
+  timelineOffset: 1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  useFixedUpdate: 0
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
