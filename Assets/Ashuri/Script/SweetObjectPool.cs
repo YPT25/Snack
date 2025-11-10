@@ -179,7 +179,7 @@ public class SweetObjectPool : NetworkBehaviour
         Vector3 randomLocalPosition = GetRandomPointInQuadXZ();
         sweet.transform.localPosition = randomLocalPosition;
         sweet.transform.localRotation = Quaternion.identity;
-        sweet.transform.localScale = Vector3.one;
+        //sweet.transform.localScale = Vector3.one;
 
         NetworkServer.Spawn(sweet);
 

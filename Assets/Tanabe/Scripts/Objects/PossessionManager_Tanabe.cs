@@ -14,6 +14,8 @@ public class PossessionManager_Tanabe : NetworkBehaviour
 
     private LeftHand_Tanabe m_leftHand;
 
+    public bool isItemCatch = false;
+
     // Start is called before the first frame update
     void Start()
     {
