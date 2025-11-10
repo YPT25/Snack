@@ -1,26 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class dorp_idle2 : MonoBehaviour
+public class dorp_idle2 : NetworkBehaviour
 {
-
+    [Header("オブジェクトの移動関連")]
+    [Tooltip("オブジェクトのスピード")]
     public float WaveSpeed = 1.0f;
+
+    [Tooltip("オブジェクトの高さ")]
     public float WaveHeight = 0.1f;
 
-    float baseY;
+    // 基準の高さ
+    [Tooltip("基準位置")]
+    float baseY = 1.0f;
 
     // Start is called before the first frame update
     void Start()
     {
-        baseY = transform.position.y;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        float newY = baseY + Mathf.Sin(Time.time * WaveSpeed) * WaveHeight;
+        ItemStateMachine itemStateMachine = GetComponent<ItemStateMachine>();
+        if (itemStateMachine.GetItemStateType() == ItemStateMachine.ItemStateType.DROP)
+        {
+            float newY = baseY + Mathf.Sin(Time.time * WaveSpeed) * WaveHeight;
 
-        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        }
     }
 }

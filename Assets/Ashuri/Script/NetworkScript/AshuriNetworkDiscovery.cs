@@ -120,7 +120,7 @@ public class AshuriNetworkDiscovery : MonoBehaviour
         // IPアドレスをTextMeshProに表示
         TextMeshProUGUI text = item.GetComponentInChildren<TextMeshProUGUI>();
         if (text != null)
-            text.text = $"{info.EndPoint.Address}";
+            text.text = $"unnti";
 
         // ボタン押下で接続
         Button button = item.GetComponent<Button>();
