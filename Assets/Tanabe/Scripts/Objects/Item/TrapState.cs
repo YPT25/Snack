@@ -27,11 +27,11 @@ public class TrapState : IItemState_Tanabe
             Vector3 playerEuler = item.GetPlayerData().transform.eulerAngles;
             item.transform.rotation = Quaternion.Euler(playerEuler.x, playerEuler.y, playerEuler.z + 90f);
             //item.transform.localScale = new Vector3(baseScale.x * 6.0f, 2.0f, baseScale.z * 6.0f);
-            item.transform.localScale = new Vector3(6.0f, baseScale.y * 9.0f, baseScale.z * 9.0f);
+            item.transform.localScale = new Vector3(18.0f, baseScale.y * 9.0f, baseScale.z * 9.0f);
             Vector3 extents = item.GetComponent<BoxCollider>().size;
             extents.x = 0.001f;
             item.GetComponent<BoxCollider>().size = extents;
-            item.GetComponent<BoxCollider>().center = new Vector3(0f, 0.17f, 0f);
+            item.GetComponent<BoxCollider>().center = new Vector3(0f, 0f, 0.006f);
             item.transform.transform.position = item.transform.position + new Vector3(0f, -1f, 0f);
             m_deleteTimer = 15.0f;
         }
