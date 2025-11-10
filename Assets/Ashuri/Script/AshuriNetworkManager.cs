@@ -71,18 +71,6 @@ public class AshuriNetworkManager : NetworkManager
         }
     }
 
-    /// <summary>
-    /// Host時に自分のプレイヤーをSpawnさせる関数
-    /// </summary>
-    public void SpawnLocalPlayer()
-    {
-        if (NetworkServer.active && NetworkClient.isConnected)
-        {
-            // Hostの場合、自分のプレイヤーを追加
-            OnServerAddPlayer(NetworkServer.localConnection);
-        }
-    }
-
     // ----------------------------------------------------
     // クライアントがサーバーに接続してきたときの処理
     // ----------------------------------------------------
@@ -116,7 +104,7 @@ public class AshuriNetworkManager : NetworkManager
     {
         base.OnClientConnect();
         Debug.Log("クライアントがサーバーに接続しました");
-    }   
+    }
 
     // ----------------------------------------------------
     // プレイヤー追加時の処理
@@ -126,14 +114,19 @@ public class AshuriNetworkManager : NetworkManager
         GameObject playerobj;
         Player_Tanabe playerScript_Tanabe;
 
+        // NetworkStartPositionからスポーン位置と回転を取得
+        Transform startPos = GetStartPosition();
+        Vector3 spawnPosition = startPos != null ? startPos.position : Vector3.zero;
+        Quaternion spawnRotation = startPos != null ? startPos.rotation : Quaternion.identity;
+
         // 1人目はplayerPrefab1、それ以降はplayerPrefab2を使用
         if (nextPlayerNumber == 1)
         {
-            playerobj = Instantiate(playerPrefab1);
+            playerobj = Instantiate(playerPrefab1, spawnPosition, spawnRotation);
         }
         else
         {
-            playerobj = Instantiate(playerPrefab2);
+            playerobj = Instantiate(playerPrefab2, spawnPosition, spawnRotation);
         }
 
         // プレイヤースクリプトに番号を割り当て
@@ -143,15 +136,11 @@ public class AshuriNetworkManager : NetworkManager
         //string currentPlayerName = PlayerNameHolder.GetPlayerName();
         //Debug.Log($"プレイヤー {playerScript_Tanabe.playerNumber} が参加しました。名前: {currentPlayerName}");
 
-
         // Mirrorにプレイヤーを登録
         NetworkServer.AddPlayerForConnection(conn, playerobj);
 
         // 次のプレイヤー番号を増やす
         nextPlayerNumber++;
-
-        // 🔹これを追加
-        base.OnServerAddPlayer(conn);
     }
 
     // ----------------------------------------------------
