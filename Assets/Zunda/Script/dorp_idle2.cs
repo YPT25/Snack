@@ -14,7 +14,7 @@ public class dorp_idle2 : NetworkBehaviour
 
     // Šî€‚Ì‚‚³
     [Tooltip("Šî€ˆÊ’u")]
-    float baseY = 1.0f;
+    float baseY = 0.5f;
 
     // Start is called before the first frame update
     void Start()

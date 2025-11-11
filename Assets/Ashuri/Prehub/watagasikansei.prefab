@@ -221,7 +221,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_itemType: 4
-  moveSpeed: 8
+  moveSpeed: 16
   rotateSpeed: 30
   m_point: 0
   m_buffType: 0
