@@ -7,15 +7,16 @@ public class HPBar : MonoBehaviour
     // 最大HP
     public float maxHP = 100f;
     // 現在のHP
-    public float currentHP;
-    // 初期位置（HPが満タンのときの位置）
-    public Vector2 initialPosition;
-
+    private float currentHP;
     // HPバーのRectTransform
     private RectTransform rectTransform;
 
-    // CharacterBaseの参照
-    private CharacterBase characterBase;
+    // 初期位置（HPが満タンのときの位置）
+    private Vector2 initialPosition;
+
+    // HPの変化に関する変数
+    private float targetHP;
+    private float lerpSpeed = 5f; // 補間の速度
 
     void Start()
     {
@@ -24,12 +25,13 @@ public class HPBar : MonoBehaviour
         initialPosition = rectTransform.anchoredPosition; // 初期位置を保存
 
         // CharacterBaseのコンポーネントを取得
-        characterBase = FindObjectOfType<CharacterBase>();
+        CharacterBase characterBase = FindObjectOfType<CharacterBase>();
         if (characterBase != null)
         {
             // 初期最大HPを設定
             maxHP = characterBase.GetMaxHP();
             currentHP = characterBase.GetHp();
+            targetHP = currentHP; // 初期値をターゲットHPに設定
             UpdateHPBar();
         }
     }
@@ -37,11 +39,16 @@ public class HPBar : MonoBehaviour
     void Update()
     {
         // プレイヤーの現在のHPを取得して更新
+        CharacterBase characterBase = FindObjectOfType<CharacterBase>();
         if (characterBase != null)
         {
-            currentHP = characterBase.GetHp();
-            UpdateHPBar();
+            // HPのターゲットを更新（ダメージや回復によって変化する）
+            targetHP = characterBase.GetHp();
         }
+
+        // スムーズにHPを補間
+        currentHP = Mathf.Lerp(currentHP, targetHP, Time.deltaTime * lerpSpeed);
+        UpdateHPBar();
     }
 
     // HPバーの表示を更新するメソッド
