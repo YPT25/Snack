@@ -148,6 +148,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb2501afe2f9f14aad6694759c0464c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   m_initialParameter:
     hp: 16
     power: 0
@@ -159,7 +162,7 @@ MonoBehaviour:
   rotationSmooth: 10
   m_respawnIcon: {fileID: 21300000, guid: e8c1fd16d7c3e6642b1589a149044c94, type: 3}
   m_attackCollider: {fileID: 0}
-  m_rollDuration: 1
+  m_rollDuration: 10
   m_rollForce: 15
 --- !u!114 &-7379743930394371599
 MonoBehaviour:
