@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
+
 
 /// <summary>
 /// CannonBox プレイヤー（砲撃攻撃持ち）
@@ -8,31 +10,31 @@ using UnityEngine;
 /// </summary
 public class CannonBox_player : MPlayerBase
 {
-    //[Header("弾丸プレハブ")]
-    //public GameObject cannonBallPrefab;
+    [Header("弾丸プレハブ")]
+    public GameObject cannonBallPrefab;
 
-    //[Header("弾丸発射位置")]
-    //public Transform firePoint;
-    //[Header("弾丸発射速度")]
-    //public float fireSpeed;
+    [Header("弾丸発射位置")]
+    public Transform firePoint;
+    [Header("弾丸発射速度")]
+    public float fireSpeed;
 
-    //protected override void OnAttackInput()
-    //{
-    //    Attack(null); // 近接対象は不要
-    //}
+    protected override void OnAttackInput()
+    {
+        Attack(null); // 近接対象は不要
+    }
 
-    //public override void Attack(CharacterBase target)
-    //{
-    //    if (cannonBallPrefab == null || firePoint == null) return;
+    public override void Attack(CharacterBase target)
+    {
+        if (cannonBallPrefab == null || firePoint == null) return;
 
-    //    GameObject ball = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
-    //    Rigidbody rb = ball.GetComponent<Rigidbody>();
-    //    if (rb != null)
-    //    {
-    //        rb.velocity = firePoint.forward * fireSpeed; // 発射速度
-    //    }
+        GameObject ball = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
+        Rigidbody rb = ball.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.velocity = firePoint.forward * fireSpeed; // 発射速度
+        }
 
-    //    Debug.Log($"{name} が砲撃を発射！");
-    //}
+        Debug.Log($"{name} が砲撃を発射！");
+    }
 }
 
