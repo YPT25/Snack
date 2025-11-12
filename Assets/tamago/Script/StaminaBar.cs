@@ -30,7 +30,7 @@ public class StaminaBar : MonoBehaviour
     void Update()
     {
         // 左シフトキーまたはコントローラーのAボタンが押されているか確認
-        if (Input.GetKey(KeyCode.LeftShift)) // "Fire1"はデフォルトでAボタンにマッピングされています
+        if (Input.GetButton("Dash")) // "Fire1"はデフォルトでAボタンにマッピングされています
         {
             DecreaseStamina(); // スタミナを減少させる
         }
