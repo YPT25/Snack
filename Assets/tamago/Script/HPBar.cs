@@ -18,7 +18,7 @@ public class HPBar : MonoBehaviour
     private float targetHP;
     private float lerpSpeed = 5f; // 補間の速度
 
-    CharacterBase player;
+    CharacterBase character;
 
     void Start()
     {
@@ -27,31 +27,34 @@ public class HPBar : MonoBehaviour
         initialPosition = rectTransform.anchoredPosition; // 初期位置を保存
 
         // CharacterBaseのコンポーネントを取得
-        CharacterBase[] characterBase = FindObjectsOfType<CharacterBase>();
-        for (int i = 0; i < characterBase.Length; i++)
+        CharacterBase characterBase = FindObjectOfType<CharacterBase>();
+        if (characterBase != null)
         {
-            if (characterBase[i].isLocalPlayer)
-            {
-                player = characterBase[i];
-                if (characterBase != null)
-                {
-                    // 初期最大HPを設定
-                    maxHP = characterBase[i].GetMaxHP();
-                    currentHP = characterBase[i].GetHp();
-                    targetHP = currentHP; // 初期値をターゲットHPに設定
-                    UpdateHPBar();
-                }
-            }
+            // 初期最大HPを設定
+            maxHP = characterBase.GetMaxHP();
+            currentHP = characterBase.GetHp();
+            targetHP = currentHP; // 初期値をターゲットHPに設定
 
+            // デバッグ情報
+            Debug.Log("Initial Max HP: " + maxHP);
+            Debug.Log("Initial Current HP: " + currentHP);
+
+            UpdateHPBar();
+        }
+        else
+        {
+            Debug.LogError("CharacterBase not found!");
         }
     }
 
     void Update()
     {
-        if (player != null)
+        // プレイヤーの現在のHPを取得して更新
+        CharacterBase characterBase = FindObjectOfType<CharacterBase>();
+        if (characterBase != null)
         {
             // HPのターゲットを更新（ダメージや回復によって変化する）
-            targetHP = player.GetHp();
+            targetHP = characterBase.GetHp();
         }
 
         // スムーズにHPを補間
@@ -66,4 +69,6 @@ public class HPBar : MonoBehaviour
         float normalizedHP = currentHP / maxHP; // 0から1の範囲に正規化
         rectTransform.anchoredPosition = new Vector2(initialPosition.x - (1 - normalizedHP) * 100, initialPosition.y); // 幅に応じて横位置を調整
     }
+
+
 }
