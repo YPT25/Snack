@@ -3813,7 +3813,6 @@ GameObject:
   - component: {fileID: 879196911}
   - component: {fileID: 879196910}
   - component: {fileID: 879196909}
-  - component: {fileID: 879196908}
   - component: {fileID: 879196907}
   m_Layer: 5
   m_Name: Mask
@@ -3856,18 +3855,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetImage: {fileID: 1388997956}
   blinkDuration: 0.2
---- !u!114 &879196908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 879196905}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 038becbc1855f474a98b63cbb078c98b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &879196909
 MonoBehaviour:
   m_ObjectHideFlags: 0

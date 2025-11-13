@@ -18,8 +18,6 @@ public class HPBar : MonoBehaviour
     private float targetHP;
     private float lerpSpeed = 5f; // 補間の速度
 
-    CharacterBase character;
-
     void Start()
     {
         // HPバーの初期化
@@ -35,15 +33,7 @@ public class HPBar : MonoBehaviour
             currentHP = characterBase.GetHp();
             targetHP = currentHP; // 初期値をターゲットHPに設定
 
-            // デバッグ情報
-            Debug.Log("Initial Max HP: " + maxHP);
-            Debug.Log("Initial Current HP: " + currentHP);
-
             UpdateHPBar();
-        }
-        else
-        {
-            Debug.LogError("CharacterBase not found!");
         }
     }
 
