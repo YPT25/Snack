@@ -40,11 +40,11 @@ public class RangedBox_Player : MPlayerBase
             SetEnemyType(EnemyType.TYPE_C);
     }
 
-    protected override void OnAttackInput()
-    {
-        if (canAttack)
-            CmdShoot();
-    }
+    //protected override void OnAttackInput()
+    //{
+    //    if (canAttack)
+    //        CmdShoot();
+    //}
 
     [Command]
     private void CmdShoot()

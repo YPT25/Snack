@@ -28,22 +28,52 @@ public class NormalBox_Player : MPlayerBase
             StartCoroutine(AttackCoroutine());
     }
 
+    /// <summary>
+    /// NPCの攻撃コルーチン
+    /// ・前に倒れる動作
+    /// ・攻撃判定ON/OFF
+    /// ・終了後に状態を戻す
+    /// </summary>
     private IEnumerator AttackCoroutine()
     {
         m_isAttacking = true;
-        transform.Rotate(Vector3.right * 30f);
+
+        float elapsed = 0f;
+        float duration = m_attackDuration;
+        float rotationAngle = 90f; // 倒れる角度を設定
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = startRot * Quaternion.Euler(rotationAngle, 0f, 0f);
 
         if (m_attackCollider != null)
             m_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(m_attackDuration);
+        // 倒れる動作
+        while (elapsed < duration)
+        {
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        transform.rotation = targetRot;
 
+        // 攻撃判定をオフ
         if (m_attackCollider != null)
             m_attackCollider.enabled = false;
 
-        transform.Rotate(Vector3.left * 30f);
+        // 元に戻る動作（同じ時間で戻す）
+        elapsed = 0f;
+        while (elapsed < duration)
+        {
+            transform.rotation = Quaternion.Slerp(targetRot, startRot, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        transform.rotation = startRot;
+
         m_isAttacking = false;
     }
+
+
 
     private void OnTriggerEnter(Collider other)
     {

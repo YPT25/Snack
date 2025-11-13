@@ -20,6 +20,14 @@ public class SphereBox_Player : MPlayerBase
     [Header("突撃の力")]
     [SerializeField] private float m_rollForce = 15f;
 
+    [Header("突撃モード設定")]
+    [SerializeField] private float dashDuration = 1.0f;    // 突撃時間
+    [SerializeField] private float dashSpeedMultiplier = 2f; // 移動速度アップ倍率
+    [SerializeField] private float dashCooldown = 3.0f;    // クールタイム
+
+    private bool m_isDashing = false;
+    private bool m_canDash = true;
+
     private bool m_isAttacking = false;
 
     public override void Start()
@@ -58,36 +66,40 @@ public class SphereBox_Player : MPlayerBase
     private void CmdStartRollAttack()
     {
         if (!m_isAttacking)
-            StartCoroutine(RollAttackCoroutine());
+            StartCoroutine(DashModeCoroutine());
     }
 
     /// <summary>
     /// 転がって突撃する攻撃のコルーチン
     /// </summary>
-    private IEnumerator RollAttackCoroutine()
+    private IEnumerator DashModeCoroutine()
     {
-        m_isAttacking = true;
-        RpcSetAttackState(true);
+        m_isDashing = true;
+        m_canDash = false;
 
-        Debug.Log($"{name} が転がって突撃！（Server）");
+        // 移動速度アップ
+        float originalSpeed = GetMoveSpeed();
+        SetMoveSpeed(originalSpeed * dashSpeedMultiplier);
 
         // 攻撃判定ON
         if (m_attackCollider != null)
             m_attackCollider.enabled = true;
 
-        // Rigidbody に前方へ力を加える（サーバー物理で処理）
-        if (m_rb != null)
-            m_rb.AddForce(transform.forward * m_rollForce, ForceMode.Impulse);
+        // 突撃モード持続
+        yield return new WaitForSeconds(dashDuration);
 
-        yield return new WaitForSeconds(m_rollDuration);
-
-        // 攻撃判定OFF
+        // 元に戻す
+        SetMoveSpeed(originalSpeed);
         if (m_attackCollider != null)
             m_attackCollider.enabled = false;
 
-        m_isAttacking = false;
-        RpcSetAttackState(false);
+        m_isDashing = false;
+
+        // クールタイム
+        yield return new WaitForSeconds(dashCooldown);
+        m_canDash = true;
     }
+
 
     /// <summary>
     /// クライアント側にも攻撃フラグを同期
