@@ -18,10 +18,10 @@ public class CannonBox_player : MPlayerBase
     [Header("弾丸発射速度")]
     public float fireSpeed;
 
-    protected override void OnAttackInput()
-    {
-        Attack(null); // 近接対象は不要
-    }
+    //protected override void OnAttackInput()
+    //{
+    //    Attack(null); // 近接対象は不要
+    //}
 
     public override void Attack(CharacterBase target)
     {

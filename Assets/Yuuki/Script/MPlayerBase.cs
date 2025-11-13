@@ -1,11 +1,17 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
+/// <summary>
+/// プレイヤー共通クラス（Mirror対応）
+/// - すべてのプレイヤーキャラはこれを継承する
+/// - HP管理、移動、攻撃、カメラ制御などを担当
+/// - 死亡時にRespawnManagerを呼び出し、UIから再選択可能
+/// </summary>
 public class MPlayerBase : EnemyBase
 {
-    [Header("�v���C���[���ʐݒ�")]
+    [Header("プレイヤー共通設定")]
     [SerializeField] protected float mouseSensitivity = 3.0f;
     [SerializeField] protected float rotationSmooth = 10f;
     [SerializeField] private Sprite m_respawnIcon;
@@ -15,30 +21,50 @@ public class MPlayerBase : EnemyBase
     protected float yaw;
     protected float pitch;
     protected Camera cam;
-    private RespawnManager respawnManager;
+
+    private bool isInitialized = false;
+    private bool isDead = false;
 
     public override void Start()
     {
         base.Start();
         m_rb = GetComponent<Rigidbody>();
 
+        // ローカルプレイヤー専用の初期化
         if (isLocalPlayer)
         {
             cam = Camera.main;
-            respawnManager = FindObjectOfType<RespawnManager>();
+            StartCoroutine(InitializeAfterDelay());
         }
+    }
+
+    private IEnumerator InitializeAfterDelay()
+    {
+        // RespawnManagerがSpawn後すぐには見つからない場合があるので少し待つ
+        yield return new WaitForSeconds(0.3f);
+        isInitialized = true;
+        Debug.Log($"[MPlayerBase] {name} が初期化完了 (isLocalPlayer={isLocalPlayer})");
     }
 
     public override void Update()
     {
         base.Update();
-        if (!isLocalPlayer) return;
+
+        // 死亡中 or 未初期化 or 他人のプレイヤーなら処理しない
+        if (!isLocalPlayer || !isInitialized || isDead)
+            return;
 
         HandleInput();
         HandleCamera();
 
         if (GetHp() <= 0 && isServer)
             Die();
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        if (!isLocalPlayer || !isInitialized || isDead) return;
+        Move();
     }
 
     protected virtual void HandleInput()
@@ -55,12 +81,6 @@ public class MPlayerBase : EnemyBase
     private void CmdAttackInput()
     {
         OnAttackInput();
-    }
-
-    protected virtual void FixedUpdate()
-    {
-        if (!isLocalPlayer) return;
-        Move();
     }
 
     protected virtual void HandleCamera()
@@ -102,21 +122,49 @@ public class MPlayerBase : EnemyBase
     [Server]
     public override void Die()
     {
-        Debug.Log($"{name} �����S���܂����B");
+        if (isDead) return;
+        isDead = true;
+
+        Debug.Log($"{name} が死亡しました。リスポーンUIを表示命令送信...");
+
+        // 動きを止める
+        RpcSetDeadState(true);
+
+        // ✅ サーバー → クライアントへ「UIを出せ」と命令を送る
         TargetShowRespawnUI(connectionToClient);
-        base.Die();
     }
 
     [TargetRpc]
     private void TargetShowRespawnUI(NetworkConnection target)
     {
-        if (respawnManager != null)
-            respawnManager.OnPlayerDeath();
+        Debug.Log("TargetShowRespawnUI：クライアントで呼び出し成功！");
+
+        // ✅ クライアントで実際にUIを操作する
+        if (RespawnManager.Instance != null)
+        {
+            Debug.Log("RespawnManager.Instance 発見、UI表示処理へ");
+            RespawnManager.Instance.ShowRespawnUI();
+        }
+        else
+        {
+            Debug.LogWarning("RespawnManager.Instance が見つかりません。シーンにRespawnManagerPrefabがありますか？");
+        }
+    }
+
+    [ClientRpc]
+    protected void RpcSetDeadState(bool value)
+    {
+        if (value)
+        {
+            // 死亡時に動きを止める
+            if (m_rb != null)
+                m_rb.velocity = Vector3.zero;
+        }
     }
 
     protected virtual void OnAttackInput()
     {
-        Debug.Log($"{name} ���U������");
+        Debug.Log($"{name} が攻撃入力");
     }
 
     public Sprite GetRespawnIcon() => m_respawnIcon;
