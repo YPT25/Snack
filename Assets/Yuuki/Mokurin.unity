@@ -988,9 +988,37 @@ PrefabInstance:
       value: 2803647465
       objectReference: {fileID: 0}
     - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
+      propertyPath: m_enemySettings.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
       propertyPath: m_spawnPoints.Array.data[1]
       value: 
       objectReference: {fileID: 1309584548}
+    - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
+      propertyPath: m_enemySettings.Array.data[0].maxCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
+      propertyPath: m_enemySettings.Array.data[1].maxCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
+      propertyPath: m_enemySettings.Array.data[0].enemyPrefab
+      value: 
+      objectReference: {fileID: 4767200080394548205, guid: d94e0e38f9e6a8d4e9fa7b6eefff411f, type: 3}
+    - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
+      propertyPath: m_enemySettings.Array.data[1].enemyPrefab
+      value: 
+      objectReference: {fileID: 5395693771008707997, guid: bbb18539bfa8cb343be56759b0c4ba47, type: 3}
+    - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
+      propertyPath: m_enemySettings.Array.data[0].respawnDelay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548424404457773366, guid: 2e9a0c003e7179e428beff8e64fe246a, type: 3}
+      propertyPath: m_enemySettings.Array.data[1].respawnDelay
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
