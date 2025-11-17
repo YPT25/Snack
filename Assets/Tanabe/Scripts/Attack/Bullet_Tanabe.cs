@@ -16,6 +16,8 @@ public class Bullet_Tanabe : NetworkBehaviour
     [SyncVar] private bool m_isPierce = false;
     [SyncVar] private bool m_isDestroy = false;
 
+    [SerializeField] private GameObject m_hitEffectPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,6 +52,13 @@ public class Bullet_Tanabe : NetworkBehaviour
         {
             Destroy(this.gameObject);
             m_isDestroy = true;
+
+            if(m_hitEffectPrefab != null)
+            {
+                GameObject obj = Instantiate(m_hitEffectPrefab, this.transform.position, Quaternion.identity);
+                NetworkServer.Spawn(obj);
+            }
+
         }
 
         // キャラクターデータの取得

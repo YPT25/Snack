@@ -153,6 +153,7 @@ MonoBehaviour:
   syncInterval: 0
   m_speed: 40
   m_activeTime: 1
+  m_hitEffectPrefab: {fileID: 6922119220925503815, guid: a0821cb4eff7af44dbfe0fa405d974cb, type: 3}
 --- !u!114 &5053736093468031877
 MonoBehaviour:
   m_ObjectHideFlags: 0

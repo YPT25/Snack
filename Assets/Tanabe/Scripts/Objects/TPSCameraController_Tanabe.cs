@@ -30,7 +30,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         camera.localPosition = new Vector3(0f, 0.35f, 0f);
         camera.localRotation = Quaternion.identity;
         Cursor.lockState = CursorLockMode.Locked;  // マウスロック
-
+        this.transform.parent = null;
         m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
     }
 
@@ -87,6 +87,13 @@ public class TPSCameraController_Tanabe : MonoBehaviour
             Vector3 desiredPosition = target.position + rotation * offset * 0.5f;
             //desiredPosition += aimingAdjustment;
             transform.position = desiredPosition;
+            Vector3 hitDistance = Vector3.one;
+            float up = 1f;
+            if(this.PositionAdjustment(desiredPosition, out hitDistance, out up))
+            {
+                transform.position = target.position + hitDistance * 0.5f;
+                desiredPosition = transform.position;
+            }
             Vector3 direction = target.position - desiredPosition;
             Vector3 aaa = target.position + direction * 1.0f + (rotation * aimingAdjustment);
             transform.LookAt(aaa);
@@ -95,7 +102,18 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         {
             Vector3 desiredPosition = target.position + rotation * offset;
             transform.position = desiredPosition;
-            transform.LookAt(target.position + Vector3.up * 1.5f);  // プレイヤーの胸or頭あたり見るように
+            Vector3 hitDistance = Vector3.one;
+            float up = 1f;
+            if (this.PositionAdjustment(desiredPosition, out hitDistance, out up))
+            {
+                transform.position = target.position + hitDistance;
+                transform.LookAt(target.position + Vector3.up * 1.5f * up);  // プレイヤーの胸or頭あたり見るように
+            }
+            else
+            {
+                transform.LookAt(target.position + Vector3.up * 1.5f);  // プレイヤーの胸or頭あたり見るように
+            }
+            //transform.LookAt(target.position + Vector3.up * 1.5f);  // プレイヤーの胸or頭あたり見るように
         }
     }
 
@@ -121,6 +139,30 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         {
             pitch = Mathf.Clamp(pitch, minY, maxY);
         }
+    }
+
+    private bool PositionAdjustment(Vector3 _cameraPosition, out Vector3 _hitDistance, out float _up)
+    {
+        Vector3 direction = _cameraPosition - target.transform.position;
+        float maxDistance = Vector3.Distance(_cameraPosition, target.transform.position);
+        float minDistance = maxDistance;
+        RaycastHit[] hits = Physics.RaycastAll(target.transform.position, direction.normalized, minDistance);
+        Vector3 distance = direction.normalized * minDistance;
+        bool isHit = false;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i].collider.gameObject.layer != 3) { continue; }
+            if(minDistance >= hits[i].distance)
+            {
+                distance = direction.normalized * hits[i].distance;
+                minDistance = hits[i].distance;
+                isHit = true;
+            }
+        }
+
+        _hitDistance = distance;
+        _up = minDistance / maxDistance;
+        return isHit;
     }
 
     public void SetTarget(Transform _target)
