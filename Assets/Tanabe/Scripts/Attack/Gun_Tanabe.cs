@@ -8,7 +8,8 @@ public class Gun_Tanabe : NetworkBehaviour
 {
     private Player_Tanabe m_player;
     [SerializeField] private GameObject m_bulletPrefab;
-    [SerializeField] GameObject m_gunHead;
+    [SerializeField] private GameObject m_gunHead;
+    [SerializeField] private MeshRenderer m_isHitMesh;
     private float m_interval = 0.0f;
     private float m_maxInterval = 0.5f;
 
@@ -16,12 +17,17 @@ public class Gun_Tanabe : NetworkBehaviour
     void Start()
     {
         m_player = GetComponentInParent<Player_Tanabe>();
+        if(m_isHitMesh != null)
+        {
+            m_isHitMesh.enabled = false;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         if (!m_player.isLocalPlayer) { return; }
+        if(m_isHitMesh != null) { m_isHitMesh.enabled = m_player.GetIsAiming(); }
         if(m_player.GetHp() <= 0.0f || m_player.IsPause()) { return; }
 
         if (m_player.GetIsAiming())
@@ -32,6 +38,23 @@ public class Gun_Tanabe : NetworkBehaviour
             {
                 Quaternion targetRotation = Quaternion.LookRotation(camForward.normalized);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10.0f * Time.deltaTime);
+            }
+
+            bool isHitEnemy = false;
+            if(m_isHitMesh != null)
+            {
+                if (this.CheckBulletRay(out isHitEnemy))
+                {
+                    if (isHitEnemy)
+                    {
+                        m_isHitMesh.material.color = new Color(1f, 0f, 0f, 1f);
+                    }
+                    m_isHitMesh.material.color = new Color(1f, 1f, 0f, 1f);
+                }
+                else
+                {
+                    m_isHitMesh.material.color = new Color(1f, 1f, 1f, 0.4f);
+                }
             }
         }
         else
@@ -81,6 +104,48 @@ public class Gun_Tanabe : NetworkBehaviour
                 }
             }
         }
+    }
+
+    private bool CheckBulletRay(out bool _isHitEnemy)
+    {
+        _isHitEnemy = false;
+
+        float activeTime = 1f;
+        float bulletSpeed = 40f;
+        Vector3 gunForward = m_gunHead.transform.forward;
+        Vector3 bulletPosition = m_gunHead.transform.position + gunForward * 0.5f;
+        switch (m_player.GetPartType())
+        {
+            case global::SetPart_Tanabe.PartType.LONGBARREL:
+                {
+                    activeTime = 0.4f;
+                    bulletSpeed *= 0.7f;
+                    break;
+                }
+            case global::SetPart_Tanabe.PartType.SHARPBULLET:
+                {
+                    activeTime = 3f;
+                    break;
+                }
+            default:
+                break;
+        }
+        Vector3 rayLastPosition = bulletPosition + gunForward * bulletSpeed * (1f / 60f) * (60f * activeTime);
+        RaycastHit hitInfo;
+        bool hitCollider = Physics.Raycast(bulletPosition, gunForward, out hitInfo, Vector3.Distance(bulletPosition, rayLastPosition), 10);
+
+        if (hitCollider && hitInfo.collider.GetComponent<Bullet_Tanabe>() == null)
+        {
+            Collider hit = hitInfo.collider;
+            CharacterBase characterBase = hit.GetComponent<CharacterBase>();
+            if (!hit.isTrigger && characterBase != null)
+            {
+                _isHitEnemy = (characterBase.GetCharacterType() == CharacterBase.CharacterType.ENEMY_TYPE);
+            }
+            return true;
+        }
+
+        return false;
     }
 
     // í èÌíe

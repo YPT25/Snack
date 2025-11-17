@@ -15329,7 +15329,7 @@ SphereCollider:
     m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 385
+    m_Bits: 1409
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
@@ -15358,6 +15358,7 @@ MonoBehaviour:
     moveSpeed: 8
     stamina: 5
   playerNumber: 0
+  playerName: Player
   m_weaponID: 1
   m_weaponObject: {fileID: 8468508739622886663}
   m_hammer: {fileID: 6921645342851126877}
@@ -15365,6 +15366,7 @@ MonoBehaviour:
   m_headObject: {fileID: 3252964221379735869}
   m_cameraController: {fileID: 5066527324689413029}
   m_bombObject: {fileID: 4528355159919364869}
+  m_sweetScore: 0
 --- !u!114 &2748449924058966797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15380,6 +15382,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  isItemCatch: 0
 --- !u!114 &3045435407489443790
 MonoBehaviour:
   m_ObjectHideFlags: 0
