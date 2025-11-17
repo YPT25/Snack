@@ -14,6 +14,7 @@ using Mirror;
 /// </summary>
 public class Projectile : NetworkBehaviour
 {
+    [SerializeField]
     private float damage = 10f;
     private MPlayerBase owner;
 

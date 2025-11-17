@@ -56,7 +56,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.5, y: 5, z: 2.5}
+  m_Size: {x: 2, y: 2.5, z: 2}
   m_Center: {x: 0, y: -0.5, z: 0}
 --- !u!54 &7011610708341014265
 Rigidbody:
@@ -106,11 +106,11 @@ MonoBehaviour:
     moveSpeed: 15
     stamina: 0
   m_canFriendlyFire: 0
-  m_enemyType: 1
+  m_enemyType: 3
   mouseSensitivity: 3
   rotationSmooth: 10
-  m_respawnIcon: {fileID: 0}
-  projectilePrefab: {fileID: 0}
+  m_respawnIcon: {fileID: 21300000, guid: ff16e899c9e4f8a41af08ba413b53813, type: 3}
+  projectilePrefab: {fileID: 4539971892963465637, guid: 99e3d69abb80f1b498edb5bfd5589fd3, type: 3}
   muzzlePoint: {fileID: 3211713571071918993}
   projectileSpeed: 20
   attackCooldown: 1
@@ -189,16 +189,16 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 512112075956165711}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -3, z: 0.5}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: -2.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3497154903786162502}
   - {fileID: 8410849052890475361}
   - {fileID: 6984714300401845675}
   m_Father: {fileID: 3211713571071918993}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &2981540665008620151
 GameObject:
   m_ObjectHideFlags: 0
