@@ -209,4 +209,12 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     {
         _item.RpcChangeState(_item, _newStateType);
     }
+
+    // ‚Á‚Ä‚¢‚éƒAƒCƒeƒ€‚Ìí—Ş‚Ìæ“¾
+    public void GetItem(out ItemStateMachine.ItemType _firstType, out ItemStateMachine.ItemType _secondType)
+    {
+        _firstType = _secondType = ItemStateMachine.ItemType.NONE_TYPE;
+        if (m_items[0] != null) { _firstType = m_items[0].GetItemType(); }
+        if (m_items[1] != null) { _secondType = m_items[1].GetItemType(); }
+    }
 }
