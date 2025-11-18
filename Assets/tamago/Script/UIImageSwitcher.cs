@@ -62,6 +62,10 @@ public class UIImageSwitcher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.JoystickButton8)) return true; // Lスティック押し込み
         if (Input.GetKeyDown(KeyCode.JoystickButton9)) return true; // Rスティック押し込み
 
+        if (Input.GetAxisRaw("Shot") != 0.0f) return true;
+        if (Input.GetAxisRaw("Aiming Pad") != 0.0f) return true;
+
+
         return false;
     }
 
@@ -81,10 +85,6 @@ public class UIImageSwitcher : MonoBehaviour
         if (Mathf.Abs(ly) > 0.1f) return true;
         if (Mathf.Abs(rx) > 0.1f) return true;
         if (Mathf.Abs(ry) > 0.1f) return true;
-        if (Mathf.Abs(lx) < 0.1f) return true;
-        if (Mathf.Abs(ly) < 0.1f) return true;
-        if (Mathf.Abs(rx) < 0.1f) return true;
-        if (Mathf.Abs(ry) < 0.1f) return true;
 
         return false;
     }
