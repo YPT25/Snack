@@ -177,8 +177,8 @@ MonoBehaviour:
   - {fileID: 1696688073}
   - {fileID: 1728798767}
   m_playerPrefabs:
-  - {fileID: 3352013568955876611, guid: ec43046cd9730794d865354a6cbe3304, type: 3}
-  - {fileID: 3322310586902897171, guid: 0eff96bf03ef8c14a84a61d0be03a795, type: 3}
+  - {fileID: 3937008207873511988, guid: 530fb43d2f6ddef4e80baa5d13f8e947, type: 3}
+  - {fileID: 1410245227978245228, guid: 3137c5444483dfd4dba656b036660eae, type: 3}
   m_debugUI:
   - {fileID: 2105991814}
   parameterText: {fileID: 2105991814}
@@ -262,6 +262,8 @@ MonoBehaviour:
   - {fileID: 3352013568955876611, guid: ec43046cd9730794d865354a6cbe3304, type: 3}
   - {fileID: 3322310586902897171, guid: 0eff96bf03ef8c14a84a61d0be03a795, type: 3}
   - {fileID: 6922119220925503815, guid: a0821cb4eff7af44dbfe0fa405d974cb, type: 3}
+  - {fileID: 3937008207873511988, guid: 530fb43d2f6ddef4e80baa5d13f8e947, type: 3}
+  - {fileID: 1410245227978245228, guid: 3137c5444483dfd4dba656b036660eae, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -1983,7 +1985,7 @@ MonoBehaviour:
     stamina: 0
   m_meshRenderer: {fileID: 1344907296}
   HITTIME: 0.7
-  m_characterTypeNum: 0
+  m_characterTypeNum: 2
 --- !u!114 &1344907293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3785,7 +3787,7 @@ MonoBehaviour:
     stamina: 0
   m_meshRenderer: {fileID: 2035922367}
   HITTIME: 0.7
-  m_characterTypeNum: 0
+  m_characterTypeNum: 1
 --- !u!136 &2035922366
 CapsuleCollider:
   m_ObjectHideFlags: 0
