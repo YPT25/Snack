@@ -6,58 +6,114 @@ using static ItemStateMachine;
 
 public class CandyDisplayManager : MonoBehaviour
 {
+    // 左側のアイテムを表示する Image
     [Header("お菓子のUI")]
-    [Tooltip("ポップコーンのイラスト")]
-    [SerializeField] private Image _popcornSprite;
+    [Tooltip("左側のイラスト")]
+    [SerializeField] private Image _leftSprite;
 
-    [Tooltip("ふわふわのイラスト")]
-    [SerializeField] private Image _fluffySprite;
+    // 右側のアイテムを表示する Image
+    [Tooltip("右のイラスト")]
+    [SerializeField] private Image _rightSprite;
 
+    // アイテムの状態を管理しているクラス
     private ItemStateMachine _itemStateMachine;
-    // Start is called before the first frame update
+
+    // プレイヤー情報を持つクラス
+    private Player_Tanabe _player_Tanabe;
+
+    // プレイヤーが所持しているアイテムを保存する配列
+    private ItemStateMachine.ItemType[] _items = new ItemStateMachine.ItemType[2];
+
+    // 投擲（ポップコーン）の Sprite
+    [Header("アイテム画像")]
+    [Tooltip("ポップコーンの画像")]
+    [SerializeField] private Sprite _popcorn;
+
+    // 罠（ふわふわ）の Sprite
+    [Tooltip("綿菓子の画像")]
+    [SerializeField] private Sprite _fluffy;
+
+    // 透明画像の Sprite
+    [Tooltip("透過画像")]
+    [SerializeField] private Sprite _transparent;
+
+    // ゲーム開始時に最初に呼ばれる処理（今回は特に何もしない）
     void Start()
     {
-        // プレイヤーが現れるまで待つ処理を開始
-        StartCoroutine(WaitForPlayer());
+        // プレイヤーと管理クラスが揃うまで待つ
+        StartCoroutine(WaitForCandy());
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator WaitForCandy()
     {
-        
-    }
-
-    // プレイヤーが生成されるまで探し続ける処理
-    private IEnumerator WaitForPlayer()
-    {
-        // プレイヤーが見つかるまでループ
-        while (_itemStateMachine == null)
+        // 必要なクラスが見つかるまで繰り返す
+        while (_itemStateMachine == null || _player_Tanabe == null)
         {
             _itemStateMachine = FindObjectOfType<ItemStateMachine>();
-            yield return null;  // 1フレーム待つ
+            _player_Tanabe = FindObjectOfType<Player_Tanabe>();
+            yield return null; // 1フレーム待つ
         }
 
-        // プレイヤーが見つかったので武器UIを更新
-        UpdateWeaponUI(_itemStateMachine.GetItemStateType());
+        // ローカルプレイヤーのみ UI 更新
+        if (!_player_Tanabe.isLocalPlayer)
+            yield break;
+
+        // 所持アイテムの UI を初回更新
+        UpdateCandyUI(_player_Tanabe.GetPossesionManager());
+
+        // 所持アイテムが変わるたびに UI 更新
+        while (true)
+        {
+            UpdateCandyUI(_player_Tanabe.GetPossesionManager());
+            yield return null; // 毎フレームチェックして更新
+        }
     }
-
-    // 武器UIを更新する処理
-    private void UpdateWeaponUI(ItemStateMachine.ItemStateType id)
+    // 所持アイテムに応じて UI アイコンを更新する処理
+    private void UpdateCandyUI(PossessionManager_Tanabe possession)
     {
-        // UIを一度全部消す処理
-        _popcornSprite.gameObject.SetActive(false);
-        _fluffySprite.gameObject.SetActive(false);
+        // 所持アイテム2種類を取得する（左と右）
+        possession.GetItem(out _items[0], out _items[1]);
 
-        // ハンマー表示処理
-        if (id == ItemStateMachine.ItemStateType.THROW)
+        // 左側が罠アイテムだった場合の処理
+        if (_items[0] == ItemType.TRAP)
         {
-            _popcornSprite.gameObject.SetActive(true);
+            // 左側にふわふわの画像を表示する
+            _leftSprite.sprite = _fluffy;
         }
 
-        // 銃の表示処理
-        if (id == ItemStateMachine.ItemStateType.TRAP)
+        // 左側が投擲アイテムだった場合の処理
+        if (_items[0] == ItemType.THROW)
         {
-            _fluffySprite.gameObject.SetActive(true);
+            // 左側にポップコーンの画像を表示する
+            _leftSprite.sprite = _popcorn;
+        }
+
+        // 右側が罠アイテムだった場合の処理
+        if (_items[1] == ItemType.TRAP)
+        {
+            // 右側にふわふわの画像を表示する
+            _rightSprite.sprite = _fluffy;
+        }
+
+        // 右側が投擲アイテムだった場合の処理
+        if (_items[1] == ItemType.THROW)
+        {
+            // 右側にポップコーンの画像を表示する
+            _rightSprite.sprite = _popcorn;
+        }
+
+        // 左側が空欄の場合の処理
+        if (_items[0] == ItemType.NONE_TYPE)
+        {
+            // 左側を透明画像にする
+            _leftSprite.sprite = _transparent;
+        }
+
+        // 右側が空欄の場合の処理
+        if (_items[1] == ItemType.NONE_TYPE)
+        {
+            // 右側を透明画像にする
+            _rightSprite.sprite = _transparent;
         }
     }
 }
