@@ -16,19 +16,20 @@ public class dorp_idle2 : NetworkBehaviour
     [Tooltip("äÓèÄà íu")]
     float baseY = 0.5f;
 
+    ItemStateMachine itemStateMachine;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        itemStateMachine = FindObjectOfType<ItemStateMachine>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        ItemStateMachine itemStateMachine = GetComponent<ItemStateMachine>();
         if (itemStateMachine.GetItemStateType() == ItemStateMachine.ItemStateType.DROP)
         {
-            float newY = baseY + Mathf.Sin(Time.time * WaveSpeed) * WaveHeight;
+            float newY = baseY + Mathf.Sin(Time.deltaTime * WaveSpeed) * WaveHeight;
 
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
