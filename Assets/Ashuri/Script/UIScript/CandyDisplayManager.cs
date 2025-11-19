@@ -46,20 +46,21 @@ public class CandyDisplayManager : MonoBehaviour
 
     private IEnumerator WaitForCandy()
     {
-        // 必要なクラスが見つかるまで繰り返す
-        while (_itemStateMachine == null || _player_Tanabe == null)
+        // このコンポーネントが乗っているオブジェクトからプレイヤー情報を取得
+        _player_Tanabe = GetComponent<Player_Tanabe>();
+        _itemStateMachine = GetComponent<ItemStateMachine>();
+
+        // どちらかが見つからない場合は待つ
+        while (_player_Tanabe == null || _itemStateMachine == null)
         {
-            _itemStateMachine = FindObjectOfType<ItemStateMachine>();
-            _player_Tanabe = FindObjectOfType<Player_Tanabe>();
-            yield return null; // 1フレーム待つ
+            _player_Tanabe = GetComponent<Player_Tanabe>();
+            _itemStateMachine = GetComponent<ItemStateMachine>();
+            yield return null;
         }
 
-        // ローカルプレイヤーのみ UI 更新
+        // ローカルプレイヤー以外は UI 更新しない
         if (!_player_Tanabe.isLocalPlayer)
             yield break;
-
-        // 所持アイテムの UI を初回更新
-        UpdateCandyUI(_player_Tanabe.GetPossesionManager());
 
         // 所持アイテムが変わるたびに UI 更新
         while (true)

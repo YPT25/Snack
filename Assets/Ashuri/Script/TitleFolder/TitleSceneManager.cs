@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class TitleSceneManager : MonoBehaviour
 {
+    [SerializeField]string SceneName = "";
     // Start is called before the first frame update
     void Start()
     {
@@ -17,7 +18,7 @@ public class TitleSceneManager : MonoBehaviour
         //左クリックを受け付ける
         if (Input.GetMouseButtonDown(0))
         {
-            SceneManager.LoadScene("LobbyScene");
+            SceneManager.LoadScene(SceneName);
         }
     }
 }

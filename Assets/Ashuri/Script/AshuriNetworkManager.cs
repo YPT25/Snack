@@ -169,4 +169,21 @@ public class AshuriNetworkManager : NetworkManager
     {
         nextPlayerNumber = 1;
     }
+    // ----------------------------------------------------
+    // ホスト（サーバー + クライアント）が抜けたとき
+    // ----------------------------------------------------
+    public override void OnStopHost()
+    {
+        base.OnStopHost();
+        Debug.LogError("ホストが抜けました（サーバーとクライアント両方が停止）");
+    }
+
+    // ----------------------------------------------------
+    // クライアントが切断したとき（自分自身側）
+    // ----------------------------------------------------
+    public override void OnClientDisconnect()
+    {
+        base.OnClientDisconnect();
+        Debug.LogError("クライアントがサーバーから切断されました");
+    }
 }
