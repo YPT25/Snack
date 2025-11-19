@@ -72,6 +72,8 @@ public class ThrowState : IItemState_Tanabe
         //item.transform.localScale = Vector3.zero;
         //item.GetColiider().enabled = false;
         ////item.GetComponent<MeshRenderer>().enabled = false;
+
+        item.GetEffectObject().transform.position = item.transform.position;
         item.RpcExplode();
 
         BombExplosion_Tanabe test = item.GetComponent<BombExplosion_Tanabe>();
