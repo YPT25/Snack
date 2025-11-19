@@ -52,13 +52,11 @@ public class Bullet_Tanabe : NetworkBehaviour
         {
             Destroy(this.gameObject);
             m_isDestroy = true;
-
-            if(m_hitEffectPrefab != null)
-            {
-                GameObject obj = Instantiate(m_hitEffectPrefab, this.transform.position, Quaternion.identity);
-                NetworkServer.Spawn(obj);
-            }
-
+        }
+        if (m_hitEffectPrefab != null)
+        {
+            GameObject obj = Instantiate(m_hitEffectPrefab, this.transform.position, Quaternion.identity);
+            NetworkServer.Spawn(obj);
         }
 
         // キャラクターデータの取得

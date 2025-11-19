@@ -71,7 +71,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
 
         if (axisPadX != 0f || axisPadY != 0f)
         {
-            this.ViewUpdate(axisPadX, axisPadY, m_sensitivityPower);
+            this.ViewUpdate(axisPadX * Mathf.Abs(axisPadX), axisPadY * Mathf.Abs(axisPadY), m_sensitivityPower * 20f);
         }
         else if (axisX != 0f || axisY != 0f)
         {
@@ -82,6 +82,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         // カメラの回転適用
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
 
+        // プレイヤーがエイム状態のときのみ通す
         if (m_player.GetIsAiming())
         {
             Vector3 desiredPosition = target.position + rotation * offset * 0.5f;
@@ -89,6 +90,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
             transform.position = desiredPosition;
             Vector3 hitDistance = Vector3.one;
             float up = 1f;
+            // カメラがステージオブジェクトにぶつかっているか調べる
             if(this.PositionAdjustment(desiredPosition, out hitDistance, out up))
             {
                 transform.position = target.position + hitDistance * 0.5f;
@@ -104,6 +106,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
             transform.position = desiredPosition;
             Vector3 hitDistance = Vector3.one;
             float up = 1f;
+            // カメラがステージオブジェクトにぶつかっているか調べる
             if (this.PositionAdjustment(desiredPosition, out hitDistance, out up))
             {
                 transform.position = target.position + hitDistance;
@@ -117,6 +120,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         }
     }
 
+    // 視点の更新
     private void ViewUpdate(float _axisX, float _axisY, float _sensitivityPower = 1f)
     {
         // マウス入力取得
@@ -141,6 +145,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         }
     }
 
+    // カメラがステージにぶつかっていたら位置を調整する
     private bool PositionAdjustment(Vector3 _cameraPosition, out Vector3 _hitDistance, out float _up)
     {
         Vector3 direction = _cameraPosition - target.transform.position;
@@ -151,7 +156,9 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         bool isHit = false;
         for (int i = 0; i < hits.Length; i++)
         {
+            // ステージオブジェクトのみ調べる
             if (hits[i].collider.gameObject.layer != 3) { continue; }
+            // ぶつかったオブジェクトの中でプレイヤーに最も距離が近い物を参照する
             if(minDistance >= hits[i].distance)
             {
                 distance = direction.normalized * hits[i].distance;
