@@ -11,10 +11,10 @@ using Mirror.Examples.Tanks;
 /// </summary>
 public class RangedBox_Player : MPlayerBase
 {
-    [Header("発射する弾丸のプレハブ（NetworkIdentity付き必須）")]
+    [Header("弾丸Prefab（NetworkIdentity 必須）")]
     [SerializeField] private GameObject projectilePrefab;
 
-    [Header("弾丸の発射位置")]
+    [Header("発射位置（銃口）")]
     [SerializeField] private Transform muzzlePoint;
 
     [Header("弾速")]
@@ -29,55 +29,52 @@ public class RangedBox_Player : MPlayerBase
     {
         base.Start();
 
-        if (isClient)
-        {
-            var rend = GetComponent<Renderer>();
-            if (rend != null)
-                rend.material.color = Color.cyan;
-        }
-
         if (isServer)
             SetEnemyType(EnemyType.TYPE_C);
     }
 
     protected override void OnAttackInput()
     {
-        if (canAttack)
-            CmdShoot();
+        if (!canAttack) return;
+
+        // カメラの forward をサーバーへ送る
+        Vector3 dir = Camera.main.transform.forward;
+        CmdShoot(dir);
     }
 
     [Command]
-    private void CmdShoot()
+    private void CmdShoot(Vector3 dir)
     {
-        if (!canAttack || projectilePrefab == null || muzzlePoint == null)
+        if (!canAttack || projectilePrefab == null)
             return;
 
-        StartCoroutine(ShootRoutine());
+        StartCoroutine(ShootRoutine(dir));
     }
 
-    private IEnumerator ShootRoutine()
+    private IEnumerator ShootRoutine(Vector3 dir)
     {
         canAttack = false;
         RpcSetAttackCooldown(false);
 
-        // 弾丸生成（サーバー側）
+        // 弾丸生成（サーバー）
         GameObject proj = Instantiate(projectilePrefab, muzzlePoint.position, muzzlePoint.rotation);
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         Projectile projectile = proj.GetComponent<Projectile>();
 
         if (projectile != null)
-        {
             projectile.Initialize(this, GetPower());
-        }
 
+        // ===== カメラ方向へ発射 =====
         if (rb != null)
         {
-            rb.velocity = muzzlePoint.forward * projectileSpeed;
+            dir.Normalize();
+            rb.velocity = dir * projectileSpeed;
         }
 
         NetworkServer.Spawn(proj);
 
         yield return new WaitForSeconds(attackCooldown);
+
         canAttack = true;
         RpcSetAttackCooldown(true);
     }
