@@ -41,6 +41,9 @@ public class CharacterBase : NetworkBehaviour
     // 自身のタイプ(分類)
     [SyncVar] private CharacterType m_characterType = CharacterType.NONE_TYPE;
 
+    //イベント
+    public static event System.Action<CharacterBase> OnCharacterTakeDamage;
+
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
     // 開始関数
@@ -83,6 +86,8 @@ public class CharacterBase : NetworkBehaviour
     public virtual void Damage(float _damage)
     {
         SetHp(m_hp - _damage);
+        if (m_hp <= 0f)
+            OnCharacterTakeDamage?.Invoke(this);
     }
 
     [Command]
