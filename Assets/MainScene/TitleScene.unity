@@ -227,6 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af7427618f9f49e41ae126cb8d2274a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SceneName: TitleTest
 --- !u!4 &132270203
 Transform:
   m_ObjectHideFlags: 0
@@ -1398,6 +1399,10 @@ PrefabInstance:
     - target: {fileID: 4130109153774000246, guid: 38a52abdd1842d14db036a5028b85155, type: 3}
       propertyPath: m_Name
       value: "\u30C1\u30E7\u30B3"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7686595215731669983, guid: 38a52abdd1842d14db036a5028b85155, type: 3}
+      propertyPath: sceneId
+      value: 2752343427
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
