@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using Unity.VisualScripting;
 /// <summary>
 /// NormalBox のプレイヤー操作用クラス
 /// ・MPlayerBase を継承
@@ -10,16 +11,28 @@ using Mirror;
 /// </summary>
 public class NormalBox_Player : MPlayerBase
 {
+    [Header("倒れるモデル（kabeteki）")]
+    [SerializeField] private Transform modelRoot;
+
     [SerializeField] private Collider m_attackCollider;
+    [SerializeField] private Collider m_hitCollider;
     [SerializeField] private float m_attackDuration = 0.5f;
     private bool m_isAttacking = false;
+    // 多段ヒット防止用
+    private HashSet<CharacterBase> hitTargets = new HashSet<CharacterBase>();
 
     public override void Start()
     {
         base.Start();
         SetEnemyType(EnemyType.TYPE_A);
+
         if (m_attackCollider != null)
             m_attackCollider.enabled = false;
+
+        if (modelRoot == null)
+        {
+            Debug.LogError("modelRoot に kabeteki を割り当ててください。");
+        }
     }
 
     protected override void OnAttackInput()
@@ -28,59 +41,70 @@ public class NormalBox_Player : MPlayerBase
             StartCoroutine(AttackCoroutine());
     }
 
-    /// <summary>
-    /// NPCの攻撃コルーチン
-    /// ・前に倒れる動作
-    /// ・攻撃判定ON/OFF
-    /// ・終了後に状態を戻す
-    /// </summary>
     private IEnumerator AttackCoroutine()
     {
         m_isAttacking = true;
+        hitTargets.Clear();
 
         float elapsed = 0f;
         float duration = m_attackDuration;
-        float rotationAngle = 90f; // 倒れる角度を設定
-        Quaternion startRot = transform.rotation;
-        Quaternion targetRot = startRot * Quaternion.Euler(rotationAngle, 0f, 0f);
+        // 攻撃中は移動不能にする
+        iscanMove = false;
 
-        if (m_attackCollider != null)
-            m_attackCollider.enabled = true;
+        // 見た目モデルの回転
+        Quaternion startRot = modelRoot.localRotation;
+        Quaternion targetRot = startRot * Quaternion.Euler(0f, 0f, -90f);
 
-        // 倒れる動作
+        // コライダー切り替え
+        //if (m_attackCollider)
+        //{
+        //    m_attackCollider.enabled = true;
+        //}
+        m_attackCollider.enabled = true;
+        // 倒れるモーション
         while (elapsed < duration)
         {
-            transform.rotation = Quaternion.Slerp(startRot, targetRot, elapsed / duration);
+            modelRoot.localRotation = Quaternion.Slerp(startRot, targetRot, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
-        transform.rotation = targetRot;
+        modelRoot.localRotation = targetRot;
 
         // 攻撃判定をオフ
-        if (m_attackCollider != null)
-            m_attackCollider.enabled = false;
-
-        // 元に戻る動作（同じ時間で戻す）
+        //if (m_attackCollider != null)
+        //{
+        //    m_attackCollider.enabled = false;
+        //}
+        m_attackCollider.enabled = false;
+        // 戻るモーション
         elapsed = 0f;
         while (elapsed < duration)
         {
-            transform.rotation = Quaternion.Slerp(targetRot, startRot, elapsed / duration);
+            modelRoot.localRotation = Quaternion.Slerp(targetRot, startRot, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
-        transform.rotation = startRot;
+        modelRoot.localRotation = startRot;
+
+        iscanMove = true;
 
         m_isAttacking = false;
     }
-
-
 
     private void OnTriggerEnter(Collider other)
     {
         if (!m_isAttacking || !isServer) return;
 
         CharacterBase target = other.GetComponent<CharacterBase>();
+
+        // ★多段ヒット防止
         if (target != null && target != this)
-            Attack(target);
+        {
+            if (!hitTargets.Contains(target))
+            {
+                hitTargets.Add(target);   // 一度当たった相手は記録
+                Attack(target);           // 攻撃実行
+            }
+        }
     }
 }

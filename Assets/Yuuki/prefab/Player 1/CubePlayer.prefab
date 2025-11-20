@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 3743531940855759647}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.075}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -249,7 +249,14 @@ MonoBehaviour:
   mouseSensitivity: 3
   rotationSmooth: 10
   m_respawnIcon: {fileID: 21300000, guid: e8c1fd16d7c3e6642b1589a149044c94, type: 3}
+  normalFOV: 60
+  adsFOV: 35
+  normalCamOffset: {x: 0, y: 2, z: -4}
+  adsCamOffset: {x: 0.6, y: 1.8, z: -2.5}
+  adsSensitivityMultiplier: 0.5
+  modelRoot: {fileID: 2549104326152318753}
   m_attackCollider: {fileID: 5869908487399127585}
+  m_hitCollider: {fileID: 4703020957633191603}
   m_attackDuration: 0.5
 --- !u!114 &4377995134492379772
 MonoBehaviour:
