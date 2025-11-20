@@ -183,8 +183,19 @@ public class AshuriNetworkManager : NetworkManager
     // ----------------------------------------------------
     public override void OnClientDisconnect()
     {
+        Debug.Log("OnClientDisconnect 発動");
+
+        if (NetworkServer.active && NetworkClient.isConnected)
+            Debug.Log("状態：Host が切断された");
+        else if (NetworkServer.active)
+            Debug.Log("状態：Server が切断された");
+        else if (NetworkClient.isConnected)
+            Debug.Log("状態：純粋な Client が切断された");
+        else
+            Debug.Log("状態：Network 状態が不明");
+
         base.OnClientDisconnect();
-        Debug.LogError("クライアントがサーバーから切断されました");
     }
+
 
 }

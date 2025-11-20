@@ -5,10 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/MainScene/TitleScene.unity
-    guid: 4c2ee6a3a937cf540b90d20ba734c2f9
-  - enabled: 1
+  - enabled: 0
     path: Assets/Zunda/TitleTest.unity
     guid: 2a6dedca3e137ae48a4bcf60701a2f4b
   - enabled: 1
@@ -20,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Tanabe/Scenes/TanabeScene.unity
     guid: 4a00efdebdc72dd4b9fe50b8d8f0ea90
+  - enabled: 1
+    path: Assets/MainScene/TitleScene.unity
+    guid: 4c2ee6a3a937cf540b90d20ba734c2f9
   m_configObjects: {}
