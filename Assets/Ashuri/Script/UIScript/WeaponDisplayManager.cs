@@ -33,7 +33,7 @@ public class WeaponDisplayManager : MonoBehaviour
         // プレイヤーが見つかるまでループ
         while (_player_Tanabe == null)
         {
-            _player_Tanabe = FindObjectOfType<Player_Tanabe>();
+            _player_Tanabe = GetComponentInParent<Player_Tanabe>();
             yield return null;  // 1フレーム待つ
         }
 
