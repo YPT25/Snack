@@ -24,22 +24,27 @@ public class MPlayerBase : EnemyBase
 
     private bool isInitialized = false;
     private bool isDead = false;
+    public bool  iscanMove = true;
 
-    // ===== ADS 用 =====
-    [Header("ADS 設定")]
-    [SerializeField] private float normalFOV = 60f;
-    [SerializeField] private float adsFOV = 35f;
+    // ===== FPS視点用 =====
+    [Header("FPS視点設定")]
+    // プレイヤー頭に置くポイント
+    [SerializeField] private Transform fpsCameraPoint;  
+    [SerializeField] private Vector3 tpsCameraOffset = new Vector3(0, 2f, -4f);
 
-    [SerializeField] private Vector3 normalCamOffset = new Vector3(0, 2f, -4f);
-    [SerializeField] private Vector3 adsCamOffset = new Vector3(0.6f, 1.8f, -2.5f);
-
-    [SerializeField] private float adsSensitivityMultiplier = 0.5f;
-    private bool isADS = false;
+    [SerializeField] private float tpsFOV = 60f;
+    [SerializeField] private float fpsFOV = 75f;
+    private bool isFPS = false;
+    // FPS時に自分の体を消すため
+    private MeshRenderer[] myRenderers;  
 
     public override void Start()
     {
         base.Start();
         m_rb = GetComponent<Rigidbody>();
+
+        // FPS時に体を非表示にするため
+        myRenderers = GetComponentsInChildren<MeshRenderer>();
 
         // ローカルプレイヤー専用初期化
         if (isLocalPlayer)
@@ -67,7 +72,9 @@ public class MPlayerBase : EnemyBase
         HandleCamera();
 
         if (GetHp() <= 0 && isServer)
+        {
             Die();
+        }
     }
 
     protected virtual void FixedUpdate()
@@ -88,14 +95,33 @@ public class MPlayerBase : EnemyBase
         if (Input.GetMouseButtonDown(0))
             CmdAttackInput();
 
-        // === ADS 入力 ===
+        // FPS切替
         if (Input.GetMouseButtonDown(1))
-            isADS = true;
-
+        {
+            SetFPS(true);
+        }
         if (Input.GetMouseButtonUp(1))
-            isADS = false;
-    }
+        {
+            SetFPS(false);
+        }
 
+    }
+    // FPS視点への切り替え
+    private void SetFPS(bool flag)
+    {
+        isFPS = flag;
+
+        // FPS時はモデルを非表示に
+        foreach (var r in myRenderers)
+            r.enabled = !flag;
+
+        // FOV切り替え
+        if (cam != null)
+        {
+            cam.fieldOfView = isFPS ? fpsFOV : tpsFOV;
+        }
+            
+    }
     [Command]
     private void CmdAttackInput()
     {
@@ -103,59 +129,65 @@ public class MPlayerBase : EnemyBase
     }
 
     /// <summary>
-    /// カメラとプレイヤーの回転処理（ADSあり）
+    /// カメラとプレイヤーの回転処理
     /// </summary>
     protected virtual void HandleCamera()
     {
         if (cam == null) return;
 
-        // ADS中は感度を下げる
-        float sens = isADS ? mouseSensitivity * adsSensitivityMultiplier : mouseSensitivity;
-
-        float mouseX = Input.GetAxis("Camera X") * sens;
-        float mouseY = Input.GetAxis("Camera Y") * sens;
+        float mouseX = Input.GetAxis("Camera X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Camera Y") * mouseSensitivity;
 
         yaw += mouseX;
         pitch -= mouseY;
-        pitch = Mathf.Clamp(pitch, -30f, 60f);
+        pitch = Mathf.Clamp(pitch, -80f, 85f);
 
-        // ===== カメラオフセット =====
-        Vector3 offset = isADS ? adsCamOffset : normalCamOffset;
-
-        // カメラ位置を決定
-        Vector3 camOffset = Quaternion.Euler(pitch, yaw, 0) * offset;
-        cam.transform.position = transform.position + camOffset;
-
-        // カメラがプレイヤーの胸あたりを見るように調整
-        cam.transform.LookAt(transform.position + Vector3.up);
-
-        // FOV（ズーム）
-        float targetFOV = isADS ? adsFOV : normalFOV;
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, Time.deltaTime * 8f);
-
-        // プレイヤー自身の回転
+        // === プレイヤーの水平回転 ===
         Quaternion targetRot = Quaternion.Euler(0, yaw, 0);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSmooth);
+
+        // === FPS視点 ===
+        if (isFPS)
+        {
+            cam.transform.position = fpsCameraPoint.position;
+            cam.transform.rotation = Quaternion.Euler(pitch, yaw, 0);
+            return;
+        }
+
+        // === TPS視点 ===
+        Vector3 offset = Quaternion.Euler(pitch, yaw, 0) * tpsCameraOffset;
+        cam.transform.position = transform.position + offset;
+
+        cam.transform.LookAt(transform.position + Vector3.up * 1.5f);
     }
 
     protected virtual void Move()
     {
         if (m_rb == null || cam == null) return;
+        if (iscanMove)
+        {
+            Vector3 camForward = cam.transform.forward;
+            camForward.y = 0;
+            camForward.Normalize();
 
-        Vector3 camForward = cam.transform.forward;
-        camForward.y = 0;
-        camForward.Normalize();
+            Vector3 camRight = cam.transform.right;
+            camRight.y = 0;
+            camRight.Normalize();
 
-        Vector3 camRight = cam.transform.right;
-        camRight.y = 0;
-        camRight.Normalize();
+            Vector3 moveDir = (camForward * m_inputDir.z + camRight * m_inputDir.x).normalized;
 
-        Vector3 moveDir = (camForward * m_inputDir.z + camRight * m_inputDir.x).normalized;
+            float speed = GetMoveSpeed();
+            Vector3 velocity = moveDir * speed;
 
-        float speed = GetMoveSpeed();
-        Vector3 velocity = moveDir * speed;
-
-        m_rb.velocity = new Vector3(velocity.x, m_rb.velocity.y, velocity.z);
+            m_rb.velocity = new Vector3(velocity.x, m_rb.velocity.y, velocity.z);
+        }
+        else
+        {
+            if (m_rb != null)
+                m_rb.velocity = Vector3.zero; // ピタッと止める
+            return;
+        }
+  
     }
 
     // ===== 死亡処理 =====

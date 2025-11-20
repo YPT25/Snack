@@ -37,8 +37,23 @@ public class RangedBox_Player : MPlayerBase
     {
         if (!canAttack) return;
 
-        // カメラの forward をサーバーへ送る
-        Vector3 dir = Camera.main.transform.forward;
+        // ========= 正確な射撃方向の取得 (FPS/TPS両対応) =========
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+
+        Vector3 targetPoint;
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 200f))
+        {
+            targetPoint = hit.point;
+        }
+        else
+        {
+            targetPoint = ray.GetPoint(200f);
+        }
+
+        // 銃口 → 狙っている点 の方向
+        Vector3 dir = (targetPoint - muzzlePoint.position).normalized;
+
         CmdShoot(dir);
     }
 
@@ -56,7 +71,6 @@ public class RangedBox_Player : MPlayerBase
         canAttack = false;
         RpcSetAttackCooldown(false);
 
-        // 弾丸生成（サーバー）
         GameObject proj = Instantiate(projectilePrefab, muzzlePoint.position, muzzlePoint.rotation);
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         Projectile projectile = proj.GetComponent<Projectile>();
@@ -64,12 +78,9 @@ public class RangedBox_Player : MPlayerBase
         if (projectile != null)
             projectile.Initialize(this, GetPower());
 
-        // ===== カメラ方向へ発射 =====
+        // カメラからの射線に一致
         if (rb != null)
-        {
-            dir.Normalize();
             rb.velocity = dir * projectileSpeed;
-        }
 
         NetworkServer.Spawn(proj);
 

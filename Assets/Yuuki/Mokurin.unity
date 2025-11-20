@@ -821,7 +821,7 @@ PrefabInstance:
     - target: {fileID: 5531071235842707636, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
       propertyPath: playerPrefabs.Array.data[2]
       value: 
-      objectReference: {fileID: 387029648432616556, guid: 86be28d542aa5c646a3d9f526ef992a8, type: 3}
+      objectReference: {fileID: 2805715037223341844, guid: 86be28d542aa5c646a3d9f526ef992a8, type: 3}
     - target: {fileID: 7132922808838319058, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
       propertyPath: sceneId
       value: 3261173567
@@ -870,7 +870,7 @@ Transform:
   m_GameObject: {fileID: 1381883419}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14.98, y: 0, z: 0}
+  m_LocalPosition: {x: 23.92, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -975,7 +975,7 @@ Transform:
   m_GameObject: {fileID: 1424141946}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -16.82, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1082,7 +1082,7 @@ Transform:
   m_GameObject: {fileID: 1439532166}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.736476, z: 18.669106}
+  m_LocalPosition: {x: 0, y: 2.736476, z: 30.42}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1394,7 +1394,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 1385275247721876855, guid: d818fd49aa1ae4141a99b784f01fc007, type: 3}
   - {fileID: 4909810242615913557, guid: 7c64dff23163b8d4cb05abd74eea0434, type: 3}
-  - {fileID: 2645696529898132949, guid: c27991ebb2dcf9a4fbd24f291e19e75b, type: 3}
+  - {fileID: 2805715037223341844, guid: 86be28d542aa5c646a3d9f526ef992a8, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
