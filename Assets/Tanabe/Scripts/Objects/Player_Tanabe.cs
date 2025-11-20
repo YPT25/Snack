@@ -38,6 +38,7 @@ public class Player_Tanabe : CharacterBase
     [Header("頭のオブジェクト"), SerializeField] private GameObject m_headObject;
     [Header("カメラ制御スクリプト"), SerializeField] private TPSCameraController_Tanabe m_cameraController;
     [Header("爆発オブジェクト"), SerializeField] private GameObject m_bombObject;
+    [Header("目オブジェクト"), SerializeField] private GameObject[] m_eyesObject = new GameObject[2];
 
     // アイテムマネージャ
     private PossessionManager_Tanabe m_possessionManager;
@@ -105,6 +106,9 @@ public class Player_Tanabe : CharacterBase
             m_bombObject.SetActive(false);
         }
         m_headObject = this.GetComponentInChildren<HeadObject_Tanabe>()?.gameObject;
+
+        m_eyesObject[0]?.SetActive(true);
+        m_eyesObject[1]?.SetActive(false);
     }
 
     public override void OnStartClient()
@@ -132,6 +136,8 @@ public class Player_Tanabe : CharacterBase
         m_headObject = this.GetComponentInChildren<HeadObject_Tanabe>()?.gameObject;
 
         m_playerManager = GameObject.Find("PlayerManager")?.GetComponent<PlayerManager_Tanabe>();
+        m_eyesObject[0]?.SetActive(true);
+        m_eyesObject[1]?.SetActive(false);
 
         if (!this.isLocalPlayer)
         {
@@ -190,6 +196,8 @@ public class Player_Tanabe : CharacterBase
         if(head == null) { return; }
         head.GetComponent<BoxCollider>().enabled = true;
         head.transform.parent = null;
+        m_eyesObject[0]?.SetActive(false);
+        m_eyesObject[1]?.SetActive(true);
     }
 
     [ClientRpc]
@@ -200,6 +208,8 @@ public class Player_Tanabe : CharacterBase
         if (head == null) { return; }
         head.GetComponent<BoxCollider>().enabled = true;
         head.transform.parent = null;
+        m_eyesObject[0]?.SetActive(false);
+        m_eyesObject[1]?.SetActive(true);
     }
 
     // 更新関数
