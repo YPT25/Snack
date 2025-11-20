@@ -186,4 +186,5 @@ public class AshuriNetworkManager : NetworkManager
         base.OnClientDisconnect();
         Debug.LogError("クライアントがサーバーから切断されました");
     }
+
 }
