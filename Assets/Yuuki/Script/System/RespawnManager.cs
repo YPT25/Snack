@@ -138,6 +138,13 @@ public class RespawnManager : NetworkBehaviour
             return;
         }
 
+        // 旧プレイヤーの削除
+        if (sender.identity != null)
+        {
+            GameObject oldPlayer = sender.identity.gameObject;
+            NetworkServer.Destroy(oldPlayer);
+        }
+
         GameObject prefab = playerPrefabs[index];
 
         // 新プレイヤー生成

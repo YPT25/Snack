@@ -70,8 +70,11 @@ public class MPlayerBase : EnemyBase
 
         HandleInput();
         HandleCamera();
-
-        if (GetHp() <= 0 && isServer)
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            SetHp(0);
+        }
+            if (GetHp() <= 0 && isServer)
         {
             Die();
         }
