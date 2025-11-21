@@ -226,4 +226,6 @@ public class MPlayerBase : EnemyBase
     }
 
     public Sprite GetRespawnIcon() => m_respawnIcon;
+    //視点の状態を渡す
+    public bool GetIsFPS() => isFPS;
 }
