@@ -52,6 +52,9 @@ public class MPlayerBase : EnemyBase
             cam = Camera.main;
             StartCoroutine(InitializeAfterDelay());
         }
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
     }
 
     private IEnumerator InitializeAfterDelay()
@@ -95,13 +98,10 @@ public class MPlayerBase : EnemyBase
         float v = Input.GetAxis("Vertical");
         m_inputDir = new Vector3(h, 0, v).normalized;
 
-        //if (!Input.GetKeyDown(KeyCode.LeftAlt))
-        //{
-        //    Cursor.lockState = CursorLockMode.Locked;
-        //}
- 
-
-       
+        if (!Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            Cursor.visible = false;
+        }
 
         // 左クリック攻撃
         if (Input.GetMouseButtonDown(0))
@@ -237,6 +237,14 @@ public class MPlayerBase : EnemyBase
         Debug.Log($"{name} Attack Input");
     }
 
+    private void CursorController()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
     public Sprite GetRespawnIcon() => m_respawnIcon;
     //視点の状態を渡す
     public bool GetIsFPS() => isFPS;
