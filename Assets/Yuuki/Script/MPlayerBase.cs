@@ -90,9 +90,18 @@ public class MPlayerBase : EnemyBase
 
     protected virtual void HandleInput()
     {
+
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
         m_inputDir = new Vector3(h, 0, v).normalized;
+
+        if (!Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+ 
+
+       
 
         // 左クリック攻撃
         if (Input.GetMouseButtonDown(0))
