@@ -2936,7 +2936,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: ae29b6ee57e20a24f99cb0222055cd7d, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: b9be97d69e716444088ce2b295dc328a, type: 2}
+      objectReference: {fileID: 2100000, guid: eea7919f60b1dce4bb8a51b9e6aca226, type: 2}
     - target: {fileID: 919132149155446097, guid: ae29b6ee57e20a24f99cb0222055cd7d, type: 3}
       propertyPath: m_Name
       value: kan_kansei 1
