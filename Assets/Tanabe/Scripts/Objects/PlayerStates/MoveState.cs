@@ -35,6 +35,7 @@ public class MoveState : IPlayerState_Tanabe
         if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) != 0.0f) x = Input.GetAxisRaw("Horizontal");
         if (Mathf.Abs(Input.GetAxisRaw("Vertical")) != 0.0f) z = Input.GetAxisRaw("Vertical");
 
+        // コントローラー入力のみ判定の調整を行う
         if (Mathf.Abs(x) <= 0.05f) x = 0f;
         else if (x > 0f) x = 1f;
         else x = -1f;

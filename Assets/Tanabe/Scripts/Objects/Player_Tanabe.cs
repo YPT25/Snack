@@ -101,12 +101,15 @@ public class Player_Tanabe : CharacterBase
 
         // Rigidbodyをアタッチする
         m_rb = GetComponent<Rigidbody>();
+        // 爆発エフェクトがあれば通す
         if (m_bombObject != null)
         {
             m_bombObject.SetActive(false);
         }
+        // 頭のオブジェクトが取得できれば登録しておく
         m_headObject = this.GetComponentInChildren<HeadObject_Tanabe>()?.gameObject;
 
+        // 目オブジェクトの見た目設定
         m_eyesObject[0]?.SetActive(true);
         m_eyesObject[1]?.SetActive(false);
     }
@@ -128,25 +131,32 @@ public class Player_Tanabe : CharacterBase
 
         // アイテムマネージャをアタッチする
         m_possessionManager = GetComponent<PossessionManager_Tanabe>();
-
+        // 爆発エフェクトがあれば通す
         if (m_bombObject != null)
         {
             m_bombObject.SetActive(false);
         }
+        // 頭のオブジェクトが取得できれば登録しておく
         m_headObject = this.GetComponentInChildren<HeadObject_Tanabe>()?.gameObject;
-
+        // プレイヤーマネージャの取得
         m_playerManager = GameObject.Find("PlayerManager")?.GetComponent<PlayerManager_Tanabe>();
+        // 目オブジェクトの見た目設定
         m_eyesObject[0]?.SetActive(true);
         m_eyesObject[1]?.SetActive(false);
 
+        // ローカルプレイヤーではない物のみ通す
         if (!this.isLocalPlayer)
         {
+            // プレイヤーの登録
             if(m_playerManager != null) { m_playerManager.SetPlayer(this); }
             return;
         }
+        // プレイヤーマネージャがあればと押す
         if (m_playerManager != null)
         {
+            // ローカルプレイヤーの登録
             m_playerManager.SetLocalPlayer(this);
+            // カメラコントローラがあればプレイヤーマネージャに登録しておく
             if(m_cameraController != null)
             {
                 m_playerManager.SetCameraController(m_cameraController);
@@ -161,12 +171,13 @@ public class Player_Tanabe : CharacterBase
 
         // 初期のステートの設定
         ChangeState(new IdleState(this));
-
+        // このプレイヤーの武器がハンマーのときのみ通す
         if (m_weaponID == WeaponID.HAMMER)
         {
+            // 攻撃判定主の登録
             this.gameObject.GetComponentInChildren<DebugAttackTest_Tanabe>()?.CmdSetParentCharacter(this);
         }
-
+        // ゲームオプションの取得
         m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
     }
 
@@ -188,7 +199,7 @@ public class Player_Tanabe : CharacterBase
         }
     }
 
-    [Command]
+    [Command] // 死亡演出(サーバーのみ)
     private void CmdDeadExplosion(GameObject _headObject, Vector3 _randomVector1, Vector3 _randomVector2)
     {
         RpcDeadExplosion(_headObject, _randomVector1, _randomVector2);
@@ -200,14 +211,20 @@ public class Player_Tanabe : CharacterBase
         m_eyesObject[1]?.SetActive(true);
     }
 
-    [ClientRpc]
+    [ClientRpc] // 死亡演出(クライアントのみ)
     private void RpcDeadExplosion(GameObject _headObject, Vector3 _randomVector1, Vector3 _randomVector2)
     {
+        // 爆発エフェクトをONにする
         m_bombObject.SetActive(true);
+        // 頭オブジェクトを取得する
         HeadObject_Tanabe head = this.GetComponentInChildren<HeadObject_Tanabe>();
+        // 頭オブジェクトが取得できていなければ処理しない
         if (head == null) { return; }
+        // 頭の衝突判定を取得する
         head.GetComponent<BoxCollider>().enabled = true;
+        // プレイヤーと頭オブジェクトの親子関係を切る(胴体と頭を分離させる)
         head.transform.parent = null;
+        // 目オブジェクトの見た目を変更
         m_eyesObject[0]?.SetActive(false);
         m_eyesObject[1]?.SetActive(true);
     }
@@ -216,7 +233,9 @@ public class Player_Tanabe : CharacterBase
 
     public override void Update()
     {
+        // ローカルプレイヤー以外は処理しない
         if (!this.isLocalPlayer) { return; }
+        // HPが0かつ、頭オブジェクトとの親子関係がある場合通す
         if (GetHp() <= 0.0f && m_headObject != null)
         {
             Debug.Log($"[Update] bomb:{m_bombObject != null}, head:{m_headObject != null}, rb:{m_rb != null}");
@@ -227,30 +246,35 @@ public class Player_Tanabe : CharacterBase
                 return;
             }
 
-            //m_cameraController.SetTarget(m_headObject.transform);
+            // 爆発の方向をランダムに設定
             Vector3 randomVector1 = new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f);
             Vector3 randomVector2 = new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f);
-            //this.CmdDeadExplosion(randomVector1, randomVector2);
-            //m_headObject.transform.parent = null;
-            //m_headObject = null;
 
+            // 爆発エフェクトをONにする
             m_bombObject.SetActive(true);
+            // カメラの注視点を頭オブジェクトに変更する
             m_cameraController.SetTarget(m_headObject.transform);
+            // 頭オブジェクトの衝突判定を有効にする
             m_headObject.GetComponent<BoxCollider>().enabled = true;
+            // 頭オブジェクトのRigidbodyの取得
             Rigidbody rb = m_headObject.GetComponent<Rigidbody>();
+            // 頭オブジェクトを自立させる
             rb.isKinematic = false;
             rb.useGravity = true;
-            //rb.AddExplosionForce(300f, m_headObject.transform.position - new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f), 5f, 1f);
             m_rb.freezeRotation = false;
+            // 頭を吹き飛ばす
             m_rb.AddExplosionForce(5f, this.transform.position - new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 1f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f), 5f, 1f);
+            // 死亡演出
             this.CmdDeadExplosion(this.gameObject, randomVector1, randomVector2);
-            //m_headObject.transform.parent = null;
             m_headObject = null;
+            // エイム状態を強制的にOFFにする
             m_isAiming = false;
         }
 
+        // ゲームオプションがあるかつ、ポーズ状態なら通す
         if(m_gameOption != null && m_gameOption.IsPause())
         {
+            // ハンマーのプレイヤーかつ、攻撃時のみ通す
             if (m_hammer != null && m_hammer.IsAttack())
             {
                 // 現在のステートの更新処理
@@ -265,9 +289,9 @@ public class Player_Tanabe : CharacterBase
             // 着地判定処理
             isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
         }
-
+        // HPが0またはポーズ状態のとき、これ以上処理しない
         if (GetHp() <= 0.0f || m_gameOption != null && m_gameOption.IsPause()) { return; }
-
+        // カメラの方向の共有
         m_notLocalCameraForward = m_cameraTransform.forward;
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -298,8 +322,10 @@ public class Player_Tanabe : CharacterBase
             m_jumpRequest = true;
         }
 
+        // セットパーツを装備しているときのみ通す
         if(m_setPart != null)
         {
+            // 装備解除入力処理
             if (Input.GetKeyUp(KeyCode.V) || Input.GetKeyUp("joystick button 4"))
             {
                 m_removeEquippedTimer = 1.0f;
@@ -307,21 +333,26 @@ public class Player_Tanabe : CharacterBase
             else if (Input.GetKey(KeyCode.V) || Input.GetKey("joystick button 4"))
             {
                 m_removeEquippedTimer -= Time.deltaTime;
+                // セットパーツを外す
                 if (m_removeEquippedTimer <= 0.0f)
                 {
                     m_removeEquippedTimer = 1.0f;
+                    // 装備しているセットパーツの取得
                     ItemStateMachine item = m_setPart.GetComponent<ItemStateMachine>();
+                    // セットパーツ情報をnullにする
                     this.SetPart(null);
+                    // 装備していたセットパーツをドロップ状態に遷移する
                     CmdChangeState_Item(item, ItemStateMachine.ItemStateType.DROP);
-
+                    // セットパーツを上方向に飛ばす処理
                     Vector3 moveVector = new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 3.0f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f);
-                    //item.GetRigidbody().AddForce(moveVector.normalized * 5.0f, ForceMode.Impulse);
                     this.CmdAddForce_Item(item, moveVector.normalized * 5.0f, ForceMode.Impulse);
                 }
             }
         }
+        // プレイヤーがデフォルト状態かつ、装備可能な状態のセットパーツアイテムがあるとき通す
         else if (GetIsDefaultState() && m_equipStandbyItem != null && m_equipStandbyItem.GetPlayerData() == this)
         {
+            // 攻撃入力でセットパーツの取得
             if (Input.GetButtonDown("Attack")                                           && this.GetPart() == null ||
                 this.GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f    && this.GetPart() == null)
             {
@@ -331,25 +362,31 @@ public class Player_Tanabe : CharacterBase
                 this.CmdSetEquipStandbyItem(m_equipStandbyItem);
             }
         }
+        // 移動フラグがfalseのときはこれ以上処理しない
         if (!base.GetIsMove())
         {
+            // 現在の速度を0にする
             m_rb.velocity = Vector3.zero;
             return;
         }
-
+        // 現在の重力を保存する
         m_prevGravity = m_rb.velocity.y;
 
         //スコアの変動の表示
         this.AddPoint();
     }
 
+    // 更新関数
     public override void FixedUpdate()
     {
+        // ローカルプレイヤー以外は処理しない
         if (!this.isLocalPlayer) { return; }
+        // HPが0なら処理しない
         if (GetHp() <= 0.0f) { return; }
-
+        // ポーズ状態なら通す
         if (m_gameOption != null && m_gameOption.IsPause())
         {
+            // 爆風が当たっていない時通す
             if(!m_isHitBomb)
             {
                 m_rb.velocity = new Vector3(0f, m_rb.velocity.y, 0f);
@@ -450,6 +487,7 @@ public class Player_Tanabe : CharacterBase
         _item.RpcChangeState(_item, _newStateType);
     }
 
+    // アイテムの移動処理(サーバーのみ)
     [Command]
     private void CmdAddForce_Item(ItemStateMachine _item, Vector3 _moveForce, ForceMode _forceMode)
     {
@@ -457,12 +495,14 @@ public class Player_Tanabe : CharacterBase
         this.RpcAddForce_Item(_item, _moveForce, _forceMode);
     }
 
+    // アイテムの移動処理(クライアントのみ)
     [ClientRpc]
     private void RpcAddForce_Item(ItemStateMachine _item, Vector3 _moveForce, ForceMode _forceMode)
     {
         _item.GetRigidbody().AddForce(_moveForce, _forceMode);
     }
 
+    // オブジェクトを削除する
     [Command]
     public void CmdDestroysObject(GameObject _gameObject)
     {
@@ -586,6 +626,7 @@ public class Player_Tanabe : CharacterBase
         return m_isDefaultState;
     }
 
+    // RTボタンの入力判定の取得
     public float GetPrevShotButton()
     {
         return m_prevShotButton;
@@ -664,6 +705,7 @@ public class Player_Tanabe : CharacterBase
         m_equipStandbyItem = _item;
     }
 
+    // 装備待機アイテムの設定(サーバーのみ)
     [Command]
     public void CmdSetEquipStandbyItem(ItemStateMachine _item)
     {
@@ -671,6 +713,7 @@ public class Player_Tanabe : CharacterBase
         RpcSetEquipStandbyItem(_item);
     }
 
+    // 装備待機アイテムの設定(クライアントのみ)
     [ClientRpc]
     public void RpcSetEquipStandbyItem(ItemStateMachine _item)
     {
@@ -701,6 +744,7 @@ public class Player_Tanabe : CharacterBase
         m_isAttackCharge = _flag;
     }
 
+    // RTボタンの入力処理
     public void SetPrevShotButton(float _shot)
     {
         m_prevShotButton = _shot;
