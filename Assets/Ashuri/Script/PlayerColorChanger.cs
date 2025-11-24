@@ -9,24 +9,51 @@ public class PlayerColorChanger : NetworkBehaviour
     private List<MeshRenderer> _parts = new List<MeshRenderer>();
 
     [Header("利用可能なマテリアルリスト")]
+    [Tooltip("配列の順番とインデックスが一致します")]
     [SerializeField] private Material[] availableMaterials;
 
+    // ★ この値がサーバー → 全クライアントへ同期される
+    [SyncVar(hook = nameof(OnMaterialIndexChanged))]
+    private int currentMaterialIndex = 0;
+
+    // オブジェクト生成時に MeshRenderer を回収
     private void Awake()
     {
-        // 子にある MeshRenderer をすべて取得する
+        // 子オブジェクトにある MeshRenderer をすべてリストへ追加
         _parts.AddRange(GetComponentsInChildren<MeshRenderer>());
     }
 
-    // インデックスで指定されたマテリアルを全パーツに適用する
+    // ★ クライアント → サーバー へ送るコマンド
     [Command]
     public void CmdChangeMaterial(int materialIndex)
     {
+        // 範囲チェック
         if (materialIndex < 0 || materialIndex >= availableMaterials.Length)
             return;
 
+        // サーバーでマテリアルのインデックスを変更
+        // → SyncVar が自動で全クライアントへ通知してくれる
+        currentMaterialIndex = materialIndex;
+    }
+
+    // ★ SyncVar の値が変わったときに全クライアントで呼ばれる処理
+    private void OnMaterialIndexChanged(int oldIndex, int newIndex)
+    {
+        // 新しいインデックスのマテリアルを適用
+        ApplyMaterial(newIndex);
+    }
+
+    // 全 MeshRenderer にマテリアルを適用
+    private void ApplyMaterial(int index)
+    {
+        // 範囲外なら何もしない
+        if (index < 0 || index >= availableMaterials.Length)
+            return;
+
+        // 全パーツへ適用
         foreach (var part in _parts)
         {
-            part.material = availableMaterials[materialIndex];
+            part.material = availableMaterials[index];
         }
     }
 }
