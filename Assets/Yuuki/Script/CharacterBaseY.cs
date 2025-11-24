@@ -57,7 +57,7 @@ public class CharacterBaseY : MonoBehaviour
     // XVŠÖ”
     public virtual void Update()
     {
-
+        
     }
 
     /// <summary>
