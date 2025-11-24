@@ -5,13 +5,15 @@ using Mirror;
 
 public class PossessionManager_Tanabe : NetworkBehaviour
 {
+    // ローカルプレイヤー
     private Player_Tanabe m_player;
-
+    // ローカルプレイヤーのバフマネージャ
     private BuffManager_Tanabe m_buffManager;
-
+    // 取得しているアイテム
     private ItemStateMachine[] m_items = new ItemStateMachine[2];
+    // アイテム取得数が最大か
     private bool m_isMaxItem = false;
-
+    // 左手
     private LeftHand_Tanabe m_leftHand;
 
     public bool isItemCatch = false;
@@ -27,31 +29,46 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        // ローカルプレイヤー以外は処理しない
         if(!this.isLocalPlayer) { return; }
+        // HPが0または、ポーズ状態ならこれ以上処理しない
         if (m_player.GetHp() <= 0.0f || m_player.IsPause()) { return; }
 
+        //↓※アイテムの情報を持っているのにそのアイテムの状態が所持以外になっている場合の不具合の防止↓
+
+        // 1番目のアイテムの情報を持っているかつ、そのアイテムが所持状態になっていない場合通す
         if (m_items[0] != null && m_items[0].GetItemStateType() != ItemStateMachine.ItemStateType.HANDS)
         {
+            // アイテムのゲームオブジェクトを有効にする
             CmdSetItemActive(m_items[0].gameObject, true);
+            // 1番目のアイテムの情報を破棄する
             m_items[0] = null;
         }
+        // 2番目のアイテムの情報を持っているかつ、そのアイテムが所持状態になっていない場合通す
         if (m_items[1] != null && m_items[1].GetItemStateType() != ItemStateMachine.ItemStateType.HANDS)
         {
+            // アイテムのゲームオブジェクトを有効にする
             CmdSetItemActive(m_items[1].gameObject, true);
+            // 2番目のアイテムの情報を破棄する
             m_items[1] = null;
         }
 
+        // プレイヤーがデフォルト状態ではないときのみ通す
         if (!m_player.GetIsDefaultState())
         {
+            // 持っているアイテムを非表示にする
             if (m_items[0] != null) CmdSetItemActive(m_items[0].gameObject, false);
             if (m_items[1] != null) CmdSetItemActive(m_items[1].gameObject, false);
+            // 左手の位置を戻す
             m_leftHand.SetIsHand(false);
             return;
         }
 
+        // 1番目のアイテムの表示、使用する際の入力処理
         if (Input.GetKeyDown(KeyCode.Q) && m_items[0] != null ||
             Input.GetKeyDown("joystick button 2") && m_items[0] != null)
         {
+            // そのアイテムがすでに表示されていたらそのまま使用する
             if (m_items[0].gameObject.active)
             {
                 CmdUsesItem(0);
@@ -63,9 +80,11 @@ public class PossessionManager_Tanabe : NetworkBehaviour
             if (m_items[1] != null) CmdSetItemActive(m_items[1].gameObject, false);
             m_leftHand.SetIsHand(true);
         }
+        // 2番目のアイテムの表示、使用する際の入力処理
         else if (Input.GetKeyDown(KeyCode.E) && m_items[1] != null ||
                 Input.GetKeyDown("joystick button 3") && m_items[1] != null)
         {
+            // そのアイテムがすでに表示されていたらそのまま使用する
             if (m_items[1].gameObject.active)
             {
                 CmdUsesItem(1);
@@ -83,12 +102,14 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         //m_items[0].GetPlayerData().GetPossesionManager().AddItem(m_items[0]);
     }
 
+    // アイテムの使用(サーバーのみ)
     [Command]
     private void CmdUsesItem(int _index)
     {
         RpcUsesItem(_index);
     }
 
+    // アイテムの使用(クライアントのみ)
     [ClientRpc]
     private void RpcUsesItem(int _index)
     {
@@ -106,6 +127,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         if(!this.isLocalPlayer) { return; }
         m_leftHand.SetIsHand(false);
 
+        // アイテムの種類を参照し、それぞれの処理を行う
         switch (item.GetItemType())
         {
             case ItemStateMachine.ItemType.BUFF:
