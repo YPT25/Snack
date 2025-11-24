@@ -95,10 +95,10 @@ public class MPlayerBase : EnemyBase
         float v = Input.GetAxis("Vertical");
         m_inputDir = new Vector3(h, 0, v).normalized;
 
-        if (!Input.GetKeyDown(KeyCode.LeftAlt))
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+        //if (!Input.GetKeyDown(KeyCode.LeftAlt))
+        //{
+        //    Cursor.lockState = CursorLockMode.Locked;
+        //}
  
 
        
