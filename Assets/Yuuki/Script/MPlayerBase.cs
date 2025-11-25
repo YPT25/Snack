@@ -52,8 +52,7 @@ public class MPlayerBase : EnemyBase
             cam = Camera.main;
             StartCoroutine(InitializeAfterDelay());
         }
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+       
 
     }
 
@@ -73,6 +72,18 @@ public class MPlayerBase : EnemyBase
 
         HandleInput();
         HandleCamera();
+        // マウスの埋め込み
+        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
         if (Input.GetKeyDown(KeyCode.L))
         {
             SetHp(0);
@@ -219,6 +230,9 @@ public class MPlayerBase : EnemyBase
     [TargetRpc]
     private void TargetShowRespawnUI(NetworkConnection target)
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         if (RespawnManager.Instance != null)
             RespawnManager.Instance.ShowRespawnUI();
         else
