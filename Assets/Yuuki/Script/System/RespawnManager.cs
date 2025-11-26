@@ -34,7 +34,7 @@ public class RespawnManager : NetworkBehaviour
 
     private bool isWaitingForSelection = false;
 
-    // 「最初の1回だけ全キャラOK」判定
+    // 最初の1回だけ全キャラ判定
     private bool isFirstRespawn = true;
 
     private void Awake()
@@ -97,7 +97,7 @@ public class RespawnManager : NetworkBehaviour
         List<int> allowedIndices = new List<int>();
 
         // -----------------------------
-        // ① 最初の1回は全キャラ表示
+        // 最初の1回は全キャラ表示
         // -----------------------------
         if (isFirstRespawn)
         {
@@ -109,7 +109,7 @@ public class RespawnManager : NetworkBehaviour
         else
         {
             // -----------------------------
-            // ② 2回目以降 → NPCのEnemyTypeでフィルタ
+            // 2回目以降 → NPCのEnemyTypeでフィルタ
             // -----------------------------
             HashSet<EnemyBase.EnemyType> aliveTypes = GetAliveEnemyTypes();
             Debug.Log("[RespawnManager] 生存NPCタイプ: " + string.Join(", ", aliveTypes));
@@ -221,11 +221,11 @@ public class RespawnManager : NetworkBehaviour
         }
 
         GameObject prefab = playerPrefabs[index];
-
+        // 新しいプレイヤーを生成する
         GameObject newPlayer = Instantiate(prefab, respawnPoint.position, Quaternion.identity);
         Debug.Log($"[RespawnManager] 新しいプレイヤー生成: {prefab.name}");
 
-        // 重要：古いプレイヤーを自動削除して置き換え
+        // 新しいプレイヤーをクライアントに日もづける
         NetworkServer.ReplacePlayerForConnection(sender, newPlayer);
     }
 }
