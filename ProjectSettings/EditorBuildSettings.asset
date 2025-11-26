@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/MainScene/TitleScene.unity
     guid: 4c2ee6a3a937cf540b90d20ba734c2f9
+  - enabled: 0
+    path: Assets/Yuuki/Mokurin.unity
+    guid: c58eae9cad815114682451fa1af56c36
   m_configObjects: {}
