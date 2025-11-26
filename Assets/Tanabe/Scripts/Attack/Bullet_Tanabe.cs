@@ -62,7 +62,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         // キャラクターデータの取得
         CharacterBase characterBase = other.GetComponent<CharacterBase>();
         // キャラクターでなければreturnする
-        if (other.isTrigger || characterBase == null || characterBase.GetCharacterType() != CharacterType.ENEMY_TYPE) { return; }
+        if (other.isTrigger || characterBase == null || characterBase.GetCharacterType() == CharacterType.HERO_TYPE) { return; }
         // 敵から攻撃力を取得してダメージとして計算する
         characterBase.RpcDamage(m_power);
 
