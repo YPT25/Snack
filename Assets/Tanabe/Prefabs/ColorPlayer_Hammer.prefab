@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 7655196402437404025}
   - component: {fileID: 7587151342251794598}
   - component: {fileID: 827598582647508589}
+  - component: {fileID: 2977152274148280918}
   m_Layer: 7
   m_Name: ColorPlayer_Hammer
   m_TagString: Player
@@ -393,6 +394,32 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &2977152274148280918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98467a91a1c29a4428d4b62d118e16c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  availableMaterials:
+  - {fileID: 2100000, guid: fc4239f04b0ea0341a863db7425aaa2b, type: 2}
+  - {fileID: 2100000, guid: 44fb24a23fb4a2c4e89a370902c4d287, type: 2}
+  - {fileID: 2100000, guid: e1ea27fb6b995814d83272daa884c1e3, type: 2}
+  - {fileID: 2100000, guid: 3cde340e70c58f346afda956efdf2265, type: 2}
+  - {fileID: 2100000, guid: 94eeeabea7ea20141a0c7dc518624c2e, type: 2}
+  - {fileID: 2100000, guid: ab7aa844c1df37d4a954b4a264e40e68, type: 2}
+  - {fileID: 2100000, guid: 6e713806e3111064c923327bfc079da7, type: 2}
+  - {fileID: 2100000, guid: d219522c6c716c5408d505718cc7bd95, type: 2}
+  - {fileID: 2100000, guid: 4d8aeef0362879949abe747e98044834, type: 2}
+  - {fileID: 2100000, guid: 1eb7070007e5c4d428baa77badd7ecfd, type: 2}
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0
@@ -5548,7 +5575,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4410657324452077202
 Transform:
   m_ObjectHideFlags: 0

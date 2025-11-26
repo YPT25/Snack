@@ -21,8 +21,18 @@ public class PlayerColorChanger : NetworkBehaviour
     // ----------------------------------------------------
     private void Awake()
     {
-        // 子オブジェクトにある MeshRenderer をすべてリストへ追加
-        _parts.AddRange(GetComponentsInChildren<MeshRenderer>());
+        // すべての MeshRenderer を取得
+        var renderers = GetComponentsInChildren<MeshRenderer>();
+
+        // 1つ上にコメント：プレイヤーのパーツだけを追加する（武器は除外）
+        foreach (var r in renderers)
+        {
+            // 武器を除外する（例：WEAPON に "Weapon" タグを付けておく）
+            if (r.gameObject.layer == LayerMask.NameToLayer("Hammer"))
+                continue;
+
+            _parts.Add(r);
+        }
     }
 
     // ----------------------------------------------------
@@ -30,16 +40,19 @@ public class PlayerColorChanger : NetworkBehaviour
     // ----------------------------------------------------
     private void Start()
     {
-        // シーン切り替え後も保存された色を取得して適用
+        // サーバーのみ保存された色を復元
         var stateManager = FindObjectOfType<StatePlayer_Ashuri>();
         if (stateManager != null && isServer)
         {
-            // サーバー側で保存されたマテリアルを取得して適用
-            currentMaterialIndex = stateManager.GetSavedMaterial(connectionToClient);
-        }
+            int saved = stateManager.GetSavedMaterial(connectionToClient);
 
-        // 現在のマテリアルを適用
-        ApplyMaterial(currentMaterialIndex);
+            // -1 なら保存なし → 元の色のまま
+            if (saved >= 0)
+            {
+                currentMaterialIndex = saved;
+                ApplyMaterial(currentMaterialIndex);
+            }
+        }
     }
 
     // ----------------------------------------------------
@@ -78,14 +91,19 @@ public class PlayerColorChanger : NetworkBehaviour
     // ----------------------------------------------------
     private void ApplyMaterial(int index)
     {
-        // 範囲外なら何もしない
+        // ↑ インデックスが間違っていたら処理しない
         if (index < 0 || index >= availableMaterials.Length)
             return;
 
-        // 全パーツへ適用
+        // ↑ すべてのパーツに対してマテリアルを設定する
         foreach (var part in _parts)
         {
-            part.material = availableMaterials[index];
+            // ★ material を使うと灰色化するので使用禁止
+            // part.material = availableMaterials[index];
+
+            // ★ 必ず sharedMaterial を使う
+            part.sharedMaterial = availableMaterials[index];
         }
     }
+
 }
