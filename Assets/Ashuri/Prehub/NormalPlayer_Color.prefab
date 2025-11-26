@@ -295,16 +295,16 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   availableMaterials:
-  - {fileID: 2100000, guid: fc4239f04b0ea0341a863db7425aaa2b, type: 2}
-  - {fileID: 2100000, guid: 44fb24a23fb4a2c4e89a370902c4d287, type: 2}
+  - {fileID: 2100000, guid: 6fa783448e80f04459fd8cd43ed42acc, type: 2}
+  - {fileID: 2100000, guid: defb372ee0145254e8a35a4bc8c70a22, type: 2}
   - {fileID: 2100000, guid: 415dc5f9c0a93fb4bb6d933d6ec236cc, type: 2}
-  - {fileID: 2100000, guid: 3cde340e70c58f346afda956efdf2265, type: 2}
-  - {fileID: 2100000, guid: 94eeeabea7ea20141a0c7dc518624c2e, type: 2}
-  - {fileID: 2100000, guid: ab7aa844c1df37d4a954b4a264e40e68, type: 2}
-  - {fileID: 2100000, guid: 6e713806e3111064c923327bfc079da7, type: 2}
-  - {fileID: 2100000, guid: d219522c6c716c5408d505718cc7bd95, type: 2}
-  - {fileID: 2100000, guid: 4d8aeef0362879949abe747e98044834, type: 2}
-  - {fileID: 2100000, guid: 1eb7070007e5c4d428baa77badd7ecfd, type: 2}
+  - {fileID: 2100000, guid: 99770c75b4ac32342825f81e1eff1000, type: 2}
+  - {fileID: 2100000, guid: 6752bd88f7477de4a8b6c4b126dd5803, type: 2}
+  - {fileID: 2100000, guid: 64c0362949e7a6d448997ede925322d2, type: 2}
+  - {fileID: 2100000, guid: def3a41ea7cddc84bbf2698ba25aff6d, type: 2}
+  - {fileID: 2100000, guid: 80a43077793c03b4eaa54d194ab682de, type: 2}
+  - {fileID: 2100000, guid: 19dba929e4ed190419462a869078c7e7, type: 2}
+  - {fileID: 2100000, guid: fd5fa4a169cc4c24ab56cab795f4127f, type: 2}
 --- !u!114 &6301805521092342517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20459,7 +20459,7 @@ GameObject:
   - component: {fileID: 6305922462395772750}
   m_Layer: 0
   m_Name: "\u7403.008"
-  m_TagString: Untagged
+  m_TagString: Eye
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20507,7 +20507,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -9130586711530211351, guid: 79c05864780dfb044917ea1516e3fb3b, type: 3}
+  - {fileID: 2100000, guid: a0952263796552240aa22c1a5e9c511f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -20749,7 +20749,7 @@ GameObject:
   - component: {fileID: 7712434122010581195}
   m_Layer: 0
   m_Name: "\u7403.002"
-  m_TagString: Untagged
+  m_TagString: Eye
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20797,7 +20797,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -9130586711530211351, guid: 79c05864780dfb044917ea1516e3fb3b, type: 3}
+  - {fileID: 2100000, guid: a0952263796552240aa22c1a5e9c511f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
