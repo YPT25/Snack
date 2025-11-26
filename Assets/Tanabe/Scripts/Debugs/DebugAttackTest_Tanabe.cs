@@ -16,7 +16,7 @@ public class DebugAttackTest_Tanabe : NetworkBehaviour
         // キャラクターデータの取得
         CharacterBase characterBase = other.GetComponent<CharacterBase>();
         // キャラクターでなければreturnする
-        if (characterBase == null || characterBase.GetCharacterType() != CharacterBase.CharacterType.ENEMY_TYPE) { return; }
+        if (characterBase == null || characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE) { return; }
         // 敵から攻撃力を取得してダメージとして計算する
         characterBase.RpcDamage(m_parentCharacter.GetPower());
     }

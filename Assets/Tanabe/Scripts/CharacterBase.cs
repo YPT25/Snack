@@ -22,6 +22,7 @@ public class CharacterBase : NetworkBehaviour
         NONE_TYPE,
         HERO_TYPE,
         ENEMY_TYPE,
+        ITEMBOX_TYPE
     }
 
     // ＜パラメータ＞ーーーーーーーーーーーーーーーーーーーーー
@@ -29,7 +30,7 @@ public class CharacterBase : NetworkBehaviour
     [SyncVar, Header("初期パラメータ"), SerializeField]
     private CharacterParameter m_initialParameter;
     // 現在のパラメータ
-    private float m_hp;
+    [SyncVar] private float m_hp;
     [SyncVar] private float m_power;
     [SyncVar] private float m_moveSpeed;
     [SyncVar] private float m_stamina;
