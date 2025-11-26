@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 6045248286606520945}
   - component: {fileID: 8359241661278619323}
   - component: {fileID: 5333748573506566072}
+  - component: {fileID: 3672417497288404238}
+  - component: {fileID: 8873666291658446240}
   m_Layer: 0
   m_Name: pistol
   m_TagString: Untagged
@@ -106,3 +108,36 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.02, y: 0.055417266, z: 0.026287995}
   m_Center: {x: 0, y: 0.017708631, z: 0.0031439979}
+--- !u!114 &3672417497288404238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7998677094362457966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27fd16b7b84ec8743982ec73ee6c058f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  targetPlayerPrefab: {fileID: 0}
+--- !u!114 &8873666291658446240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7998677094362457966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3021171694
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

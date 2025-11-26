@@ -1278,6 +1278,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u6728\u306E\u770B\u677F"
       objectReference: {fileID: 0}
+    - target: {fileID: 1688486832600504983, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2028138775747723309, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.1476865
@@ -1317,6 +1321,18 @@ PrefabInstance:
     - target: {fileID: 2028138775747723309, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3308055915441367781, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5745186110155098385, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5790561584688792909, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1589,6 +1605,10 @@ PrefabInstance:
     - target: {fileID: 5270477147656981431, guid: c87e73d07409b7f4ba9917f540c34df8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5419885135155002661, guid: c87e73d07409b7f4ba9917f540c34df8, type: 3}
+      propertyPath: sceneId
+      value: 2018912754
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2335,7 +2355,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 6e1dc5e0862e1fb48b25415c05e67967, type: 2}
     - target: {fileID: 8396368960366502981, guid: 9ee94e58c718bd44e8188ac129baf444, type: 3}
       propertyPath: m_Name
-      value: CanSpray (2)
+      value: CanSpray_BLUE
       objectReference: {fileID: 0}
     - target: {fileID: 9209357360990174975, guid: 9ee94e58c718bd44e8188ac129baf444, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3286,7 +3306,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8396368960366502981, guid: 9ee94e58c718bd44e8188ac129baf444, type: 3}
       propertyPath: m_Name
-      value: CanSpray
+      value: CanSpray_PURPLE
       objectReference: {fileID: 0}
     - target: {fileID: 9209357360990174975, guid: 9ee94e58c718bd44e8188ac129baf444, type: 3}
       propertyPath: m_LocalScale.x
@@ -3884,6 +3904,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3672417497288404238, guid: b2318d190a69b02428b31e04b65f18b2, type: 3}
+      propertyPath: targetPlayerPrefab
+      value: 
+      objectReference: {fileID: 8759962040556672278, guid: 3137c5444483dfd4dba656b036660eae, type: 3}
     - target: {fileID: 7226820398031535572, guid: b2318d190a69b02428b31e04b65f18b2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.36
@@ -3927,6 +3951,10 @@ PrefabInstance:
     - target: {fileID: 7998677094362457966, guid: b2318d190a69b02428b31e04b65f18b2, type: 3}
       propertyPath: m_Name
       value: pistol
+      objectReference: {fileID: 0}
+    - target: {fileID: 8873666291658446240, guid: b2318d190a69b02428b31e04b65f18b2, type: 3}
+      propertyPath: sceneId
+      value: 3444191140
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

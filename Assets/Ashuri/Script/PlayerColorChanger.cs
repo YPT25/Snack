@@ -31,6 +31,9 @@ public class PlayerColorChanger : NetworkBehaviour
             if (r.gameObject.layer == LayerMask.NameToLayer("Hammer"))
                 continue;
 
+            if (r.CompareTag("Eye"))
+                continue;
+
             _parts.Add(r);
         }
     }
