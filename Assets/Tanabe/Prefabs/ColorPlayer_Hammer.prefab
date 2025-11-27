@@ -26330,8 +26330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1e148b6719e71540bab19c0843f6049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gunSprite: {fileID: 1293536728776588966}
-  _hammerSprite: {fileID: 4194257217189910082}
+  _gunSprite: {fileID: 0}
+  _hammerSprite: {fileID: 0}
 --- !u!1 &6424055527487967109
 GameObject:
   m_ObjectHideFlags: 0

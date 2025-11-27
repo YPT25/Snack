@@ -45751,6 +45751,7 @@ GameObject:
   - component: {fileID: 9042151061074423249}
   - component: {fileID: 8447808551873358020}
   - component: {fileID: 317732843886008495}
+  - component: {fileID: 6312388131507322048}
   m_Layer: 7
   m_Name: ColorPlayer_Gun
   m_TagString: Player
@@ -45969,3 +45970,29 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &6312388131507322048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8759962040556672278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98467a91a1c29a4428d4b62d118e16c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  availableMaterials:
+  - {fileID: 2100000, guid: 6fa783448e80f04459fd8cd43ed42acc, type: 2}
+  - {fileID: 2100000, guid: defb372ee0145254e8a35a4bc8c70a22, type: 2}
+  - {fileID: 2100000, guid: 415dc5f9c0a93fb4bb6d933d6ec236cc, type: 2}
+  - {fileID: 2100000, guid: 99770c75b4ac32342825f81e1eff1000, type: 2}
+  - {fileID: 2100000, guid: 6752bd88f7477de4a8b6c4b126dd5803, type: 2}
+  - {fileID: 2100000, guid: 64c0362949e7a6d448997ede925322d2, type: 2}
+  - {fileID: 2100000, guid: def3a41ea7cddc84bbf2698ba25aff6d, type: 2}
+  - {fileID: 2100000, guid: 80a43077793c03b4eaa54d194ab682de, type: 2}
+  - {fileID: 2100000, guid: 19dba929e4ed190419462a869078c7e7, type: 2}
+  - {fileID: 2100000, guid: fd5fa4a169cc4c24ab56cab795f4127f, type: 2}

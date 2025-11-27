@@ -1,13 +1,13 @@
-using Mirror;             // Mirrorネットワーク機能を使用
-using Mirror.Examples.MultipleMatch; // Mirrorのサンプル機能（必要に応じて）
-using System.Collections; // コルーチンを使用するため
-using TMPro;              // TextMeshProを使用するため
-using UnityEngine;        // Unity基本機能
+using Mirror;             // Mirrorのネットワーク機能を使用
+using System.Collections; // コルーチンを使用
+using UnityEngine;        // Unityの基本機能
 
 /// <summary>
 /// Mirror用のゲーム進行管理クラス
-/// ・時間経過によるゲーム終了処理
-/// ・スコア表示通知を行う（UI処理はResultUIScoreに任せる）
+/// ・ゲーム開始前のカウントダウン
+/// ・ゲーム中の時間カウントダウン
+/// ・ゲーム終了時のスコア通知
+/// ・カウントダウン中はゲームを停止
 /// </summary>
 public class GameManager : NetworkBehaviour
 {
@@ -15,39 +15,38 @@ public class GameManager : NetworkBehaviour
     // ゲーム時間関連の設定
     // ===============================
 
-    [Header("ゲーム全般の時間設定")]
-    [Tooltip("現在の残り時間。サーバーからクライアントへ同期されます。")]
-    [SyncVar(hook = nameof(OnTimeChange))]
-    public float remainingGameTime; // 残り時間（サーバー→クライアント同期）
+    [Header("ゲーム時間設定")]
+    [Tooltip("ゲーム開始時の合計時間（秒）")]
+    [SerializeField] public float initialGameTime = 180f;
 
-    [Header("ゲーム初期設定")]
-    [Tooltip("ゲーム開始時の初期時間（秒単位）")]
-    [SerializeField] public float initialGameTime = 180f; // ゲームの合計時間（秒）
+    [Tooltip("ゲーム開始前のカウントダウン時間（秒）")]
+    [SerializeField] public float preGameCountdownTime = 3f;
 
-    [Header("ゲーム開始前カウントダウン")]
-    [Tooltip("ゲーム開始前のカウントダウン秒数")]
-    [SerializeField] public float preGameCountdownTime = 3f; // 開始前カウントダウン
+    [Tooltip("サーバーが管理する残り時間（SyncVarでクライアントに同期）")]
+    [SyncVar] private float remainingGameTime;
 
     // ===============================
-    // ゲーム進行状態の管理
+    // ゲーム進行フラグ
     // ===============================
-
     [Header("ゲーム状態")]
     [Tooltip("ゲームが開始されたかどうか")]
-    [SyncVar(hook = nameof(OnGameStartChanged))]
-    public bool gameStarted = false; // ゲーム開始フラグ
+    [SyncVar] public bool gameStarted = false; // カウントダウン中は false
 
     // ===============================
-    // シングルトンインスタンスの設定
+    // シングルトン
     // ===============================
     public static GameManager Instance { get; private set; }
+
+    // ===============================
+    // 外部から残り時間を取得するプロパティ
+    // ===============================
+    public float CurrentTime => remainingGameTime;
 
     // ===============================
     // サーバー開始時の処理
     // ===============================
     public override void OnStartServer()
     {
-        // 親クラスの開始処理を実行
         base.OnStartServer();
 
         // シングルトン登録（初回のみ）
@@ -56,7 +55,7 @@ public class GameManager : NetworkBehaviour
         // 残り時間を初期化
         remainingGameTime = initialGameTime;
 
-        // ゲーム開始前のカウントダウンを開始
+        // ゲーム開始前カウントダウン開始
         StartCoroutine(ServerPreGameCountdown());
     }
 
@@ -65,62 +64,35 @@ public class GameManager : NetworkBehaviour
     // ===============================
     public override void OnStartClient()
     {
-        // 親クラスの開始処理を実行
         base.OnStartClient();
 
-        // クライアント側もシングルトン登録
+        // クライアント側シングルトン登録（初回のみ）
         if (Instance == null) Instance = this;
     }
 
     // ===============================
-    // SyncVarフック：残り時間変更時に呼ばれる
+    // サーバー：ゲーム開始前カウントダウン
+    // カウントダウン中は gameStarted = false
     // ===============================
-    void OnTimeChange(float _oldTime, float _newTime)
+    private IEnumerator ServerPreGameCountdown()
     {
-        // 残り時間が0以下になったら終了処理を呼ぶ（サーバーのみ）
-        if (isServer && _newTime <= 0f)
-        {
-            EndGame();
-        }
-    }
-
-    // ===============================
-    // SyncVarフック：ゲーム開始状態が変化したとき
-    // ===============================
-    void OnGameStartChanged(bool _oldValue, bool _newValue)
-    {
-        // クライアント側でゲーム開始時にログ出力
-        if (_newValue)
-        {
-            Debug.Log("Game Started! (Client)");
-        }
-    }
-
-    // ===============================
-    // サーバー側：ゲーム開始前カウントダウン
-    // ===============================
-    IEnumerator ServerPreGameCountdown()
-    {
-        // カウントダウンの残り時間を設定
+        // カウントダウン時間をセット
         float countdown = preGameCountdownTime;
 
-        // カウントダウンが0になるまで繰り返す
+        // カウントダウン中は残り秒数を1秒ずつ減らす
         while (countdown > 0)
         {
-            // 残り秒数を表示
-            Debug.Log($"Game starts in {Mathf.Ceil(countdown)}");
+            // デバッグ用ログ（サーバー側）
+            Debug.Log($"Game starts in {Mathf.Ceil(countdown)} seconds");
 
-            // 1秒待つ
+            // 1秒待機
             yield return new WaitForSeconds(1f);
 
-            // 残り時間を1減らす
+            // カウントダウンを減らす
             countdown -= 1f;
         }
 
-        // サーバーでゲーム開始を表示
-        Debug.Log("Game Started! (Server)");
-
-        // ゲーム開始フラグをON
+        // カウントダウン終了 → ゲーム開始
         gameStarted = true;
 
         // ゲーム時間カウントダウン開始
@@ -128,43 +100,42 @@ public class GameManager : NetworkBehaviour
     }
 
     // ===============================
-    // サーバー側：ゲーム中の時間カウントダウン
+    // サーバー：ゲーム中の時間カウントダウン
     // ===============================
-    IEnumerator ServerCountdownCoroutine()
+    private IEnumerator ServerCountdownCoroutine()
     {
-        // 残り時間が0より大きい間繰り返す
+        // ゲーム時間が残っている限りループ
         while (remainingGameTime > 0)
         {
-            // 1秒待機（同期負荷軽減）
+            // 1秒待機
             yield return new WaitForSeconds(1f);
 
             // 残り時間を1秒減らす
             remainingGameTime -= 1f;
 
-            // 負の値にならないように補正
-            if (remainingGameTime < 0)
-                remainingGameTime = 0;
+            // マイナス補正
+            if (remainingGameTime < 0) remainingGameTime = 0;
         }
 
-        // 残り時間が0になったら終了処理
+        // 残り時間が0になったらゲーム終了
         EndGame();
     }
 
     // ===============================
-    // サーバー側：ゲーム終了処理
+    // サーバー：ゲーム終了処理
     // ===============================
     [Server]
-    void EndGame()
+    private void EndGame()
     {
-        // サーバーでゲーム終了をログ表示
-        Debug.Log("Time's up! (Server) Game Over!");
+        // サーバー側で終了ログ
+        Debug.Log("Time's up! Game Over (Server)");
 
         // ゲーム進行フラグをOFF
         gameStarted = false;
 
-        // SweetScoreを探して現在スコアを取得
-        SweetScore sweetScore = FindObjectOfType<SweetScore>();
-        float currentScore = sweetScore.currentScore;
+        // SweetScoreを探して現在のスコアを取得
+        SweetScore score = FindObjectOfType<SweetScore>();
+        float currentScore = score != null ? score.currentScore : 0f;
 
         // 全クライアントにスコア表示を通知
         ResultUIScore.Instance.RpcShowScore(currentScore);
@@ -175,7 +146,6 @@ public class GameManager : NetworkBehaviour
     // ===============================
     public override void OnStopClient()
     {
-        // 親クラスの終了処理を呼ぶ
         base.OnStopClient();
 
         // シングルトン解除
@@ -188,10 +158,9 @@ public class GameManager : NetworkBehaviour
     // ===============================
     public override void OnStopServer()
     {
-        // 親クラスの終了処理を呼ぶ
         base.OnStopServer();
 
-        // 全コルーチンを停止
+        // 全コルーチン停止
         StopAllCoroutines();
     }
 }
