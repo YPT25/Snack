@@ -389,6 +389,7 @@ MonoBehaviour:
   m_speed: 83
   targetText: {fileID: 0}
   filePath: 
+  m_isLoop: 0
 --- !u!114 &1179532828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -614,6 +615,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f598a4c3d42c1f247b8cde906cb3e739, type: 3}
   - {fileID: 21300000, guid: 9f5ef1a679ce35c41be6ab5cb482c055, type: 3}
   - {fileID: 21300000, guid: 002f34998f47d5e47be9f10381096199, type: 3}
+  - {fileID: 21300000, guid: 014fb42b49e20234a95ad3837f628285, type: 3}
+  - {fileID: 21300000, guid: 8d89cf182567b5c4ab40d26486f2a974, type: 3}
+  - {fileID: 21300000, guid: c7064c8b25d96ae4ca436fb12dc16125, type: 3}
+  - {fileID: 21300000, guid: 119b50fbb79a8ec4b8e571f9a4efe2f0, type: 3}
+  m_colorfulMaterial: {fileID: 2100000, guid: c36435a18d4443745a526109c95823bc, type: 2}
 --- !u!1 &1831206142
 GameObject:
   m_ObjectHideFlags: 0
@@ -823,7 +829,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 450}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3

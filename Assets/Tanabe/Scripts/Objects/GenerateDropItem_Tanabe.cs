@@ -9,9 +9,14 @@ public class GenerateDropItem_Tanabe : NetworkBehaviour
     [Header("ドロップする数"), SerializeField] private int m_dropItemCount;
 
     // アイテムをドロップする関数
-    public void DropItems()
+    public void DropItems(int _dropCount = 0)
     {
-        for (int i = 0; i < m_dropItemCount; i++)
+        if(_dropCount == 0)
+        {
+            _dropCount = m_dropItemCount;
+        }
+
+        for (int i = 0; i < _dropCount; i++)
         {
             this.GenerateItem();
         }

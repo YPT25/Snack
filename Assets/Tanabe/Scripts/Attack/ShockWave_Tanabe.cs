@@ -64,7 +64,7 @@ public class ShockWave_Tanabe : NetworkBehaviour
 
         if(other.gameObject == m_parentPlayer) { return; }
 
-        if (characterBase.GetCharacterType() == CharacterBase.CharacterType.ENEMY_TYPE)
+        if (characterBase.GetCharacterType() != CharacterBase.CharacterType.HERO_TYPE)
         {
             characterBase.RpcDamage(10);
         }

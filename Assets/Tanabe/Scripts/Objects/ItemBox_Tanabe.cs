@@ -2,7 +2,6 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class ItemBox_Tanabe : CharacterBase
 {
@@ -10,6 +9,8 @@ public class ItemBox_Tanabe : CharacterBase
     [Header("ヒット時のカウンタ"), SerializeField] private float HITTIME;
     [Header("死亡演出のエフェクト"), SerializeField] GameObject m_explosionEffect;
     [Header("このオブジェクトが消えるまでのタイマー"), SerializeField] private float m_deadTimer;
+    [Header("攻撃された時にアイテムを少しづつ落とすか"), SerializeField] private bool m_isDropLittleByLittle;
+    private GenerateDropItem_Tanabe m_generateDropItem;
     private float m_hitTimer = 0.7f;
     private Color m_defaultColor;
     private bool m_isDead = false;
@@ -26,6 +27,7 @@ public class ItemBox_Tanabe : CharacterBase
         m_explosionEffect?.SetActive(false);
         base.Initialize();
         base.SetCharacterType(CharacterType.ITEMBOX_TYPE);
+        m_generateDropItem = this.GetComponent<GenerateDropItem_Tanabe>();
     }
 
     // Update is called once per frame
@@ -46,7 +48,7 @@ public class ItemBox_Tanabe : CharacterBase
             SetMeshActive(false);
             RpcSetMeshActive(false);
             m_isDead = true;
-            this.GetComponent<GenerateDropItem_Tanabe>()?.DropItems();
+            m_generateDropItem?.DropItems();
         }
 
         if (m_hitTimer > 0f)
@@ -65,6 +67,10 @@ public class ItemBox_Tanabe : CharacterBase
         this.ChangeColor(new Color(0.8f, 0f, 0f, 0f));
         m_hitTimer = HITTIME;
         RpcHit();
+        if(m_isDropLittleByLittle && Random.Range(0, 4) == 0)
+        {
+            m_generateDropItem?.DropItems(1);
+        }
     }
 
 
