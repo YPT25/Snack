@@ -16,6 +16,9 @@ public class Endroll_Tanabe : MonoBehaviour
     [SerializeField] private TMP_Text targetText;   // TextMeshProの参照
     [SerializeField] private string filePath;       // StreamingAssets内のファイル名とか
 
+    [SerializeField] private bool m_isLoop = false;
+    private float m_timer = 2f;
+
     void Start()
     {
         //LoadAndSetText();
@@ -42,6 +45,19 @@ public class Endroll_Tanabe : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(m_isLoop && m_isStopped)
+        {
+            m_timer -= Time.deltaTime;
+            if(m_timer <= 0f)
+            {
+                m_timer = 2f;
+                m_isStopped = false;
+                Vector3 a = m_readStoppedTransform.localPosition;
+                a.y = -1595f;
+                m_readStoppedTransform.localPosition = a;
+            }
+        }
+
         float UpSpeed = 1f;
         if(Input.GetMouseButton(0) || /*Input.GetKey(KeyCode.Space) || */Input.GetButton("Jump"))
         {
