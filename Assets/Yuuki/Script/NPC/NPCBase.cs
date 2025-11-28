@@ -13,9 +13,12 @@ public class NPCBase : EnemyBase
     private int m_currentWaypoint = 0;
 
     [Header("AI基本設定")]
-    [SerializeField] protected float detectRange = 10f;       // 索敵範囲
-    [SerializeField] protected float attackRange = 2f;        // 攻撃範囲
-    [SerializeField] protected float randomWalkInterval = 2f; // ランダム歩行 切替時間
+    // 索敵範囲
+    [SerializeField] protected float detectRange = 10f;
+    // 攻撃範囲
+    [SerializeField] protected float attackRange = 2f;
+    // ランダム歩行 切替時間
+    [SerializeField] protected float randomWalkInterval = 2f; 
     [SerializeField] protected float walkSpeedMultiplier = 0.5f;
 
     private float randomWalkTimer = 0f;
@@ -37,7 +40,7 @@ public class NPCBase : EnemyBase
 
         if (m_isAttacking) return;
 
-        // ① ターゲットがいる → 追跡 or 攻撃
+        // ターゲットがいるなら追跡または攻撃
         if (m_target != null)
         {
             float dist = Vector3.Distance(transform.position, m_target.position);
@@ -60,18 +63,18 @@ public class NPCBase : EnemyBase
             return;
         }
 
-        // ② ターゲットを探す
+        // ターゲットを探す
         FindHeroTarget();
         if (m_target != null) return;
 
-        // ③ 巡回ポイントがあれば巡回
+        // 巡回ポイントがあれば巡回
         if (m_waypoints != null && m_waypoints.Length > 0)
         {
             Patrol();
             return;
         }
 
-        // ④ 無ければランダム歩行
+        // 無ければランダム歩行
         RandomWalk();
     }
 
