@@ -106,42 +106,28 @@ public class AshuriNetworkManager : NetworkManager
         Debug.Log("クライアントがサーバーに接続しました");
     }
 
-    // ----------------------------------------------------
-    // プレイヤー追加時の処理
-    // ----------------------------------------------------
-    //public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-    //{
-    //    GameObject playerobj;
-    //    Player_Tanabe playerScript_Tanabe;
+    // ------------------------------
+    // クライアント接続時に呼ばれる（プレイヤー生成処理）
+    // ------------------------------
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        // ランダムで0 or 1 を取得
+        int randomIndex = Random.Range(0, 2);
 
-    //    // NetworkStartPositionからスポーン位置と回転を取得
-    //    Transform startPos = GetStartPosition();
-    //    Vector3 spawnPosition = startPos != null ? startPos.position : Vector3.zero;
-    //    Quaternion spawnRotation = startPos != null ? startPos.rotation : Quaternion.identity;
+        // ランダムで選んだプレハブを入れる変数
+        GameObject selectedPrefab = randomIndex == 0 ? playerPrefab1 : playerPrefab2;
 
-    //    // 1人目はplayerPrefab1、それ以降はplayerPrefab2を使用
-    //    if (nextPlayerNumber == 1)
-    //    {
-    //        playerobj = Instantiate(playerPrefab1, spawnPosition, spawnRotation);
-    //    }
-    //    else
-    //    {
-    //        playerobj = Instantiate(playerPrefab2, spawnPosition, spawnRotation);
-    //    }
+        // プレイヤーの出現位置を取得（デフォルトのspawn point）
+        Transform startPos = GetStartPosition();
 
-    //    // プレイヤースクリプトに番号を割り当て
-    //    playerScript_Tanabe = playerobj.GetComponent<Player_Tanabe>();
-    //    playerScript_Tanabe.playerNumber = nextPlayerNumber;
+        // ランダムで選ばれたプレハブを生成
+        GameObject player = startPos != null
+            ? Instantiate(selectedPrefab, startPos.position, startPos.rotation)
+            : Instantiate(selectedPrefab);
 
-    //    //string currentPlayerName = PlayerNameHolder.GetPlayerName();
-    //    //Debug.Log($"プレイヤー {playerScript_Tanabe.playerNumber} が参加しました。名前: {currentPlayerName}");
-
-    //    // Mirrorにプレイヤーを登録
-    //    NetworkServer.AddPlayerForConnection(conn, playerobj);
-
-    //    // 次のプレイヤー番号を増やす
-    //    nextPlayerNumber++;
-    //}
+        // Mirror によるネットワーク生成
+        NetworkServer.AddPlayerForConnection(conn, player);
+    }
 
     // ----------------------------------------------------
     // クライアントが切断したとき
