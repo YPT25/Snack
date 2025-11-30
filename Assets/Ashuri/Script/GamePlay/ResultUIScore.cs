@@ -1,6 +1,9 @@
-﻿using Mirror;     // Mirrorネットワーク機能
-using TMPro;      // TextMeshProを使用
-using UnityEngine; // Unityの基本クラス使用
+﻿using Mirror;                     // Mirrorネットワーク機能
+using TMPro;                      // TextMeshProを使用
+using UnityEngine;
+using UnityEngine.UI;              // Unityの基本クラス使用
+using UnityEngine.SceneManagement; // シーン遷移のために必要
+using System.Collections;
 
 /// <summary>
 /// ゲーム終了後のスコアUIを管理するクラス
@@ -10,111 +13,138 @@ public class ResultUIScore : NetworkBehaviour
 {
     [Header("スコアUI関連")]
     [Tooltip("スコアを表示するTextMeshProUGUI")]
-    [SerializeField] private TextMeshProUGUI scoreText; // スコアテキスト
+    [SerializeField] private TextMeshProUGUI scoreText;
 
     [Tooltip("スコアパネル（非表示→表示切り替え）")]
-    [SerializeField] private GameObject scorePanel; // スコアパネルオブジェクト
+    [SerializeField] private GameObject scorePanel;
 
-    // シングルトンインスタンスを保持
+    [Tooltip("ロビーシーンに戻るボタン")]
+    [SerializeField] private Button lobbySceneButton;
+
+    [Tooltip("ロビーシーンで非表示にしたいCanvasの名前")]
+    [SerializeField] private string lobbyCanvasName = "NetworkCanvas";
+
     public static ResultUIScore Instance { get; private set; }
 
-    // ===============================
-    // クライアント開始時の処理
-    // ===============================
     public override void OnStartClient()
     {
-        // 親クラスの処理を呼ぶ
         base.OnStartClient();
 
-        // シングルトン登録（重複防止）
         if (Instance == null) Instance = this;
 
-        // ゲーム開始時はスコアパネルを非表示にしておく
         if (scorePanel != null)
             scorePanel.SetActive(false);
+
+        if (lobbySceneButton != null)
+        {
+            lobbySceneButton.onClick.AddListener(OnClickReturnLobby);
+
+            if (!isServer)
+                lobbySceneButton.interactable = false;
+        }
     }
 
-    // ===============================
-    // クライアントRPC：スコアを全クライアントに表示
-    // ===============================
+    private void Update()
+    {
+        if (!isServer) return;
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            OnClickReturnLobby();
+        }
+    }
+
     [ClientRpc]
     public void RpcShowScore(float finalScore)
     {
-        // クライアントでスコア表示を開始
         ShowScore(finalScore);
+
+        if (lobbySceneButton != null)
+            lobbySceneButton.gameObject.SetActive(true);
     }
 
-    // ===============================
-    // クライアント側：スコアUI表示処理
-    // ===============================
     public void ShowScore(float finalScore)
     {
-        // デバッグログを表示
         Debug.Log("Game Over! Showing Score (Client)");
 
-        // すべてのプレイヤーを取得
         Player_Tanabe[] players = FindObjectsOfType<Player_Tanabe>();
 
-        // スコアパネルを表示
         if (scorePanel != null)
             scorePanel.SetActive(true);
 
-        // スコアテキストが存在する場合
         if (scoreText != null)
         {
-            // スコア表示用文字列を作る
             string allScores = "";
 
-            // 各プレイヤーのスコアを追加
             for (int i = 0; i < players.Length; i++)
             {
                 Player_Tanabe p = players[i];
                 //allScores += $"Player{p.playerNumber}: {p.m_sweetScore}\n";
             }
 
-            // チーム全体スコアを最後に追加
             //allScores += $"\nYour team Score: {finalScore}";
 
-            // テキストに反映
             scoreText.text = allScores;
         }
 
-        // ===============================
-        // 🔽【追加機能】ランキング表示処理
-        // ===============================
-
-        // 各プレイヤーをスコアの降順で並び替える
         System.Array.Sort(players, (a, b) => b.m_sweetScore.CompareTo(a.m_sweetScore));
 
-        // ランキング結果を文字列として作成
         string rankingText = "\n\n--- Ranking ---\n";
 
-        // 各順位を順に追加
         for (int i = 0; i < players.Length; i++)
         {
             Player_Tanabe p = players[i];
             rankingText += $"Number{i + 1}: Player{p.playerNumber} - {p.m_sweetScore}PT\n";
         }
 
-        // 既存のスコアテキストの後ろにランキングを追記
         if (scoreText != null)
-        {
             scoreText.text += rankingText;
-        }
 
-        // 全クライアントでゲームを停止させる
         Time.timeScale = 0f;
     }
 
-    // ===============================
-    // クライアント停止時：シングルトン解除
-    // ===============================
+    private void OnClickReturnLobby()
+    {
+        if (!isServer) return;
+
+        Time.timeScale = 1f;
+
+        // ロビーシーンへ移動
+        NetworkManager.singleton.ServerChangeScene("LobbyScene");
+
+        // Canvas を非表示にする処理を全クライアントで実行
+        RpcHideLobbyCanvas();
+    }
+
+    [ClientRpc]
+    private void RpcHideLobbyCanvas()
+    {
+        // シーン移動後に少し待って Canvas を取得する
+        StartCoroutine(HideCanvasAfterDelay());
+    }
+
+    private IEnumerator HideCanvasAfterDelay()
+    {
+        // 数フレーム待つことで Canvas が生成されるのを待つ
+        for (int i = 0; i < 5; i++)
+            yield return null;
+
+        GameObject canvas = GameObject.Find(lobbyCanvasName);
+        if (canvas != null)
+        {
+            canvas.SetActive(false);
+            Debug.Log($"{lobbyCanvasName} を非表示にしました");
+        }
+        else
+        {
+            Debug.LogWarning($"{lobbyCanvasName} が見つかりませんでした");
+        }
+    }
+
     public override void OnStopClient()
     {
-        // 親クラスの停止処理を呼ぶ
         base.OnStopClient();
 
-        // 登録済みなら解除
         if (Instance == this)
             Instance = null;
     }
