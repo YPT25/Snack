@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 72461401386866273}
   - component: {fileID: 1578536292320788079}
   - component: {fileID: 3461284029247494861}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: pancake
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 5793415965298944870}
   - component: {fileID: 8371086748700138957}
   - component: {fileID: 7982468519769672118}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

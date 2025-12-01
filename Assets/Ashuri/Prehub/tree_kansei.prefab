@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4484518563517062410}
   - component: {fileID: 6718872945577190356}
   - component: {fileID: 4188250070919446757}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: tree_kansei
   m_TagString: Untagged
   m_Icon: {fileID: 0}
