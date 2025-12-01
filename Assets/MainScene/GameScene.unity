@@ -2410,6 +2410,7 @@ MonoBehaviour:
   scoreText: {fileID: 1883256414}
   scorePanel: {fileID: 1294198687}
   lobbySceneButton: {fileID: 1033610278}
+  lobbyCanvasName: NetworkCanvas
 --- !u!1 &375904350
 GameObject:
   m_ObjectHideFlags: 0
