@@ -2,186 +2,169 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 
 /// <summary>
-/// MirrorのNetworkManagerを拡張したクラス
-/// シーン名リストによって「途中参加できる／できない」を制御する
+/// カスタム NetworkManager（Loadingを動画対応に変更）
 /// </summary>
 public class AshuriNetworkManager : NetworkManager
 {
-    // ------------------------------
-    // プレイヤー関連設定
-    // ------------------------------
-    [Header("プレイヤーオブジェクト")]
-    [Tooltip("1人チーム用のプレイヤープレハブ")]
+    [Header("プレイヤー関連")]
     public GameObject playerPrefab1;
-
-    [Tooltip("3人チーム用のプレイヤープレハブ")]
     public GameObject playerPrefab2;
 
-    // ------------------------------
-    // ゲーム状態管理
-    // ------------------------------
-    [Header("ゲーム状態管理")]
-    [Tooltip("trueの時、途中参加を禁止します")]
-    public bool gameInProgress = false;
-
-    // ------------------------------
-    // 途中参加禁止シーンの設定（インスペクターから入力）
-    // ------------------------------
-    [Header("途中参加禁止シーン設定（シーン名で入力）")]
-    [Tooltip("ここに途中参加を禁止したいシーン名を文字で入力してください")]
+    [Header("途中参加禁止シーン設定")]
     public List<string> blockedSceneNames = new List<string>();
 
-    // 次に割り当てるプレイヤー番号
+    [Header("Loading UI（動画対応）")]
+    [Tooltip("VideoPlayerをInspectorで設定")]
+    public VideoPlayer loadingVideoPlayer;
+
+    public bool gameInProgress = false;
     private int nextPlayerNumber = 1;
 
-    // ----------------------------------------------------
-    // 起動時に初期化処理を行う
-    // ----------------------------------------------------
+    // ====================================================
+    // 起動時の初期化
+    // ====================================================
     public override void Awake()
     {
+        Debug.Log("【Loadingログ】NetworkManager Awake");
         base.Awake();
 
-        // blockedSceneNamesリストが空なら警告を表示
         if (blockedSceneNames.Count == 0)
+            Debug.LogWarning("途中参加禁止シーンのリストが空です。Inspectorで設定してください");
+    }
+
+    // ====================================================
+    // Loading動画再生開始
+    // ====================================================
+    public void ShowLoading()
+    {
+        if (loadingVideoPlayer != null)
         {
-            Debug.LogWarning("途中参加禁止シーンのリストが空です。インスペクターで設定してください。");
+            loadingVideoPlayer.gameObject.SetActive(true);
+            loadingVideoPlayer.Play();
+            Debug.Log("【Loadingログ】Loading動画再生開始");
         }
     }
 
-    // ----------------------------------------------------
-    // 毎フレーム、現在のシーン名をチェックして参加可否を切り替える
-    // ----------------------------------------------------
+    // ====================================================
+    // Loading動画停止
+    // ====================================================
+    public void HideLoading()
+    {
+        if (loadingVideoPlayer != null)
+        {
+            loadingVideoPlayer.Stop();
+            loadingVideoPlayer.gameObject.SetActive(false);
+            Debug.Log("【Loadingログ】Loading動画停止");
+        }
+    }
+
+    // ====================================================
+    // ホスト開始時
+    // ====================================================
+    public override void OnStartHost()
+    {
+        ShowLoading();
+        Debug.Log("【Loadingログ】ホスト開始 → Loading Start");
+        base.OnStartHost();
+    }
+
+    // ====================================================
+    // クライアント接続開始時
+    // ====================================================
+    public override void OnStartClient()
+    {
+        ShowLoading();
+        Debug.Log("【Loadingログ】クライアント接続開始 → Loading Start");
+        base.OnStartClient();
+    }
+
+    // ====================================================
+    // クライアント接続成功時
+    // ====================================================
+    public override void OnClientConnect()
+    {
+        Debug.Log("【Loadingログ】クライアント接続成功 → Loading End");
+        HideLoading();
+        base.OnClientConnect();
+    }
+
+    // ====================================================
+    // クライアント切断時
+    // ====================================================
+    public override void OnClientDisconnect()
+    {
+        Debug.Log("【Loadingログ】クライアント切断 → Loading End");
+        HideLoading();
+        base.OnClientDisconnect();
+    }
+
+    // ====================================================
+    // 毎フレーム：途中参加判定
+    // ====================================================
     public override void Update()
     {
         base.Update();
-
-        // 現在のシーン名を取得
-        string currentScene = SceneManager.GetActiveScene().name;
-
-        // 現在のシーンが「禁止リスト」に含まれている場合、途中参加を禁止
-        if (blockedSceneNames.Contains(currentScene))
-        {
-            gameInProgress = true;
-        }
-        else
-        {
-            gameInProgress = false;
-        }
+        string sceneName = SceneManager.GetActiveScene().name;
+        gameInProgress = blockedSceneNames.Contains(sceneName);
     }
 
-    // ----------------------------------------------------
-    // クライアントがサーバーに接続してきたときの処理
-    // ----------------------------------------------------
+    // ====================================================
+    // サーバー接続時チェック
+    // ====================================================
     public override void OnServerConnect(NetworkConnectionToClient conn)
     {
-        // 現在のシーンで途中参加が禁止されている場合、接続を拒否する
         if (gameInProgress)
         {
-            Debug.Log($"シーン '{SceneManager.GetActiveScene().name}' は途中参加禁止です。接続を拒否します。");
+            Debug.Log($"シーン '{SceneManager.GetActiveScene().name}' は途中参加禁止。接続拒否");
             conn.Disconnect();
             return;
         }
 
-        // 通常の接続処理を継続
         base.OnServerConnect(conn);
     }
 
-    // ----------------------------------------------
-    // サーバーが起動したときに呼ばれる処理
-    // ----------------------------------------------
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-        Debug.Log("サーバーが起動しました");
-    }
-
-    // ----------------------------------------------
-    // クライアントが接続したときに呼ばれる処理
-    // ----------------------------------------------
-    public override void OnClientConnect()
-    {
-        base.OnClientConnect();
-        Debug.Log("クライアントがサーバーに接続しました");
-    }
-
-    // ------------------------------
-    // クライアント接続時に呼ばれる（プレイヤー生成処理）
-    // ------------------------------
+    // ====================================================
+    // プレイヤー追加（ランダム）
+    // ====================================================
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        // ランダムで0 or 1 を取得
         int randomIndex = Random.Range(0, 2);
+        GameObject selectedPrefab = (randomIndex == 0 ? playerPrefab1 : playerPrefab2);
 
-        // ランダムで選んだプレハブを入れる変数
-        GameObject selectedPrefab = randomIndex == 0 ? playerPrefab1 : playerPrefab2;
-
-        // プレイヤーの出現位置を取得（デフォルトのspawn point）
         Transform startPos = GetStartPosition();
-
-        // ランダムで選ばれたプレハブを生成
-        GameObject player = startPos != null
+        GameObject player = (startPos != null)
             ? Instantiate(selectedPrefab, startPos.position, startPos.rotation)
             : Instantiate(selectedPrefab);
 
-        // Mirror によるネットワーク生成
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
-    // ----------------------------------------------------
-    // クライアントが切断したとき
-    // ----------------------------------------------------
-    public override void OnServerDisconnect(NetworkConnectionToClient conn)
-    {
-        base.OnServerDisconnect(conn);
-    }
-
-    // ----------------------------------------------------
-    // サーバーを停止したときに番号をリセット
-    // ----------------------------------------------------
+    // ====================================================
+    // サーバー停止
+    // ====================================================
     public override void OnStopServer()
     {
         base.OnStopServer();
-
-        // 新しいセッション用に番号をリセット
-        PlayerNumberReset();
+        nextPlayerNumber = 1;
     }
 
-    // ----------------------------------------------------
-    // プレイヤー番号を手動でリセットしたい場合
-    // ----------------------------------------------------
+    // ====================================================
+    // ホスト終了時
+    // ====================================================
+    public override void OnStopHost()
+    {
+        base.OnStopHost();
+        Debug.LogError("ホストが切断されました");
+    }
+
+    // ====================================================
+    // プレイヤー番号リセット
+    // ====================================================
     public void PlayerNumberReset()
     {
         nextPlayerNumber = 1;
     }
-    // ----------------------------------------------------
-    // ホスト（サーバー + クライアント）が抜けたとき
-    // ----------------------------------------------------
-    public override void OnStopHost()
-    {
-        base.OnStopHost();
-        Debug.LogError("ホストが抜けました（サーバーとクライアント両方が停止）");
-    }
-
-    // ----------------------------------------------------
-    // クライアントが切断したとき（自分自身側）
-    // ----------------------------------------------------
-    public override void OnClientDisconnect()
-    {
-        Debug.Log("OnClientDisconnect 発動");
-
-        if (NetworkServer.active && NetworkClient.isConnected)
-            Debug.Log("状態：Host が切断された");
-        else if (NetworkServer.active)
-            Debug.Log("状態：Server が切断された");
-        else if (NetworkClient.isConnected)
-            Debug.Log("状態：純粋な Client が切断された");
-        else
-            Debug.Log("状態：Network 状態が不明");
-
-        base.OnClientDisconnect();
-    }
-
-
 }

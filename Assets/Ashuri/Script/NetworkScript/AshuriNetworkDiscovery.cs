@@ -5,128 +5,99 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// LAN内サーバー検索・接続
+/// Host開始・Client接続時に動画Loadingを表示
+/// </summary>
 public class AshuriNetworkDiscovery : MonoBehaviour
 {
-    [Header("Network Discovery 参照")]
-    [Tooltip("NetworkDiscoveryオブジェクトを指定")]
+    [Header("Network Discovery")]
     [SerializeField] private NetworkDiscovery networkDiscovery;
 
-    [Header("UI 参照")]
-    [Tooltip("ホストを開始するボタン")]
+    [Header("UI参照")]
     [SerializeField] private Button hostButton;
-
-    [Tooltip("クライアントとしてサーバーを探すボタン（LAN内検索用）")]
     [SerializeField] private Button clientButton;
-
-    [Tooltip("サーバーリストを表示するScrollViewのContent部分")]
     [SerializeField] private Transform serverListContent;
-
-    [Tooltip("サーバー情報を表示するUIプレハブ（ボタンなど）")]
     [SerializeField] private GameObject serverItemPrefab;
-
-    [Tooltip("後ろの背景パネル")]
     [SerializeField] private GameObject networkPanel;
 
-    // ------------------------------
-    // 見つかったサーバーを記録する辞書（重複防止用）
-    // ------------------------------
     private readonly Dictionary<long, ServerResponse> discoveredServers = new();
 
-    /// <summary>
-    /// 初期化処理
-    /// </summary>
+    // ====================================================
+    // 初期化
+    // ====================================================
     private void Start()
     {
-        // Hostボタンが押されたときの処理登録
         hostButton.onClick.AddListener(OnHostClicked);
-
-        // Clientボタンが押されたときの処理登録
         clientButton.onClick.AddListener(OnClientClicked);
-
-        // NetworkDiscoveryでサーバーを見つけたときの処理登録
         networkDiscovery.OnServerFound.AddListener(OnServerFound);
     }
 
-    /// <summary>
-    /// ホスト開始ボタンが押されたとき
-    /// </summary>
+    // ====================================================
+    // ホスト開始
+    // ====================================================
     private void OnHostClicked()
     {
-        // Hostとして接続を開始
-        NetworkManager.singleton.StartHost();
+        // NetworkManagerにLoading再生指示
+        AshuriNetworkManager manager = NetworkManager.singleton.GetComponent<AshuriNetworkManager>();
+        manager?.ShowLoading();
 
-        // LAN内に自分の存在をブロードキャスト
+        NetworkManager.singleton.StartHost();
         networkDiscovery.AdvertiseServer();
 
-        Debug.Log("ホストを開始しました。LAN内にサーバーを公開中。");
-
-        // UIを非表示
-        this.gameObject.SetActive(false);
+        Debug.Log("ホスト開始（動画Loading）");
+        networkPanel.SetActive(false);
     }
 
-    /// <summary>
-    /// クライアントがLAN内サーバーを検索するとき
-    /// </summary>
+    // ====================================================
+    // クライアント検索開始
+    // ====================================================
     private void OnClientClicked()
     {
-        // 古いServerリストをすべて削除
         foreach (Transform child in serverListContent)
-        {
             Destroy(child.gameObject);
-        }
-        discoveredServers.Clear();
 
-        // LAN内のサーバー検索を開始
+        discoveredServers.Clear();
         networkDiscovery.StartDiscovery();
 
-        Debug.Log("サーバー検索を開始しました（LAN探索中）...");
+        Debug.Log("サーバー探索開始（動画Loading）...");
     }
 
-    /// <summary>
-    /// 選択したサーバーに接続する処理
-    /// </summary>
-    /// <param name="info">接続するサーバー情報</param>
+    // ====================================================
+    // サーバー接続
+    // ====================================================
     private void ConnectToServer(ServerResponse info)
     {
-        // サーバー検索を停止
         networkDiscovery.StopDiscovery();
 
+        // Loading表示
+        AshuriNetworkManager manager = NetworkManager.singleton.GetComponent<AshuriNetworkManager>();
+        manager?.ShowLoading();
+
         Debug.Log($"クライアント接続中: {info.EndPoint.Address}");
-
-        // MirrorのNetworkManagerを使って接続
         NetworkManager.singleton.StartClient(info.uri);
-
-        // UIを非表示（ゲーム開始）
-        this.gameObject.SetActive(false);
+        networkPanel.SetActive(false);
     }
 
-    /// <summary>
-    /// サーバーを見つけたときの処理
-    /// </summary>
-    /// <param name="info">発見したサーバー情報</param>
+    // ====================================================
+    // サーバー発見
+    // ====================================================
     private void OnServerFound(ServerResponse info)
     {
-        // 既に登録済みならスキップ
         if (discoveredServers.ContainsKey(info.serverId))
             return;
 
-        // サーバー情報を記録
         discoveredServers[info.serverId] = info;
 
-        // Server Item プレハブを生成
         GameObject item = Instantiate(serverItemPrefab, serverListContent);
         item.SetActive(true);
 
-        // IPアドレスをTextMeshProに表示
         TextMeshProUGUI text = item.GetComponentInChildren<TextMeshProUGUI>();
         if (text != null)
-            text.text = $"unnti";
+            text.text = info.EndPoint.Address.ToString();
 
-        // ボタン押下で接続
         Button button = item.GetComponent<Button>();
         if (button != null)
-        {
             button.onClick.AddListener(() => ConnectToServer(info));
-        }
     }
 }
