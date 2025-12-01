@@ -11,11 +11,20 @@ using static Player_Tanabe;
 public class WeaponDisplayManager : MonoBehaviour
 {
     [Header("武器のUI")]
+    [Tooltip("Image")]
+    [SerializeField] private Image _weaponImage;
+
     [Tooltip("銃のイラスト")]
-    [SerializeField] private Image _gunSprite;
+    [SerializeField] private Sprite _gunSprite;
 
     [Tooltip("ハンマーのイラスト")]
-    [SerializeField] private Image _hammerSprite;
+    [SerializeField] private Sprite _hammerSprite;
+
+    [Tooltip("ポップコーンのイラスト")]
+    [SerializeField] private Sprite _poppcornSprite;
+
+    [Tooltip("綿あめのイラスト")]
+    [SerializeField] private Sprite _watagashiSprite;
 
     // ローカルプレイヤーを保持する変数
     private Player_Tanabe _localPlayer;
@@ -59,16 +68,12 @@ public class WeaponDisplayManager : MonoBehaviour
     // 武器 UI を更新する処理
     private void UpdateWeaponUI(WeaponID id)
     {
-        // UI をすべて非表示にする
-        _gunSprite.gameObject.SetActive(false);
-        _hammerSprite.gameObject.SetActive(false);
-
         // 銃表示
         if (id == WeaponID.GUN)
-            _gunSprite.gameObject.SetActive(true);
+            _weaponImage.sprite = _gunSprite;
 
         // ハンマー表示
         if (id == WeaponID.HAMMER)
-            _hammerSprite.gameObject.SetActive(true);
+            _weaponImage.sprite = _hammerSprite;
     }
 }
