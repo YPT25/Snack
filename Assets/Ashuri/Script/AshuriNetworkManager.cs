@@ -9,6 +9,7 @@ using UnityEngine.Video;
 /// ・Loadingを動画対応に変更
 /// ・プレイヤーPrefabをランダムで追加
 /// ・途中参加禁止シーン対応
+/// ・動画再生完了かつ接続完了で非表示
 /// </summary>
 public class AshuriNetworkManager : NetworkManager
 {
@@ -46,6 +47,12 @@ public class AshuriNetworkManager : NetworkManager
     // ------------------------------
     private int nextPlayerNumber = 1;
 
+    // ------------------------------
+    // 動画再生・接続完了フラグ
+    // ------------------------------
+    [HideInInspector] public bool videoFinished = false;
+    [HideInInspector] public bool connectionFinished = false;
+
     // ====================================================
     // 起動時の初期化
     // ====================================================
@@ -54,7 +61,6 @@ public class AshuriNetworkManager : NetworkManager
         Debug.Log("【Loadingログ】NetworkManager Awake");
         base.Awake();
 
-        // 途中参加禁止シーンリストが空なら警告
         if (blockedSceneNames.Count == 0)
             Debug.LogWarning("途中参加禁止シーンのリストが空です。Inspectorで設定してください");
     }
@@ -66,6 +72,9 @@ public class AshuriNetworkManager : NetworkManager
     {
         if (loadingVideoPlayer != null)
         {
+            videoFinished = false;
+            connectionFinished = false;
+
             loadingVideoPlayer.gameObject.SetActive(true);
 
             // 動画終了時に呼ばれるイベントを登録（重複防止）
@@ -78,82 +87,47 @@ public class AshuriNetworkManager : NetworkManager
     }
 
     // ====================================================
-    // 動画終了時の処理（ホスト・クライアント共通）
+    // 動画終了時の処理（フラグ設定）
     // ====================================================
-    private void OnLoadingVideoEnd(VideoPlayer vp)
+    public void OnLoadingVideoEnd(VideoPlayer vp)
     {
-        Debug.Log("【Loadingログ】Loading動画再生終了");
-
-        // シーン遷移後にCanvas非表示にするためイベント登録
-        SceneManager.sceneLoaded -= OnSceneLoadedAfterVideo;
-        SceneManager.sceneLoaded += OnSceneLoadedAfterVideo;
-
-        // ホスト・クライアントどちらでも同じシーンに遷移
-        SceneManager.LoadScene("LobbyScene"); // 遷移先のシーン名を指定
+        videoFinished = true;
+        CheckHideLoading();
     }
 
     // ====================================================
-    // シーン遷移完了時の処理
+    // 動画＆接続完了時にLoading非表示
     // ====================================================
-    private void OnSceneLoadedAfterVideo(Scene scene, LoadSceneMode mode)
+    private void CheckHideLoading()
     {
-        Debug.Log("【Loadingログ】シーン遷移完了 → Canvas非表示");
-
-        // Canvasを非表示にする
-        if (loadingVideoPlayer != null)
+        if (videoFinished && connectionFinished)
         {
-            loadingVideoPlayer.gameObject.SetActive(false);
-        }
-
-        // 既にホストなら不要、必要ならここで処理
-        NetworkManager.singleton.StartHost();
-
-        // イベント登録解除
-        SceneManager.sceneLoaded -= OnSceneLoadedAfterVideo;
-    }
-
-    // ====================================================
-    // Loading動画停止
-    // ====================================================
-    public void HideLoading()
-    {
-        if (loadingVideoPlayer != null)
-        {
-            loadingVideoPlayer.Stop();
-            loadingVideoPlayer.gameObject.SetActive(false);
-            Debug.Log("【Loadingログ】Loading動画停止");
+            if (loadingVideoPlayer != null)
+            {
+                //loadingVideoPlayer.gameObject.SetActive(false);
+            }
+            Debug.Log("【Loadingログ】動画終了＆接続完了 → Loading非表示");
         }
     }
 
     // ====================================================
-    // ホスト開始時の処理
+    // ホスト開始時の処理（接続完了とみなす）
     // ====================================================
     public override void OnStartHost()
     {
-        ShowLoading();
-        Debug.Log("【Loadingログ】ホスト開始 → Loading Start");
-
         base.OnStartHost();
+        connectionFinished = true;
+        CheckHideLoading();
     }
 
     // ====================================================
-    // クライアント接続開始時の処理
-    // ====================================================
-    public override void OnStartClient()
-    {
-        ShowLoading();
-        Debug.Log("【Loadingログ】クライアント接続開始 → Loading Start");
-        base.OnStartClient();
-    }
-
-    // ====================================================
-    // クライアント接続成功時の処理
+    // クライアント接続成功時の処理（接続完了とみなす）
     // ====================================================
     public override void OnClientConnect()
     {
-        Debug.Log("【Loadingログ】クライアント接続成功 → Loading End");
-        HideLoading();
         base.OnClientConnect();
+        connectionFinished = true;
+        CheckHideLoading();
     }
 
     // ====================================================
@@ -161,8 +135,6 @@ public class AshuriNetworkManager : NetworkManager
     // ====================================================
     public override void OnClientDisconnect()
     {
-        Debug.Log("【Loadingログ】クライアント切断 → Loading End");
-        HideLoading();
         base.OnClientDisconnect();
     }
 
@@ -173,10 +145,7 @@ public class AshuriNetworkManager : NetworkManager
     {
         base.Update();
 
-        // 現在のシーン名を取得
         string sceneName = SceneManager.GetActiveScene().name;
-
-        // 途中参加禁止シーンならフラグをON
         gameInProgress = blockedSceneNames.Contains(sceneName);
     }
 
@@ -200,17 +169,14 @@ public class AshuriNetworkManager : NetworkManager
     // ====================================================
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        // ランダムでどちらのプレイヤーPrefabを使用するか決定
         int randomIndex = Random.Range(0, 2);
         GameObject selectedPrefab = (randomIndex == 0 ? playerPrefab1 : playerPrefab2);
 
-        // スポーン位置があればその位置に生成、なければデフォルト位置に生成
         Transform startPos = GetStartPosition();
         GameObject player = (startPos != null)
             ? Instantiate(selectedPrefab, startPos.position, startPos.rotation)
             : Instantiate(selectedPrefab);
 
-        // Mirrorにプレイヤーを登録
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
@@ -220,8 +186,6 @@ public class AshuriNetworkManager : NetworkManager
     public override void OnStopServer()
     {
         base.OnStopServer();
-
-        // プレイヤー番号をリセット
         nextPlayerNumber = 1;
     }
 
