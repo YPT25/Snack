@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 7587151342251794598}
   - component: {fileID: 827598582647508589}
   - component: {fileID: 2977152274148280918}
+  - component: {fileID: 3007194824742831071}
   m_Layer: 7
   m_Name: ColorPlayer_Hammer
   m_TagString: Player
@@ -420,6 +421,25 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 80a43077793c03b4eaa54d194ab682de, type: 2}
   - {fileID: 2100000, guid: 19dba929e4ed190419462a869078c7e7, type: 2}
   - {fileID: 2100000, guid: fd5fa4a169cc4c24ab56cab795f4127f, type: 2}
+--- !u!114 &3007194824742831071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe4b8ae5ec923f40be656d2a349b62f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_meshRenderers:
+  - {fileID: 4349610632563845787}
+  - {fileID: 5037158226421774451}
+  - {fileID: 3778292530368735981}
+  - {fileID: 7231876487223850764}
+  HITTIME: 0.8
+  m_damageColor: {r: 0.627451, g: 0, b: 0, a: 1}
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0

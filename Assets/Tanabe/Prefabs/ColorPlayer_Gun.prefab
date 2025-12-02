@@ -45752,6 +45752,7 @@ GameObject:
   - component: {fileID: 8447808551873358020}
   - component: {fileID: 317732843886008495}
   - component: {fileID: 6312388131507322048}
+  - component: {fileID: 1361106765907010299}
   m_Layer: 7
   m_Name: ColorPlayer_Gun
   m_TagString: Player
@@ -45996,3 +45997,22 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 80a43077793c03b4eaa54d194ab682de, type: 2}
   - {fileID: 2100000, guid: 19dba929e4ed190419462a869078c7e7, type: 2}
   - {fileID: 2100000, guid: fd5fa4a169cc4c24ab56cab795f4127f, type: 2}
+--- !u!114 &1361106765907010299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8759962040556672278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe4b8ae5ec923f40be656d2a349b62f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_meshRenderers:
+  - {fileID: 4104587751331642941}
+  - {fileID: 732385616165175390}
+  - {fileID: 6641148949644351198}
+  - {fileID: 7176457726010826844}
+  HITTIME: 0.8
+  m_damageColor: {r: 0.627451, g: 0, b: 0, a: 1}
