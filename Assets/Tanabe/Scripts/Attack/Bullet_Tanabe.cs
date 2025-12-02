@@ -85,6 +85,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         m_activeTime = 1f;
         m_forward = _gunHead.forward;
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
+        this.RandomScale();
         Debug.Log("Shot");
         this.GetComponent<MeshRenderer>().material.color = Color.gray;
         this.RpcSetBulletColor(Color.gray);
@@ -99,6 +100,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         m_speed *= 0.7f;
         m_forward = _moveVector;
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
+        this.RandomScale();
 
         this.GetComponent<MeshRenderer>().material.color = Color.red;
         this.RpcSetBulletColor(Color.red);
@@ -112,14 +114,36 @@ public class Bullet_Tanabe : NetworkBehaviour
         m_activeTime = 3f;
         m_forward = _gunHead.forward;
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
+        this.RandomScale();
 
         this.GetComponent<MeshRenderer>().material.color = Color.magenta;
         this.RpcSetBulletColor(Color.magenta);
     }
 
     [ClientRpc]
-    private void RpcSetBulletColor(Color _color)
+    public void RpcSetBulletColor(Color _color)
     {
         this.GetComponent<MeshRenderer>().material.color = _color;
+    }
+
+    private void RandomScale()
+    {
+        Vector3 scale = this.transform.localScale;
+        switch (Random.Range(0, 3))
+        {
+            case 0:
+                scale.x *= 0.5f;
+                break;
+            case 1:
+                scale.y *= 0.5f;
+                break;
+            case 2:
+                scale.z *= 0.5f;
+                break;
+            default:
+                scale.x *= 0.5f;
+                break;
+        }
+        this.transform.localScale = scale;
     }
 }
