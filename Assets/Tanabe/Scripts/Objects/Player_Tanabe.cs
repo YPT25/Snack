@@ -92,6 +92,9 @@ public class Player_Tanabe : CharacterBase
     private PlayerManager_Tanabe m_playerManager;
     private GameOption_Tanabe m_gameOption;
 
+    private DamagePerformance m_damagePerformance;
+
+
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
     // 開始関数
@@ -162,6 +165,8 @@ public class Player_Tanabe : CharacterBase
                 m_playerManager.SetCameraController(m_cameraController);
             }
         }
+
+        m_damagePerformance = GetComponent<DamagePerformance>();
 
         // デバッグ時のみ
         m_debugParameterText = GameObject.Find("DebugParameterText")?.GetComponent<DebugParameterText_Tanabe>();
@@ -507,6 +512,15 @@ public class Player_Tanabe : CharacterBase
     public void CmdDestroysObject(GameObject _gameObject)
     {
         Destroy(_gameObject);
+    }
+
+    public override void Damage(float _damage)
+    {
+        base.Damage(_damage);
+        if(this.isLocalPlayer)
+        {
+            m_damagePerformance?.Damage();
+        }
     }
 
 
