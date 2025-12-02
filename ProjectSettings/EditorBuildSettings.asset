@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Zunda/TitleTest.unity
     guid: 2a6dedca3e137ae48a4bcf60701a2f4b
+  - enabled: 1
+    path: Assets/MainScene/ConnectionScene.unity
+    guid: 6c5cda49dfca3dd4d8d106e09636735e
   - enabled: 1
     path: Assets/MainScene/LobbyScene.unity
     guid: 07ef117a0995c2944875e079bb294194
