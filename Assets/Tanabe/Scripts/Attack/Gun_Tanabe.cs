@@ -11,6 +11,7 @@ public class Gun_Tanabe : NetworkBehaviour
     [SerializeField] private GameObject m_gunHead;
     [SerializeField] private MeshRenderer m_isHitMesh;
     [SerializeField] private GunReticle_Tanabe m_gunReticle;
+    [SerializeField] private Color[] m_bulletColor;
     private float m_interval = 0.0f;
     private float m_maxInterval = 0.5f;
 
@@ -169,6 +170,8 @@ public class Gun_Tanabe : NetworkBehaviour
         GameObject obj = Instantiate(m_bulletPrefab);
         obj.GetComponent<Bullet_Tanabe>().Shot(m_player.GetPower(), m_gunHead.transform);
         NetworkServer.Spawn(obj);
+
+        obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
     }
 
     // ƒVƒ‡ƒbƒgƒKƒ“
@@ -183,6 +186,8 @@ public class Gun_Tanabe : NetworkBehaviour
             GameObject obj = Instantiate(m_bulletPrefab);
             obj.GetComponent<Bullet_Tanabe>().ShotGun(m_player.GetPower(), m_gunHead.transform, moveVector3.normalized);
             NetworkServer.Spawn(obj);
+
+            obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
         }
     }
 
@@ -193,6 +198,8 @@ public class Gun_Tanabe : NetworkBehaviour
         GameObject obj = Instantiate(m_bulletPrefab);
         obj.GetComponent<Bullet_Tanabe>().SharpShot(m_player.GetPower(), m_gunHead.transform);
         NetworkServer.Spawn(obj);
+
+        obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
     }
 
     private float GetRandomPoint()
