@@ -25785,7 +25785,7 @@ MonoBehaviour:
   HITTIME: 0.5
   m_explosionEffect: {fileID: 42294537}
   m_deadTimer: 2
-  m_isDropLittleByLittle: 1
+  m_isDropLittleByLittle: 0
 --- !u!54 &1018716822
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -110235,7 +110235,7 @@ MonoBehaviour:
   HITTIME: 0.5
   m_explosionEffect: {fileID: 2489981664250067792}
   m_deadTimer: 2
-  m_isDropLittleByLittle: 1
+  m_isDropLittleByLittle: 0
 --- !u!4 &6635524940810209793
 Transform:
   m_ObjectHideFlags: 0

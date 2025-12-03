@@ -39,6 +39,7 @@ public class Player_Tanabe : CharacterBase
     [Header("カメラ制御スクリプト"), SerializeField] private TPSCameraController_Tanabe m_cameraController;
     [Header("爆発オブジェクト"), SerializeField] private GameObject m_bombObject;
     [Header("目オブジェクト"), SerializeField] private GameObject[] m_eyesObject = new GameObject[2];
+    [Header("デバッグモードか"), SerializeField] private bool m_isDebugMode = false;
 
     // アイテムマネージャ
     private PossessionManager_Tanabe m_possessionManager;
@@ -298,7 +299,7 @@ public class Player_Tanabe : CharacterBase
         if (GetHp() <= 0.0f || m_gameOption != null && m_gameOption.IsPause()) { return; }
         // カメラの方向の共有
         m_notLocalCameraForward = m_cameraTransform.forward;
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) && m_isDebugMode)
         {
             this.transform.position = new Vector3(0f, 2f, 0f);
             m_rb.velocity = Vector3.zero;
