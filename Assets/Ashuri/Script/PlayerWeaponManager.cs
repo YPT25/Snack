@@ -40,6 +40,18 @@ public class PlayerWeaponManager : NetworkBehaviour
         // 置き換え
         NetworkServer.ReplacePlayerForConnection(conn, newPlayer, false);
 
+        //StatePlayer_Ashuri にモデル番号を保存する
+        StatePlayer_Ashuri state = FindObjectOfType<StatePlayer_Ashuri>();
+        if (state != null)
+        {
+            state.SavePlayerModel(conn, playerNumber);
+            Debug.Log($"[WeaponManager] モデル {playerNumber} を保存しました");
+        }
+        else
+        {
+            Debug.LogWarning("[WeaponManager] StatePlayer_Ashuri が見つかりませんでした");
+        }
+
         // 古いプレイヤー削除
         StartCoroutine(DeleteOldPlayer(oldPlayer));
     }

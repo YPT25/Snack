@@ -164,21 +164,41 @@ public class AshuriNetworkManager : NetworkManager
         base.OnServerConnect(conn);
     }
 
-    // ====================================================
-    // プレイヤー追加（ランダムでPrefab選択）
-    // ====================================================
-    //public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-    //{
-    //    //int randomIndex = Random.Range(0, 2);
-    //    //GameObject selectedPrefab = (randomIndex == 0 ? playerPrefab1 : playerPrefab2);
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        // 1つ上のコメント：プレイヤーの状態管理クラスを探す
+        var stateManager = FindObjectOfType<StatePlayer_Ashuri>();
 
-    //    //Transform startPos = GetStartPosition();
-    //    //GameObject player = (startPos != null)
-    //    //    ? Instantiate(selectedPrefab, startPos.position, startPos.rotation)
-    //    //    : Instantiate(selectedPrefab);
+        GameObject selectedPrefab;
 
-    //    //NetworkServer.AddPlayerForConnection(conn, player);
-    //}
+        // 1つ上のコメント：保存されたモデルがある場合だけ切り替える
+        if (stateManager != null && stateManager.HasSavedModel(conn))
+        {
+            // 1つ上のコメント：保存されているモデル番号を取得
+            int modelIndex = stateManager.GetSavedModel(conn);
+
+            // 1つ上のコメント：モデルに応じたPrefabを選ぶ
+            selectedPrefab = (modelIndex == 0 ? playerPrefab1 : playerPrefab2);
+        }
+        else
+        {
+            // 1つ上のコメント：保存されていない（初回）は NetworkManager のデフォルトを使用
+            selectedPrefab = playerPrefab;
+        }
+
+        // 1つ上のコメント：初期位置を取得
+        Transform start = GetStartPosition();
+
+        // 1つ上のコメント：プレイヤーを生成する
+        GameObject player = (start != null)
+            ? Instantiate(selectedPrefab, start.position, start.rotation)
+            : Instantiate(selectedPrefab);
+
+        // 1つ上のコメント：接続中のクライアントにプレイヤーを紐づける
+        NetworkServer.AddPlayerForConnection(conn, player);
+    }
+
+
 
     // ====================================================
     // サーバー停止時の処理

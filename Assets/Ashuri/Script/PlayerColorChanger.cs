@@ -28,7 +28,7 @@ public class PlayerColorChanger : NetworkBehaviour
         foreach (var r in renderers)
         {
             // 武器を除外する（例：WEAPON に "Weapon" タグを付けておく）
-            if (r.gameObject.layer == LayerMask.NameToLayer("Hammer"))
+            if (r.gameObject.layer == LayerMask.NameToLayer("Hammer") || r.gameObject.layer == LayerMask.NameToLayer("Gun"))
                 continue;
 
             if (r.CompareTag("Eye"))
