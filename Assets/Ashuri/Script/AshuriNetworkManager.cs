@@ -167,18 +167,18 @@ public class AshuriNetworkManager : NetworkManager
     // ====================================================
     // プレイヤー追加（ランダムでPrefab選択）
     // ====================================================
-    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-    {
-        int randomIndex = Random.Range(0, 2);
-        GameObject selectedPrefab = (randomIndex == 0 ? playerPrefab1 : playerPrefab2);
+    //public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    //{
+    //    //int randomIndex = Random.Range(0, 2);
+    //    //GameObject selectedPrefab = (randomIndex == 0 ? playerPrefab1 : playerPrefab2);
 
-        Transform startPos = GetStartPosition();
-        GameObject player = (startPos != null)
-            ? Instantiate(selectedPrefab, startPos.position, startPos.rotation)
-            : Instantiate(selectedPrefab);
+    //    //Transform startPos = GetStartPosition();
+    //    //GameObject player = (startPos != null)
+    //    //    ? Instantiate(selectedPrefab, startPos.position, startPos.rotation)
+    //    //    : Instantiate(selectedPrefab);
 
-        NetworkServer.AddPlayerForConnection(conn, player);
-    }
+    //    //NetworkServer.AddPlayerForConnection(conn, player);
+    //}
 
     // ====================================================
     // サーバー停止時の処理

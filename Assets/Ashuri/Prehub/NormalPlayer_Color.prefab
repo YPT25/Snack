@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 7587151342251794598}
   - component: {fileID: 827598582647508589}
   - component: {fileID: 2808877991225013990}
+  - component: {fileID: 2760218808282663596}
   m_Layer: 7
   m_Name: NormalPlayer_Color
   m_TagString: Player
@@ -262,6 +263,7 @@ MonoBehaviour:
   m_eyesObject:
   - {fileID: 5571579845783191448}
   - {fileID: 1822068149236919117}
+  m_isDebugMode: 0
   m_sweetScore: 0
 --- !u!114 &997897894590578773
 MonoBehaviour:
@@ -357,8 +359,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1e148b6719e71540bab19c0843f6049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponImage: {fileID: 0}
   _gunSprite: {fileID: 0}
   _hammerSprite: {fileID: 0}
+  _poppcornSprite: {fileID: 0}
+  _watagashiSprite: {fileID: 0}
+--- !u!114 &2760218808282663596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d443ee3bd3d2434db1c4449e2b215a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  newPlayerPrefab:
+  - {fileID: 8759962040556672278, guid: 3137c5444483dfd4dba656b036660eae, type: 3}
+  - {fileID: 676404720595789358, guid: 530fb43d2f6ddef4e80baa5d13f8e947, type: 3}
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0
