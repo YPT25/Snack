@@ -21,14 +21,19 @@ public class SphereBox_Player : MPlayerBase
     [SerializeField] private float m_rollForce = 15f;
 
     [Header("突撃モード設定")]
-    [SerializeField] private float dashDuration = 1.0f;    // 突撃時間
-    [SerializeField] private float dashSpeedMultiplier = 2f; // 移動速度アップ倍率
-    [SerializeField] private float dashCooldown = 3.0f;    // クールタイム
+    // 突撃時間
+    [SerializeField] private float dashDuration = 1.0f;
+    // 移動速度アップ倍率
+    [SerializeField] private float dashSpeedMultiplier = 2f;
+    // クールタイム
+    [SerializeField] private float dashCooldown = 3.0f;
 
     private bool m_isDashing = false;
     private bool m_canDash = true;
 
     private bool m_isAttacking = false;
+    // ノックバックの威力
+    [SerializeField] private float knockbackForce = 20f;
 
     public override void Start()
     {
@@ -121,6 +126,31 @@ public class SphereBox_Player : MPlayerBase
 
         CharacterBase target = other.GetComponent<CharacterBase>();
         if (target != null && target != this)
+        {
+            // ダメージ処理
             Attack(target);
+
+            // ノックバック
+            Rigidbody rb = other.attachedRigidbody;
+            if (rb != null)
+            {
+                // 吹っ飛ばす方向
+                Vector3 dir = (other.transform.position - transform.position).normalized;
+                dir.y = 1.3f; 
+                dir.Normalize();
+
+                // 速度リセット
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+
+                // 直接速度上書き
+                rb.velocity = dir * knockbackForce;
+
+                // AddForceの併用
+                rb.AddForce(dir * (knockbackForce * 0.5f), ForceMode.Impulse);
+            }
+        }
     }
 }
+
+
