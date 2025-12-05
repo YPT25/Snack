@@ -15710,7 +15710,7 @@ GameObject:
   - component: {fileID: 2676446379496727903}
   - component: {fileID: 1336300632885652218}
   - component: {fileID: 3850446914987728432}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: marbel_gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25708,7 +25708,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3300884035631210512}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46012,6 +46012,7 @@ MonoBehaviour:
   m_eyesObject:
   - {fileID: 4727835074378120277}
   - {fileID: 5285541003729473306}
+  m_isDebugMode: 0
   m_sweetScore: 0
 --- !u!114 &26098935339714900
 MonoBehaviour:
