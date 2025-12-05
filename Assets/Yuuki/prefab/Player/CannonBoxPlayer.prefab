@@ -270,7 +270,7 @@ MonoBehaviour:
   m_enemyType: 3
   mouseSensitivity: 3
   rotationSmooth: 10
-  m_respawnIcon: {fileID: 21300000, guid: ff16e899c9e4f8a41af08ba413b53813, type: 3}
+  m_respawnIcon: {fileID: 21300000, guid: 1d46f7e1e8fe9d34ab38818ac28bf9a4, type: 3}
   iscanMove: 1
   fpsCameraPoint: {fileID: 5468120318630731223}
   tpsCameraOffset: {x: 0, y: 2, z: -4}

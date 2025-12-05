@@ -2,23 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.AI;
 public class NPCBase : EnemyBase
 {
     [SyncVar] protected bool m_isAttacking = false;
     protected Transform m_target;
     protected Rigidbody m_rb;
+    protected NavMeshAgent agent;
 
     // WayPoint 読み込み用（子オブジェクトの Transform を入れる）
     protected Transform[] m_waypoints;
     private int m_currentWaypoint = 0;
 
     [Header("AI基本設定")]
-    // 索敵範囲
-    [SerializeField] protected float detectRange = 10f;
-    // 攻撃範囲
-    [SerializeField] protected float attackRange = 2f;
-    // ランダム歩行 切替時間
-    [SerializeField] protected float randomWalkInterval = 2f; 
+    [SerializeField] protected float detectRange = 10f;       // 索敵範囲
+    [SerializeField] protected float attackRange = 2f;        // 攻撃範囲
+    [SerializeField] protected float randomWalkInterval = 2f; // ランダム歩行 切替時間
     [SerializeField] protected float walkSpeedMultiplier = 0.5f;
 
     private float randomWalkTimer = 0f;
@@ -28,6 +27,15 @@ public class NPCBase : EnemyBase
     {
         base.Start();
         m_rb = GetComponent<Rigidbody>();
+        TryGetComponent<NavMeshAgent>(out agent);
+
+        if (agent != null)
+        {
+            // Agent側の速度は GetMoveSpeed() と連動させるために最初の速度を保存
+            agent.speed = GetMoveSpeed() * walkSpeedMultiplier;
+            agent.updateRotation = true;
+            agent.updatePosition = true;
+        }
     }
 
     // ======================================
@@ -49,6 +57,8 @@ public class NPCBase : EnemyBase
             if (dist > detectRange * 1.5f)
             {
                 m_target = null;
+                // agent を停止
+                if (agent != null && agent.isOnNavMesh) agent.ResetPath();
                 return;
             }
 
@@ -113,10 +123,20 @@ public class NPCBase : EnemyBase
             ).normalized;
         }
 
-        transform.position += randomDir * GetMoveSpeed() * walkSpeedMultiplier * Time.deltaTime;
+        Vector3 move = randomDir * GetMoveSpeed() * walkSpeedMultiplier * Time.deltaTime;
 
-        if (randomDir.sqrMagnitude > 0.01f)
-            transform.forward = randomDir;
+        if (agent != null && agent.isOnNavMesh)
+        {
+            // NavMesh があるなら目的地を短く指定して移動させる（少しずつ）
+            Vector3 dest = transform.position + move;
+            agent.speed = GetMoveSpeed() * walkSpeedMultiplier;
+            agent.SetDestination(dest);
+        }
+        else
+        {
+            transform.position += move;
+            if (randomDir.sqrMagnitude > 0.01f) transform.forward = randomDir;
+        }
     }
 
     // ======================================
@@ -128,17 +148,29 @@ public class NPCBase : EnemyBase
         if (m_waypoints == null || m_waypoints.Length == 0) return;
 
         Transform wp = m_waypoints[m_currentWaypoint];
+        Vector3 dest = wp.position;
 
-        Vector3 dir = (wp.position - transform.position).normalized;
-        transform.position += dir * GetMoveSpeed() * walkSpeedMultiplier * Time.deltaTime;
-
-        if (dir.sqrMagnitude > 0.01f)
-            transform.forward = dir;
-
-        // 到達判定
-        if (Vector3.Distance(transform.position, wp.position) < 1f)
+        if (agent != null && agent.isOnNavMesh)
         {
-            m_currentWaypoint = (m_currentWaypoint + 1) % m_waypoints.Length;
+            agent.speed = GetMoveSpeed() * walkSpeedMultiplier;
+            agent.SetDestination(dest);
+
+            // 到達判定は NavMeshAgent の残り距離を利用（ただし agent.pathPending を考慮）
+            if (!agent.pathPending && agent.remainingDistance <= 1.0f)
+            {
+                m_currentWaypoint = (m_currentWaypoint + 1) % m_waypoints.Length;
+            }
+        }
+        else
+        {
+            Vector3 dir = (dest - transform.position).normalized;
+            transform.position += dir * GetMoveSpeed() * walkSpeedMultiplier * Time.deltaTime;
+            if (dir.sqrMagnitude > 0.01f) transform.forward = dir;
+
+            if (Vector3.Distance(transform.position, dest) < 1f)
+            {
+                m_currentWaypoint = (m_currentWaypoint + 1) % m_waypoints.Length;
+            }
         }
     }
 
@@ -148,12 +180,23 @@ public class NPCBase : EnemyBase
     [Server]
     protected virtual void ChaseTarget()
     {
-        Vector3 dir = (m_target.position - transform.position).normalized;
+        if (m_target == null) return;
 
-        transform.position += dir * GetMoveSpeed() * Time.deltaTime;
+        Vector3 dest = m_target.position;
 
-        if (dir.sqrMagnitude > 0.01f)
-            transform.forward = dir;
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.speed = GetMoveSpeed();
+            agent.SetDestination(dest);
+        }
+        else
+        {
+            Vector3 dir = (dest - transform.position).normalized;
+            transform.position += dir * GetMoveSpeed() * Time.deltaTime;
+
+            if (dir.sqrMagnitude > 0.01f)
+                transform.forward = dir;
+        }
     }
 
     // ======================================

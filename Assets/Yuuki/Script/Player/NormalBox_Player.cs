@@ -17,6 +17,9 @@ public class NormalBox_Player : MPlayerBase
     [SerializeField] private Collider m_attackCollider;
     [SerializeField] private Collider m_hitCollider;
     [SerializeField] private float m_attackDuration = 0.5f;
+    [Header("倒れる中心")]
+    [SerializeField] private Transform attackPivot;
+
     private bool m_isAttacking = false;
     // 多段ヒット防止用
     private HashSet<CharacterBase> hitTargets = new HashSet<CharacterBase>();
@@ -48,46 +51,40 @@ public class NormalBox_Player : MPlayerBase
 
         float elapsed = 0f;
         float duration = m_attackDuration;
-        // 攻撃中は移動不能にする
+
         iscanMove = false;
 
-        // 見た目モデルの回転
-        Quaternion startRot = modelRoot.localRotation;
-        Quaternion targetRot = startRot * Quaternion.Euler(0f, 0f, -90f);
+        // pivotが無ければmodelRootをpivotとして扱う
+        Transform pivot = attackPivot != null ? attackPivot : modelRoot;
 
-        // コライダー切り替え
-        //if (m_attackCollider)
-        //{
-        //    m_attackCollider.enabled = true;
-        //}
+        Quaternion startRot = pivot.localRotation;
+        Quaternion targetRot = startRot * Quaternion.Euler(90f, 0f, 0f);
+
         m_attackCollider.enabled = true;
-        // 倒れるモーション
+
+        // ===== 倒れるアニメ =====
         while (elapsed < duration)
         {
-            modelRoot.localRotation = Quaternion.Slerp(startRot, targetRot, elapsed / duration);
+            pivot.localRotation = Quaternion.Slerp(startRot, targetRot, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
-        modelRoot.localRotation = targetRot;
+        pivot.localRotation = targetRot;
 
-        // 攻撃判定をオフ
-        //if (m_attackCollider != null)
-        //{
-        //    m_attackCollider.enabled = false;
-        //}
+        // 攻撃オフ
         m_attackCollider.enabled = false;
-        // 戻るモーション
+
+        // 元に戻るアニメ
         elapsed = 0f;
         while (elapsed < duration)
         {
-            modelRoot.localRotation = Quaternion.Slerp(targetRot, startRot, elapsed / duration);
+            pivot.localRotation = Quaternion.Slerp(targetRot, startRot, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
-        modelRoot.localRotation = startRot;
+        pivot.localRotation = startRot;
 
         iscanMove = true;
-
         m_isAttacking = false;
     }
 

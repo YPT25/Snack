@@ -8,6 +8,9 @@ public class NormalBox_NPC : NPCBase
     [Header("倒れるモデル（kabeteki を指定）")]
     [SerializeField] private Transform modelRoot;
 
+    [Header("回転の中心（modelRoot のローカル座標）")]
+    [SerializeField] private Vector3 pivotOffset = Vector3.zero;
+
     [SerializeField] private Collider m_attackCollider;
     [SerializeField] private Collider m_hitCollider;
     [SerializeField] private float attackDuration = 0.5f;
@@ -29,71 +32,93 @@ public class NormalBox_NPC : NPCBase
             Debug.LogError("modelRoot に kabeteki を設定してください。NPC");
     }
 
-    // ======================================
-    // ● プレイヤー版の前倒し攻撃を移植（transformは回転させない）
-    // ======================================
+
+    // =====================================================
+    // 倒れる攻撃
+    // =====================================================
     protected override IEnumerator DoAttack()
     {
         if (m_isAttacking) yield break;
         m_isAttacking = true;
 
-        // 多段ヒットを防ぐ
+        // 多段ヒット防止
         hitTargets.Clear();
 
-        // ↓ 攻撃中は移動しない
-        Vector3 stopVelocity = Vector3.zero;
+        // 攻撃中は移動不能
         float originalSpeed = GetMoveSpeed();
         SetMoveSpeed(0);
 
         float elapsed = 0f;
         float duration = attackDuration;
 
-        // モデルだけ倒す（Playerと同じ）
-        Quaternion startRot = modelRoot.localRotation;
-        Quaternion targetRot = startRot * Quaternion.Euler(0, 0, -90f);
+        // Pivot 計算
+        Vector3 pivotWorld = modelRoot.TransformPoint(pivotOffset);
 
-        // コライダーON
+        // 回転開始前の状態
+        Quaternion startRot = modelRoot.rotation;
+        Quaternion endRot = startRot * Quaternion.Euler(90, 0, 0f);
+
+        // コライダー ON
         if (m_attackCollider)
         {
             m_attackCollider.enabled = true;
-            m_hitCollider.enabled = false;
+            if (m_hitCollider) m_hitCollider.enabled = false;
         }
 
-        // 倒れるアニメ
+        // ============================
+        // 前倒しの回転
+        // ============================
         while (elapsed < duration)
         {
-            modelRoot.localRotation = Quaternion.Slerp(startRot, targetRot, elapsed / duration);
+            float t = elapsed / duration;
+            Quaternion rot = Quaternion.Slerp(startRot, endRot, t);
+
+            // Pivot を中心に回転させる
+            modelRoot.rotation = rot;
+            modelRoot.position = pivotWorld - (modelRoot.rotation * pivotOffset);
+
             elapsed += Time.deltaTime;
             yield return null;
         }
-        modelRoot.localRotation = targetRot;
 
-        // OFF
+        modelRoot.rotation = endRot;
+        modelRoot.position = pivotWorld - (modelRoot.rotation * pivotOffset);
+
+        // コライダー OFF
         if (m_attackCollider)
         {
             m_attackCollider.enabled = false;
-            m_hitCollider.enabled = true;
+            if (m_hitCollider) m_hitCollider.enabled = true;
         }
 
-        // 元に戻す
+        // ============================
+        // 元の姿勢に戻るアニメーション
+        // ============================
         elapsed = 0f;
         while (elapsed < duration)
         {
-            modelRoot.localRotation = Quaternion.Slerp(targetRot, startRot, elapsed / duration);
+            float t = elapsed / duration;
+            Quaternion rot = Quaternion.Slerp(endRot, startRot, t);
+
+            modelRoot.rotation = rot;
+            modelRoot.position = pivotWorld - (modelRoot.rotation * pivotOffset);
+
             elapsed += Time.deltaTime;
             yield return null;
         }
-        modelRoot.localRotation = startRot;
 
-        // 移動速度を戻す
+        modelRoot.rotation = startRot;
+        modelRoot.position = pivotWorld - (modelRoot.rotation * pivotOffset);
+
+        // 移動復帰
         SetMoveSpeed(originalSpeed);
-
         m_isAttacking = false;
     }
 
-    // ======================================
-    // ● 多段ヒットなし攻撃
-    // ======================================
+
+    // =====================================================
+    // 多段ヒットなし攻撃
+    // =====================================================
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
