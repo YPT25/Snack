@@ -90,12 +90,12 @@ public class TPSCameraController_Tanabe : MonoBehaviour
             transform.position = desiredPosition;
             Vector3 hitDistance = Vector3.one;
             float up = 1f;
-            // カメラがステージオブジェクトにぶつかっているか調べる
-            if(this.PositionAdjustment(desiredPosition, out hitDistance, out up))
-            {
-                transform.position = target.position + hitDistance * 0.5f;
-                desiredPosition = transform.position;
-            }
+            //// カメラがステージオブジェクトにぶつかっているか調べる
+            //if(this.PositionAdjustment(desiredPosition, out hitDistance, out up))
+            //{
+            //    transform.position = target.position + hitDistance * 0.5f;
+            //    desiredPosition = transform.position;
+            //}
             Vector3 direction = target.position - desiredPosition;
             Vector3 aaa = target.position + direction * 1.0f + (rotation * aimingAdjustment);
             transform.LookAt(aaa);
