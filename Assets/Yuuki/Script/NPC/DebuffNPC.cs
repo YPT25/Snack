@@ -6,82 +6,21 @@ using Mirror;
 public class DebuffNPC : NPCBase
 {
     [Header("デバフ設定")]
-    // 行動不能時間
-    [SerializeField] private float debuffDuration = 2f;
-    // 1秒ごとのDoT
-    [SerializeField] private float damagePerSecond = 5f;
-    // 接触しやすくする用
-    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float debuffDuration = 3f;
+    [SerializeField] private float damageInterval = 1f;
+    [SerializeField] private float damageAmount = 5f;
 
-    private Rigidbody rb;
-
-    public override void Start()
-    {
-        base.Start();
-        rb = GetComponent<Rigidbody>();
-    }
-
-    // 攻撃対象にヒットしたときサーバー側で実行
-    [Server]
-    void ApplyDebuff(CharacterBase target)
-    {
-        if (target == null)
-        {
-            return;
-        }
-
-        // HEROにのみ効果
-        if (target.GetCharacterType() != CharacterType.HERO_TYPE)
-        {
-            return;
-        }
-
-
-        // 既存のSetIsMove / SetIsAttack を使って行動不能
-        target.SetIsMove(false);
-        target.SetIsAttack(false);
-
-        target.RpcSetIsMove(false);
-        target.RpcSetIsAttack(false);
-
-        // 行動不能+持続ダメージのコルーチン
-        StartCoroutine(DebuffCoroutine(target));
-    }
-
-    [Server]
-    private IEnumerator DebuffCoroutine(CharacterBase target)
-    {
-        float timer = 0f;
-
-        while (timer < debuffDuration && target != null)
-        {
-            target.Damage(damagePerSecond * Time.deltaTime);
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        // デバフ終了 → 行動可能に戻す
-        if (target != null)
-        {
-            target.SetIsMove(true);
-            target.SetIsAttack(true);
-
-            target.RpcSetIsMove(true);
-            target.RpcSetIsAttack(true);
-        }
-    }
-
-    [Server]
     protected override IEnumerator DoAttack()
     {
         if (m_isAttacking) yield break;
+
         m_isAttacking = true;
 
-        // 簡易ジャンプ攻撃
-        if (rb != null)
-            rb.velocity = new Vector3(0, jumpForce, 0);
+        // ジャンプ
+        if (m_rb != null)
+            m_rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.4f);
 
         m_isAttacking = false;
     }
@@ -92,9 +31,46 @@ public class DebuffNPC : NPCBase
         if (!m_isAttacking) return;
 
         CharacterBase target = other.GetComponent<CharacterBase>();
-        if (target == null) return;
 
-        // デバフ実行
+        if (target == null) return;
+        if (target.GetCharacterType() != CharacterType.HERO_TYPE) return;
+
         ApplyDebuff(target);
+    }
+
+    // -----------------------------
+    // デバフ本体
+    // -----------------------------
+    private void ApplyDebuff(CharacterBase target)
+    {
+        target.SetIsMove(false);
+        target.SetIsAttack(false);
+        target.RpcSetIsMove(false);
+        target.RpcSetIsAttack(false);
+
+        StartCoroutine(DoDamageOverTime(target));
+        StartCoroutine(RecoverAfterDelay(target));
+    }
+
+    private IEnumerator DoDamageOverTime(CharacterBase target)
+    {
+        float timer = 0f;
+        while (timer < debuffDuration)
+        {
+            target.Damage(damageAmount);
+            target.RpcDamage(damageAmount);
+            yield return new WaitForSeconds(damageInterval);
+            timer += damageInterval;
+        }
+    }
+
+    private IEnumerator RecoverAfterDelay(CharacterBase target)
+    {
+        yield return new WaitForSeconds(debuffDuration);
+
+        target.SetIsMove(true);
+        target.SetIsAttack(true);
+        target.RpcSetIsMove(true);
+        target.RpcSetIsAttack(true);
     }
 }
