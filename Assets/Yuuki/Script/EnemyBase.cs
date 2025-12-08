@@ -44,7 +44,7 @@ public class EnemyBase : CharacterBase
             return;
         }
 
-        target.Damage(GetPower());
+        target.RpcDamage(GetPower());
         Debug.Log($"{name} が {target.name} に攻撃！ ダメージ:{GetPower()}");
     }
 
