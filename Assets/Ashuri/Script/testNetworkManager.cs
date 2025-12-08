@@ -11,6 +11,7 @@ public class testNetworkManager : NetworkBehaviour
 
     private void Update()
     {
+
         // ©•ª‚ÌƒvƒŒƒCƒ„[‚¾‚¯‚ª‘€ì‚Å‚«‚é‚æ‚¤‚É‚·‚é
         if (!isLocalPlayer) return;
 

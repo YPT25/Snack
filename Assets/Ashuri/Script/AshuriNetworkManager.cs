@@ -166,27 +166,27 @@ public class AshuriNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        // 1つ上のコメント：プレイヤーの状態管理クラスを探す
+        // プレイヤーの状態管理クラスを探す
         var stateManager = FindObjectOfType<StatePlayer_Ashuri>();
 
         GameObject selectedPrefab;
 
-        // 1つ上のコメント：保存されたモデルがある場合だけ切り替える
+        // 保存されたモデルがある場合だけ切り替える
         if (stateManager != null && stateManager.HasSavedModel(conn))
         {
-            // 1つ上のコメント：保存されているモデル番号を取得
+            // 保存されているモデル番号を取得
             int modelIndex = stateManager.GetSavedModel(conn);
 
-            // 1つ上のコメント：モデルに応じたPrefabを選ぶ
+            // モデルに応じたPrefabを選ぶ
             selectedPrefab = (modelIndex == 0 ? playerPrefab1 : playerPrefab2);
         }
         else
         {
-            // 1つ上のコメント：保存されていない（初回）は NetworkManager のデフォルトを使用
+            // 保存されていない（初回）は NetworkManager のデフォルトを使用
             selectedPrefab = playerPrefab;
         }
 
-        // 1つ上のコメント：初期位置を取得
+        // 初期位置を取得
         Transform start = GetStartPosition();
 
         // 1つ上のコメント：プレイヤーを生成する

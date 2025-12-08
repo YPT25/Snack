@@ -593,6 +593,10 @@ PrefabInstance:
       value: Assets/MainScene/LobbyScene.unity
       objectReference: {fileID: 0}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: offlineScene
+      value: Assets/MainScene/TitleScene.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: playerPrefab
       value: 
       objectReference: {fileID: 676404720595789358, guid: 624793d9cc157ac4d861cb60ff873717, type: 3}

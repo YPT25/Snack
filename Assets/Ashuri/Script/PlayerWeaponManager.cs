@@ -40,6 +40,9 @@ public class PlayerWeaponManager : NetworkBehaviour
         // 置き換え
         NetworkServer.ReplacePlayerForConnection(conn, newPlayer, false);
 
+        // 角度を元に戻す
+        StartCoroutine(FixRotationNextFrame(newPlayer, oldPlayer.transform.rotation));
+
         //StatePlayer_Ashuri にモデル番号を保存する
         StatePlayer_Ashuri state = FindObjectOfType<StatePlayer_Ashuri>();
         if (state != null)
@@ -64,5 +67,15 @@ public class PlayerWeaponManager : NetworkBehaviour
         yield return null;
         if (oldPlayer != null)
             NetworkServer.Destroy(oldPlayer);
+    }
+
+    // ----------------------------------------------------
+    // 1フレーム後に新しいプレイヤーの角度を変更
+    // ----------------------------------------------------
+    private IEnumerator FixRotationNextFrame(GameObject newPlayer, Quaternion rot)
+    {
+        yield return null;
+        if (newPlayer != null)
+            newPlayer.transform.rotation = rot;
     }
 }
