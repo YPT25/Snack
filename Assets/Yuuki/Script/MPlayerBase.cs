@@ -88,7 +88,7 @@ public class MPlayerBase : EnemyBase
         {
             SetHp(0);
         }
-            if (GetHp() <= 0 && isServer)
+        if (GetHp() <= 0 && isServer)
         {
             Die();
         }
@@ -104,30 +104,29 @@ public class MPlayerBase : EnemyBase
 
     protected virtual void HandleInput()
     {
+        // ====== 移動入力（共通化）======
+        Vector2 moveAxis = LegacyInputHelper.GetMoveAxis();
+        m_inputDir = new Vector3(moveAxis.x, 0, moveAxis.y).normalized;
 
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-        m_inputDir = new Vector3(h, 0, v).normalized;
-
-        if (!Input.GetKeyDown(KeyCode.LeftAlt))
-        {
-            Cursor.visible = false;
-        }
-
-        // 左クリック攻撃
-        if (Input.GetMouseButtonDown(0))
+        // ====== 攻撃 ======
+        if (LegacyInputHelper.GetAttackDown())
             CmdAttackInput();
 
-        // FPS切替
-        if (Input.GetMouseButtonDown(1))
-        {
-            SetFPS(true);
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            SetFPS(false);
-        }
+        // ====== FPS/TPS切り替え（右クリック or Pad L2） ======
+        bool aiming = LegacyInputHelper.GetAim();
+        SetFPS(aiming);
 
+        // マウスカーソル処理
+        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
     // FPS視点への切り替え
     private void SetFPS(bool flag)
@@ -158,18 +157,21 @@ public class MPlayerBase : EnemyBase
     {
         if (cam == null) return;
 
-        float mouseX = Input.GetAxis("Camera X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Camera Y") * mouseSensitivity;
+        // ====== マウス + 右スティック共通 ======
+        Vector2 lookAxis = LegacyInputHelper.GetLookAxis();
+
+        float mouseX = lookAxis.x * mouseSensitivity;
+        float mouseY = lookAxis.y * mouseSensitivity;
 
         yaw += mouseX;
         pitch -= mouseY;
         pitch = Mathf.Clamp(pitch, -80f, 85f);
 
-        // === プレイヤーの水平回転 ===
+        // ===== プレイヤー水平回転 =====
         Quaternion targetRot = Quaternion.Euler(0, yaw, 0);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSmooth);
 
-        // === FPS視点 ===
+        // ===== FPS視点 =====
         if (isFPS)
         {
             cam.transform.position = fpsCameraPoint.position;
@@ -177,7 +179,7 @@ public class MPlayerBase : EnemyBase
             return;
         }
 
-        // === TPS視点 ===
+        // ===== TPS視点 =====
         Vector3 offset = Quaternion.Euler(pitch, yaw, 0) * tpsCameraOffset;
         cam.transform.position = transform.position + offset;
 
