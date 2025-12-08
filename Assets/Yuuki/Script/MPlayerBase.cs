@@ -16,6 +16,12 @@ public class MPlayerBase : EnemyBase
     [SerializeField] protected float rotationSmooth = 10f;
     [SerializeField] private Sprite m_respawnIcon;
 
+    // Pad 用設定（Editorで微調整できるようにした）
+    [Header("Pad（右スティック）設定")]
+    [SerializeField] private float padSensitivityMultiplier = 20f;
+    [SerializeField] private float padDeadZone = 0.02f;
+    [SerializeField] private bool padInvertY = true;
+
     protected Vector3 m_inputDir;
     protected Rigidbody m_rb;
     protected float yaw;
@@ -24,19 +30,18 @@ public class MPlayerBase : EnemyBase
 
     private bool isInitialized = false;
     private bool isDead = false;
-    public bool  iscanMove = true;
+    public bool iscanMove = true;
 
     // ===== FPS視点用 =====
     [Header("FPS視点設定")]
-    // プレイヤー頭に置くポイント
-    [SerializeField] private Transform fpsCameraPoint;  
+    [SerializeField] private Transform fpsCameraPoint;
     [SerializeField] private Vector3 tpsCameraOffset = new Vector3(0, 2f, -4f);
 
     [SerializeField] private float tpsFOV = 60f;
     [SerializeField] private float fpsFOV = 75f;
     private bool isFPS = false;
     // FPS時に自分の体を消すため
-    private MeshRenderer[] myRenderers;  
+    private MeshRenderer[] myRenderers;
 
     public override void Start()
     {
@@ -52,8 +57,6 @@ public class MPlayerBase : EnemyBase
             cam = Camera.main;
             StartCoroutine(InitializeAfterDelay());
         }
-       
-
     }
 
     private IEnumerator InitializeAfterDelay()
@@ -61,6 +64,11 @@ public class MPlayerBase : EnemyBase
         yield return new WaitForSeconds(0.3f);
         isInitialized = true;
         Debug.Log($"[MPlayerBase] {name}: Initialize完了 (isLocalPlayer={isLocalPlayer})");
+
+        // LegacyInputHelper のパッド設定を同期（エディタでここを変えられる）
+        LegacyInputHelper.padSensitivityMultiplier = padSensitivityMultiplier;
+        LegacyInputHelper.padDeadZone = padDeadZone;
+        LegacyInputHelper.invertPadY = padInvertY;
     }
 
     public override void Update()
@@ -72,6 +80,7 @@ public class MPlayerBase : EnemyBase
 
         HandleInput();
         HandleCamera();
+
         // マウスの埋め込み
         if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
         {
@@ -116,7 +125,7 @@ public class MPlayerBase : EnemyBase
         bool aiming = LegacyInputHelper.GetAim();
         SetFPS(aiming);
 
-        // マウスカーソル処理
+        // マウスカーソル処理（Altキーで解除）
         if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
         {
             Cursor.lockState = CursorLockMode.None;
@@ -128,6 +137,7 @@ public class MPlayerBase : EnemyBase
             Cursor.visible = false;
         }
     }
+
     // FPS視点への切り替え
     private void SetFPS(bool flag)
     {
@@ -142,8 +152,8 @@ public class MPlayerBase : EnemyBase
         {
             cam.fieldOfView = isFPS ? fpsFOV : tpsFOV;
         }
-            
     }
+
     [Command]
     private void CmdAttackInput()
     {
@@ -157,9 +167,10 @@ public class MPlayerBase : EnemyBase
     {
         if (cam == null) return;
 
-        // ====== マウス + 右スティック共通 ======
+        // LegacyInputHelper 側で padDeadZone / padSensitivity 等を反映している
         Vector2 lookAxis = LegacyInputHelper.GetLookAxis();
 
+        // ここでマウスSensitivity を適用（padで戻された値は既に padMultiplier がかかっている）
         float mouseX = lookAxis.x * mouseSensitivity;
         float mouseY = lookAxis.y * mouseSensitivity;
 
@@ -174,15 +185,17 @@ public class MPlayerBase : EnemyBase
         // ===== FPS視点 =====
         if (isFPS)
         {
-            cam.transform.position = fpsCameraPoint.position;
-            cam.transform.rotation = Quaternion.Euler(pitch, yaw, 0);
+            if (fpsCameraPoint != null)
+            {
+                cam.transform.position = fpsCameraPoint.position;
+                cam.transform.rotation = Quaternion.Euler(pitch, yaw, 0);
+            }
             return;
         }
 
         // ===== TPS視点 =====
         Vector3 offset = Quaternion.Euler(pitch, yaw, 0) * tpsCameraOffset;
         cam.transform.position = transform.position + offset;
-
         cam.transform.LookAt(transform.position + Vector3.up * 1.5f);
     }
 
@@ -212,7 +225,6 @@ public class MPlayerBase : EnemyBase
                 m_rb.velocity = Vector3.zero; // ピタッと止める
             return;
         }
-  
     }
 
     // ===== 死亡処理 =====
