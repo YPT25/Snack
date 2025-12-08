@@ -87,7 +87,7 @@ public class NPCBase : EnemyBase
         // –³‚¯‚ê‚Îƒ‰ƒ“ƒ_ƒ€•às
         RandomWalk();
 
-        if (GetHp() <= 0 && isServer)
+        if (GetHp() <= 0)
         {
             Die();
         }
