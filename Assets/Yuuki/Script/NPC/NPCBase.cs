@@ -44,6 +44,11 @@ public class NPCBase : EnemyBase
     [ServerCallback]
     public override void Update()
     {
+        if (GetHp() <= 0)
+        {
+            Die();
+        }
+
         base.Update();
 
         if (m_isAttacking) return;
@@ -87,10 +92,7 @@ public class NPCBase : EnemyBase
         // –³‚¯‚ê‚Îƒ‰ƒ“ƒ_ƒ€•às
         RandomWalk();
 
-        if (GetHp() <= 0)
-        {
-            Die();
-        }
+
     }
 
     // ======================================
