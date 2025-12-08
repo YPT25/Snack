@@ -278,7 +278,7 @@ MonoBehaviour:
   m_canFriendlyFire: 0
   m_enemyType: 1
   detectRange: 10
-  attackRange: 1
+  attackRange: 1.5
   randomWalkInterval: 2
   walkSpeedMultiplier: 0.5
   modelRoot: {fileID: 9172718188186435390}
