@@ -1,9 +1,10 @@
 ﻿using Mirror;                     // Mirrorネットワーク機能
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;                      // TextMeshProを使用
 using UnityEngine;
-using UnityEngine.UI;              // Unityの基本クラス使用
-using UnityEngine.SceneManagement; // シーン遷移のために必要
-using System.Collections;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;             // Unityの基本クラス使用
 
 /// <summary>
 /// ゲーム終了後のスコアUIを管理するクラス
@@ -11,140 +12,123 @@ using System.Collections;
 /// </summary>
 public class ResultUIScore : NetworkBehaviour
 {
-    [Header("スコアUI関連")]
-    [Tooltip("スコアを表示するTextMeshProUGUI")]
-    [SerializeField] private TextMeshProUGUI scoreText;
-
-    [Tooltip("スコアパネル（非表示→表示切り替え）")]
-    [SerializeField] private GameObject scorePanel;
-
-    [Tooltip("ロビーシーンに戻るボタン")]
-    [SerializeField] private Button lobbySceneButton;
-
-    [Tooltip("ロビーシーンで非表示にしたいCanvasの名前")]
-    [SerializeField] private string lobbyCanvasName = "NetworkCanvas";
-
+    // シングルトンとして自身を登録
     public static ResultUIScore Instance { get; private set; }
 
+    // ===============================
+    // 生成するオブジェクトのリスト
+    // ===============================
+    [Header("王冠プレハブ")]
+    [SerializeField] private List<GameObject> crownPrefab = new List<GameObject>();
+
+    // ===============================
+    // お菓子を管理しているオブジェクト
+    // ===============================
+    [Header("お菓子を管理しているオブジェクト")]
+    [SerializeField] private GameObject _sweetContainer;
+
+
+    // クライアント開始時に初期設定を行う
     public override void OnStartClient()
     {
         base.OnStartClient();
 
+        // インスタンス登録
         if (Instance == null) Instance = this;
-
-        if (scorePanel != null)
-            scorePanel.SetActive(false);
-
-        if (lobbySceneButton != null)
-        {
-            lobbySceneButton.onClick.AddListener(OnClickReturnLobby);
-
-            if (!isServer)
-                lobbySceneButton.interactable = false;
-        }
     }
 
+
+    // 毎フレーム、サーバーのみボタン判定を行う
     private void Update()
     {
         if (!isServer) return;
 
+        // Nキーでロビーに戻れるようにする（サーバー用）
         if (Input.GetKeyDown(KeyCode.N))
         {
             OnClickReturnLobby();
         }
     }
 
+
+    // スコア表示をすべてのクライアントに送る
     [ClientRpc]
     public void RpcShowScore(float finalScore)
     {
+        //お菓子を削除
+        _sweetContainer.SetActive(false);
+        // スコアを表示する処理
         ShowScore(finalScore);
-
-        if (lobbySceneButton != null)
-            lobbySceneButton.gameObject.SetActive(true);
     }
 
+
+    // スコア UI を生成して表示する
     public void ShowScore(float finalScore)
     {
-        Debug.Log("Game Over! Showing Score (Client)");
+        // デバッグログを表示する
+        Debug.Log("Game Over! Showing Crowns Instead of Score (Client)");
 
+        // 全プレイヤー情報を取得する
         Player_Tanabe[] players = FindObjectsOfType<Player_Tanabe>();
 
-        if (scorePanel != null)
-            scorePanel.SetActive(true);
-
-        if (scoreText != null)
-        {
-            string allScores = "";
-
-            for (int i = 0; i < players.Length; i++)
-            {
-                Player_Tanabe p = players[i];
-                //allScores += $"Player{p.playerNumber}: {p.m_sweetScore}\n";
-            }
-
-            //allScores += $"\nYour team Score: {finalScore}";
-
-            scoreText.text = allScores;
-        }
-
+        // スコア順に並び替え（降順）
         System.Array.Sort(players, (a, b) => b.m_sweetScore.CompareTo(a.m_sweetScore));
-
-        string rankingText = "\n\n--- Ranking ---\n";
-
+        // ランキング順にクラウン（BWCrownManager付き）を割り当てる処理
         for (int i = 0; i < players.Length; i++)
         {
+            // 対象プレイヤーを取得する
             Player_Tanabe p = players[i];
-            rankingText += $"Number{i + 1}: Player{p.playerNumber} - {p.m_sweetScore}PT\n";
+
+            // ランキングの並びに対応するクラウンオブジェクトがあるか確認
+            if (i < crownPrefab.Count && crownPrefab[i] != null)
+            {
+                // crownPrefab には BWCrownManager を持つオブジェクトが入っている前提
+                GameObject crownObj = crownPrefab[i];
+
+                // プレハブをシーンに生成（位置は適当、後で BWCrownManager が動かす）
+                GameObject crownInstance = Instantiate(crownObj);
+
+                // BWCrownManager を取得
+                BWCrownManager crownManager = crownInstance.GetComponent<BWCrownManager>();
+
+                if (crownManager != null)
+                {
+                    // プレイヤーの Transform を登録
+                    crownManager.SetPlayerPosition(p.transform);
+
+                    Debug.Log($"Player{p.playerNumber} に {i + 1} 位クラウンを割り当てました。");
+                }
+                else
+                {
+                    Debug.LogWarning("BWCrownManager が crownPrefab に付いていません");
+                }
+            }
         }
 
-        if (scoreText != null)
-            scoreText.text += rankingText;
 
-        Time.timeScale = 0f;
+        // ゲームを一時停止する
+        //Time.timeScale = 0f;
     }
 
+
+    // ロビーに戻す処理（サーバーのみ）
     private void OnClickReturnLobby()
     {
         if (!isServer) return;
 
+        // 時間を通常に戻す
         Time.timeScale = 1f;
 
-        // ロビーシーンへ移動
+        // サーバー側でロビーシーンへ遷移
         NetworkManager.singleton.ServerChangeScene("LobbyScene");
-
-        // Canvas を非表示にする処理を全クライアントで実行
-        RpcHideLobbyCanvas();
     }
 
-    [ClientRpc]
-    private void RpcHideLobbyCanvas()
-    {
-        // シーン移動後に少し待って Canvas を取得する
-        StartCoroutine(HideCanvasAfterDelay());
-    }
-
-    private IEnumerator HideCanvasAfterDelay()
-    {
-        // 数フレーム待つことで Canvas が生成されるのを待つ
-        for (int i = 0; i < 5; i++)
-            yield return null;
-
-        GameObject canvas = GameObject.Find(lobbyCanvasName);
-        if (canvas != null)
-        {
-            canvas.SetActive(false);
-            Debug.Log($"{lobbyCanvasName} を非表示にしました");
-        }
-        else
-        {
-            Debug.LogWarning($"{lobbyCanvasName} が見つかりませんでした");
-        }
-    }
-
+    // クライアント終了時にインスタンスを削除
     public override void OnStopClient()
     {
         base.OnStopClient();
 
+        // 自身がインスタンスなら解除
         if (Instance == this)
             Instance = null;
     }
