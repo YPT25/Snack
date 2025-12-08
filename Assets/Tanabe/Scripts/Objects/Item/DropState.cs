@@ -19,7 +19,11 @@ public class DropState : IItemState_Tanabe
         item.SetUseGravity(true);
         item.SetIsKinematic(false);
         baseScale = item.transform.localScale;
-        if (item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
+        if (item.GetItemType() == ItemStateMachine.ItemType.SETPART)
+        {
+            item.transform.localScale = baseScale * 0.6f;
+        }
+        else if (item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
         {
             item.transform.localScale = baseScale * 0.3f;
         }

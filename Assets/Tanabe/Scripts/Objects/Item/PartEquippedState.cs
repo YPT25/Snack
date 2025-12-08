@@ -22,10 +22,28 @@ public class PartEquippedState : IItemState_Tanabe
         item.SetUseGravity(false);
         item.SetIsKinematic(true);
 
-        item.transform.rotation = item.GetPlayerTransform().rotation;
+        Vector3 euler = item.GetPlayerTransform().rotation.eulerAngles;
+        euler.y += 180f;
+        item.transform.rotation = Quaternion.Euler(euler);
+        //item.transform.rotation = item.GetPlayerTransform().rotation;
 
         item.transform.parent = item.GetPlayerTransform();
-        item.transform.localPosition = new Vector3(0.6f, 0.0f, -0.4f);
+
+        if(item.GetComponent<SetPart_Tanabe>().GetPartType() == SetPart_Tanabe.PartType.LONGBARREL)
+        {
+            item.transform.localPosition = new Vector3(0.73f, 0.125f, 0.85f);
+            //item.transform.localScale = baseScale * 0.17f;
+            item.transform.localScale = baseScale * 0.3f;
+            if(item.GetPlayerData().GetWeaponID() == Player_Tanabe.WeaponID.GUN)
+            {
+                item.transform.parent = item.GetPlayerData().GetGunHead();
+            }
+        }
+        else
+        {
+            item.transform.localPosition = new Vector3(0.6f, 0.0f, -0.4f);
+        }
+        //item.transform.localPosition = new Vector3(0.6f, 0.0f, -0.4f);
 
         item.GetPlayerData().SetPart(item.GetComponent<SetPart_Tanabe>());
 
@@ -68,8 +86,8 @@ public class PartEquippedState : IItemState_Tanabe
     {
         item.SetUseGravity(true);
         item.SetIsKinematic(false);
-        item.transform.localScale = baseScale;
         item.transform.parent = null;
+        item.transform.localScale = baseScale;
         Debug.Log("PartEquipped:èIóπ");
     }
 }
