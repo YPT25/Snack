@@ -225,4 +225,25 @@ public class AshuriNetworkManager : NetworkManager
     {
         nextPlayerNumber = 1;
     }
+
+    // ====================================================
+    // 切断ボタンのシーン遷移
+    // ====================================================
+    public void OnDisconnectButton()
+    {
+        // 1つ上のコメント：ホストとして動いている場合はサーバーも止める
+        if (NetworkServer.active && NetworkClient.isConnected)
+        {
+            NetworkManager.singleton.StopHost();
+        }
+        // 1つ上のコメント：クライアントのみの場合はこちら
+        else if (NetworkClient.isConnected)
+        {
+            NetworkManager.singleton.StopClient();
+        }
+
+        // 1つ上のコメント：切断後にシーン遷移
+        SceneManager.LoadScene("TitleScene");
+    }
+
 }

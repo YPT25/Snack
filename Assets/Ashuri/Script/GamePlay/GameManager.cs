@@ -1,166 +1,167 @@
-using Mirror;             // Mirror‚Ìƒlƒbƒgƒ[ƒN‹@”\‚ğg—p
-using System.Collections; // ƒRƒ‹[ƒ`ƒ“‚ğg—p
-using UnityEngine;        // Unity‚ÌŠî–{‹@”\
+ï»¿using Mirror;             // Mirrorã®ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯æ©Ÿèƒ½ã‚’ä½¿ç”¨
+using System.Collections; // ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä½¿ç”¨
+using System.Collections.Generic;
+using UnityEngine;        // Unityã®åŸºæœ¬æ©Ÿèƒ½
 
 /// <summary>
-/// Mirror—p‚ÌƒQ[ƒ€isŠÇ—ƒNƒ‰ƒX
-/// EƒQ[ƒ€ŠJn‘O‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“
-/// EƒQ[ƒ€’†‚ÌŠÔƒJƒEƒ“ƒgƒ_ƒEƒ“
-/// EƒQ[ƒ€I—¹‚ÌƒXƒRƒA’Ê’m
-/// EƒJƒEƒ“ƒgƒ_ƒEƒ“’†‚ÍƒQ[ƒ€‚ğ’â~
+/// Mirrorç”¨ã®ã‚²ãƒ¼ãƒ é€²è¡Œç®¡ç†ã‚¯ãƒ©ã‚¹
+/// ãƒ»ã‚²ãƒ¼ãƒ é–‹å§‹å‰ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³
+/// ãƒ»ã‚²ãƒ¼ãƒ ä¸­ã®æ™‚é–“ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³
+/// ãƒ»ã‚²ãƒ¼ãƒ çµ‚äº†æ™‚ã®ã‚¹ã‚³ã‚¢é€šçŸ¥
+/// ãƒ»ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ä¸­ã¯ã‚²ãƒ¼ãƒ ã‚’åœæ­¢
 /// </summary>
 public class GameManager : NetworkBehaviour
 {
     // ===============================
-    // ƒQ[ƒ€ŠÔŠÖ˜A‚Ìİ’è
+    // ã‚²ãƒ¼ãƒ æ™‚é–“é–¢é€£ã®è¨­å®š
     // ===============================
 
-    [Header("ƒQ[ƒ€ŠÔİ’è")]
-    [Tooltip("ƒQ[ƒ€ŠJn‚Ì‡ŒvŠÔi•bj")]
+    [Header("ã‚²ãƒ¼ãƒ æ™‚é–“è¨­å®š")]
+    [Tooltip("ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚ã®åˆè¨ˆæ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] public float initialGameTime = 180f;
 
-    [Tooltip("ƒQ[ƒ€ŠJn‘O‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“ŠÔi•bj")]
+    [Tooltip("ã‚²ãƒ¼ãƒ é–‹å§‹å‰ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] public float preGameCountdownTime = 3f;
 
-    [Tooltip("ƒT[ƒo[‚ªŠÇ—‚·‚éc‚èŠÔiSyncVar‚ÅƒNƒ‰ƒCƒAƒ“ƒg‚É“¯Šúj")]
+    [Tooltip("ã‚µãƒ¼ãƒãƒ¼ãŒç®¡ç†ã™ã‚‹æ®‹ã‚Šæ™‚é–“ï¼ˆSyncVarã§ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«åŒæœŸï¼‰")]
     [SyncVar] private float remainingGameTime;
 
     // ===============================
-    // ƒQ[ƒ€isƒtƒ‰ƒO
+    // ã‚²ãƒ¼ãƒ é€²è¡Œãƒ•ãƒ©ã‚°
     // ===============================
-    [Header("ƒQ[ƒ€ó‘Ô")]
-    [Tooltip("ƒQ[ƒ€‚ªŠJn‚³‚ê‚½‚©‚Ç‚¤‚©")]
-    [SyncVar] public bool gameStarted = false; // ƒJƒEƒ“ƒgƒ_ƒEƒ“’†‚Í false
+    [Header("ã‚²ãƒ¼ãƒ çŠ¶æ…‹")]
+    [Tooltip("ã‚²ãƒ¼ãƒ ãŒé–‹å§‹ã•ã‚ŒãŸã‹ã©ã†ã‹")]
+    [SyncVar] public bool gameStarted = false; // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ä¸­ã¯ false
 
     // ===============================
-    // ƒVƒ“ƒOƒ‹ƒgƒ“
+    // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³
     // ===============================
     public static GameManager Instance { get; private set; }
 
     // ===============================
-    // ŠO•”‚©‚çc‚èŠÔ‚ğæ“¾‚·‚éƒvƒƒpƒeƒB
+    // å¤–éƒ¨ã‹ã‚‰æ®‹ã‚Šæ™‚é–“ã‚’å–å¾—ã™ã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
     // ===============================
     public float CurrentTime => remainingGameTime;
 
     // ===============================
-    // ƒT[ƒo[ŠJn‚Ìˆ—
+    // ã‚µãƒ¼ãƒãƒ¼é–‹å§‹æ™‚ã®å‡¦ç†
     // ===============================
     public override void OnStartServer()
     {
         base.OnStartServer();
 
-        // ƒVƒ“ƒOƒ‹ƒgƒ““o˜^i‰‰ñ‚Ì‚İj
+        // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ç™»éŒ²ï¼ˆåˆå›ã®ã¿ï¼‰
         if (Instance == null) Instance = this;
 
-        // c‚èŠÔ‚ğ‰Šú‰»
+        // æ®‹ã‚Šæ™‚é–“ã‚’åˆæœŸåŒ–
         remainingGameTime = initialGameTime;
 
-        // ƒQ[ƒ€ŠJn‘OƒJƒEƒ“ƒgƒ_ƒEƒ“ŠJn
+        // ã‚²ãƒ¼ãƒ é–‹å§‹å‰ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–‹å§‹
         StartCoroutine(ServerPreGameCountdown());
     }
 
     // ===============================
-    // ƒNƒ‰ƒCƒAƒ“ƒgŠJn‚Ìˆ—
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé–‹å§‹æ™‚ã®å‡¦ç†
     // ===============================
     public override void OnStartClient()
     {
         base.OnStartClient();
 
-        // ƒNƒ‰ƒCƒAƒ“ƒg‘¤ƒVƒ“ƒOƒ‹ƒgƒ““o˜^i‰‰ñ‚Ì‚İj
+        // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ç™»éŒ²ï¼ˆåˆå›ã®ã¿ï¼‰
         if (Instance == null) Instance = this;
     }
 
     // ===============================
-    // ƒT[ƒo[FƒQ[ƒ€ŠJn‘OƒJƒEƒ“ƒgƒ_ƒEƒ“
-    // ƒJƒEƒ“ƒgƒ_ƒEƒ“’†‚Í gameStarted = false
+    // ã‚µãƒ¼ãƒãƒ¼ï¼šã‚²ãƒ¼ãƒ é–‹å§‹å‰ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³
+    // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ä¸­ã¯ gameStarted = false
     // ===============================
     private IEnumerator ServerPreGameCountdown()
     {
-        // ƒJƒEƒ“ƒgƒ_ƒEƒ“ŠÔ‚ğƒZƒbƒg
+        // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³æ™‚é–“ã‚’ã‚»ãƒƒãƒˆ
         float countdown = preGameCountdownTime;
 
-        // ƒJƒEƒ“ƒgƒ_ƒEƒ“’†‚Íc‚è•b”‚ğ1•b‚¸‚ÂŒ¸‚ç‚·
+        // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ä¸­ã¯æ®‹ã‚Šç§’æ•°ã‚’1ç§’ãšã¤æ¸›ã‚‰ã™
         while (countdown > 0)
         {
-            // ƒfƒoƒbƒO—pƒƒOiƒT[ƒo[‘¤j
+            // ãƒ‡ãƒãƒƒã‚°ç”¨ãƒ­ã‚°ï¼ˆã‚µãƒ¼ãƒãƒ¼å´ï¼‰
             Debug.Log($"Game starts in {Mathf.Ceil(countdown)} seconds");
 
-            // 1•b‘Ò‹@
+            // 1ç§’å¾…æ©Ÿ
             yield return new WaitForSeconds(1f);
 
-            // ƒJƒEƒ“ƒgƒ_ƒEƒ“‚ğŒ¸‚ç‚·
+            // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ã‚’æ¸›ã‚‰ã™
             countdown -= 1f;
         }
 
-        // ƒJƒEƒ“ƒgƒ_ƒEƒ“I—¹ ¨ ƒQ[ƒ€ŠJn
+        // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³çµ‚äº† â†’ ã‚²ãƒ¼ãƒ é–‹å§‹
         gameStarted = true;
 
-        // ƒQ[ƒ€ŠÔƒJƒEƒ“ƒgƒ_ƒEƒ“ŠJn
+        // ã‚²ãƒ¼ãƒ æ™‚é–“ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–‹å§‹
         StartCoroutine(ServerCountdownCoroutine());
     }
 
     // ===============================
-    // ƒT[ƒo[FƒQ[ƒ€’†‚ÌŠÔƒJƒEƒ“ƒgƒ_ƒEƒ“
+    // ã‚µãƒ¼ãƒãƒ¼ï¼šã‚²ãƒ¼ãƒ ä¸­ã®æ™‚é–“ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³
     // ===============================
     private IEnumerator ServerCountdownCoroutine()
     {
-        // ƒQ[ƒ€ŠÔ‚ªc‚Á‚Ä‚¢‚éŒÀ‚èƒ‹[ƒv
+        // ã‚²ãƒ¼ãƒ æ™‚é–“ãŒæ®‹ã£ã¦ã„ã‚‹é™ã‚Šãƒ«ãƒ¼ãƒ—
         while (remainingGameTime > 0)
         {
-            // 1•b‘Ò‹@
+            // 1ç§’å¾…æ©Ÿ
             yield return new WaitForSeconds(1f);
 
-            // c‚èŠÔ‚ğ1•bŒ¸‚ç‚·
+            // æ®‹ã‚Šæ™‚é–“ã‚’1ç§’æ¸›ã‚‰ã™
             remainingGameTime -= 1f;
 
-            // ƒ}ƒCƒiƒX•â³
+            // ãƒã‚¤ãƒŠã‚¹è£œæ­£
             if (remainingGameTime < 0) remainingGameTime = 0;
         }
 
-        // c‚èŠÔ‚ª0‚É‚È‚Á‚½‚çƒQ[ƒ€I—¹
+        // æ®‹ã‚Šæ™‚é–“ãŒ0ã«ãªã£ãŸã‚‰ã‚²ãƒ¼ãƒ çµ‚äº†
         EndGame();
     }
 
     // ===============================
-    // ƒT[ƒo[FƒQ[ƒ€I—¹ˆ—
+    // ã‚µãƒ¼ãƒãƒ¼ï¼šã‚²ãƒ¼ãƒ çµ‚äº†å‡¦ç†
     // ===============================
     [Server]
     private void EndGame()
     {
-        // ƒT[ƒo[‘¤‚ÅI—¹ƒƒO
+        // ã‚µãƒ¼ãƒãƒ¼å´ã§çµ‚äº†ãƒ­ã‚°
         Debug.Log("Time's up! Game Over (Server)");
 
-        // ƒQ[ƒ€isƒtƒ‰ƒO‚ğOFF
-        //gameStarted = false;
+        // ã‚²ãƒ¼ãƒ é€²è¡Œãƒ•ãƒ©ã‚°ã‚’OFF
+        gameStarted = false;
 
-        // SweetScore‚ğ’T‚µ‚ÄŒ»İ‚ÌƒXƒRƒA‚ğæ“¾
+        // SweetScoreã‚’æ¢ã—ã¦ç¾åœ¨ã®ã‚¹ã‚³ã‚¢ã‚’å–å¾—
         SweetScore score = FindObjectOfType<SweetScore>();
         float currentScore = score != null ? score.currentScore : 0f;
 
-        // ‘SƒNƒ‰ƒCƒAƒ“ƒg‚ÉƒXƒRƒA•\¦‚ğ’Ê’m
+        // å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«ã‚¹ã‚³ã‚¢è¡¨ç¤ºã‚’é€šçŸ¥
         ResultUIScore.Instance.RpcShowScore(currentScore);
     }
 
     // ===============================
-    // ƒNƒ‰ƒCƒAƒ“ƒg’â~‚Ìˆ—
+    // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåœæ­¢æ™‚ã®å‡¦ç†
     // ===============================
     public override void OnStopClient()
     {
         base.OnStopClient();
 
-        // ƒVƒ“ƒOƒ‹ƒgƒ“‰ğœ
+        // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³è§£é™¤
         if (Instance == this)
             Instance = null;
     }
 
     // ===============================
-    // ƒT[ƒo[’â~‚Ìˆ—
+    // ã‚µãƒ¼ãƒãƒ¼åœæ­¢æ™‚ã®å‡¦ç†
     // ===============================
     public override void OnStopServer()
     {
         base.OnStopServer();
 
-        // ‘SƒRƒ‹[ƒ`ƒ“’â~
+        // å…¨ã‚³ãƒ«ãƒ¼ãƒãƒ³åœæ­¢
         StopAllCoroutines();
     }
 }
