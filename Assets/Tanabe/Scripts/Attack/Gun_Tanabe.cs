@@ -14,6 +14,7 @@ public class Gun_Tanabe : NetworkBehaviour
     [SerializeField] private Color[] m_bulletColor;
     private float m_interval = 0.0f;
     private float m_maxInterval = 0.5f;
+    private SoundPlayer_Tanabe m_soundPlayer;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +25,9 @@ public class Gun_Tanabe : NetworkBehaviour
             m_isHitMesh.enabled = false;
         }
         m_gunReticle?.gameObject.SetActive(false);
+
+        if (!m_player.isLocalPlayer) { return; }
+        m_soundPlayer = GameObject.Find("SoundPlayer").GetComponent<SoundPlayer_Tanabe>();
     }
 
     // Update is called once per frame
@@ -172,6 +176,8 @@ public class Gun_Tanabe : NetworkBehaviour
         NetworkServer.Spawn(obj);
 
         obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
+
+        m_soundPlayer.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
     }
 
     // ÉVÉáÉbÉgÉKÉì
@@ -189,6 +195,8 @@ public class Gun_Tanabe : NetworkBehaviour
 
             obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
         }
+        m_soundPlayer.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
+        m_soundPlayer.SetSoundCount(10);
     }
 
     // êÎíe
