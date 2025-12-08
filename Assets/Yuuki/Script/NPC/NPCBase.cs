@@ -86,6 +86,11 @@ public class NPCBase : EnemyBase
 
         // 無ければランダム歩行
         RandomWalk();
+
+        if (GetHp() <= 0 && isServer)
+        {
+            Die();
+        }
     }
 
     // ======================================
@@ -198,6 +203,7 @@ public class NPCBase : EnemyBase
                 transform.forward = dir;
         }
     }
+
 
     // ======================================
     // HERO（プレイヤー）探索
