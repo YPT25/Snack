@@ -26,7 +26,6 @@ public class Gun_Tanabe : NetworkBehaviour
         }
         m_gunReticle?.gameObject.SetActive(false);
 
-        if (!m_player.isLocalPlayer) { return; }
         m_soundPlayer = GameObject.Find("SoundPlayer").GetComponent<SoundPlayer_Tanabe>();
     }
 

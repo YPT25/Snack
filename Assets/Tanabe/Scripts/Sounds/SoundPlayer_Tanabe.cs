@@ -58,17 +58,17 @@ public class SoundPlayer_Tanabe : NetworkBehaviour
             Debug.Log("その番号の音はない！！！！！！");
             return;
         }
-        Debug.Log("PlaySound");
+        //Debug.Log("PlaySound");
         AudioSource.PlayClipAtPoint(GetSound(_index), _position);
     }
 
     public AudioClip GetSound(SoundNum _index)
     {
-        if (m_sounds.Length - 1 < (int)_index)
-        {
-            Debug.LogError("その番号の音はない！！！！！！");
-            return null;
-        }
+        //if (m_sounds.Length - 1 < (int)_index)
+        //{
+        //    Debug.LogError("その番号の音はない！！！！！！");
+        //    return null;
+        //}
 
         return m_sounds[(int)_index];
     }
