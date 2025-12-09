@@ -159184,7 +159184,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_initialParameter:
-    hp: 100
+    hp: 800
     power: 0
     moveSpeed: 0
     stamina: 0
