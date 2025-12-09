@@ -126,7 +126,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
                 }
             case Buff.BuffType.POWER_UP:
                 {
-                    int randNum = Random.Range(1, 4);
+                    int randNum = Random.Range(1, 10);
                     GameObject obj = null;
                     // 1`3‚ÌŠÔ‚Åƒ‰ƒ“ƒ_ƒ€‚È’l‚ğæ“¾‚µA1‚È‚ç’Ê‚·
                     if (randNum == 1)
