@@ -5,8 +5,8 @@ using Mirror;
 
 public class ShockWave_Tanabe : NetworkBehaviour
 {
-    private float m_explosionForce = 7.3f;  // 爆風の強さ
-    private float m_upwardsModifier = 1f;   // 上方向の補正（持ち上がる感じ）
+    private float m_explosionForce = 7.3f * 2f;  // 爆風の強さ
+    private float m_upwardsModifier = 0.2f;   // 上方向の補正（持ち上がる感じ）
 
     private float m_waveTimer = 0.0f;
     [SyncVar] private bool m_isFall = false;

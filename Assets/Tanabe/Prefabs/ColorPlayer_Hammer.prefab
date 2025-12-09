@@ -297,7 +297,7 @@ MonoBehaviour:
   syncInterval: 0
   m_initialParameter:
     hp: 100
-    power: 20
+    power: 30
     moveSpeed: 8
     stamina: 5
   playerNumber: 0
@@ -312,6 +312,7 @@ MonoBehaviour:
   m_eyesObject:
   - {fileID: 5571579845783191448}
   - {fileID: 1822068149236919117}
+  m_isDebugMode: 0
   m_sweetScore: 0
 --- !u!114 &997897894590578773
 MonoBehaviour:
@@ -26350,8 +26351,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1e148b6719e71540bab19c0843f6049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponImage: {fileID: 0}
   _gunSprite: {fileID: 0}
   _hammerSprite: {fileID: 0}
+  _poppcornSprite: {fileID: 0}
+  _watagashiSprite: {fileID: 0}
 --- !u!1 &6424055527487967109
 GameObject:
   m_ObjectHideFlags: 0
