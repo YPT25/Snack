@@ -44,6 +44,10 @@ public class NPCBase : EnemyBase
     [ServerCallback]
     public override void Update()
     {
+        if(GetIsMove())
+        {
+
+       
         if (transform.position.y < fallDeathY)
         {
             Debug.Log($"{name} はステージ外へ落下しました（Y={transform.position.y}）。死亡扱い。");
@@ -114,7 +118,7 @@ public class NPCBase : EnemyBase
 
         // 無ければランダム歩行
         RandomWalk();
-
+        }
 
     }
 

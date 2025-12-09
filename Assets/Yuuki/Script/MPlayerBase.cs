@@ -101,6 +101,11 @@ public class MPlayerBase : EnemyBase
         {
             Die();
         }
+
+        if(!GetIsMove())
+        {
+            iscanMove = false;
+        }
     }
 
     protected virtual void FixedUpdate()
