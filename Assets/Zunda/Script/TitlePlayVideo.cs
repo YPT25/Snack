@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
-using UnityEditor.SearchService;
+//using UnityEditor.SearchService;
 
 public class TitlePlayVideo : MonoBehaviour
 {

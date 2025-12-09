@@ -34,6 +34,10 @@ public class VS_GameManager : NetworkBehaviour
     // 外部から残り時間を取得するためのプロパティ
     public float CurrentTime => remainingGameTime;
 
+    // ===============================
+    // プレイヤーの数を取得
+    // ===============================
+    private int _countPlayer;
 
 
     // ===============================
@@ -52,6 +56,9 @@ public class VS_GameManager : NetworkBehaviour
     // ===============================
     private void Start()
     {
+        //プレイヤーの情報を取得する
+        _countPlayer = NetworkManager.singleton.numPlayers;
+
         // もしサーバー（=ホストも含む）でなければ何もしない
         if (!isServer) return;
 
