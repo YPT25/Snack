@@ -22,7 +22,7 @@ public class NPCBase : EnemyBase
 
     private float randomWalkTimer = 0f;
     private Vector3 randomDir;
-
+    private float fallDeathY = -5f;
     public override void Start()
     {
         base.Start();
@@ -44,6 +44,12 @@ public class NPCBase : EnemyBase
     [ServerCallback]
     public override void Update()
     {
+        if (transform.position.y < fallDeathY)
+        {
+            Debug.Log($"{name} はステージ外へ落下しました（Y={transform.position.y}）。死亡扱い。");
+            Die();
+            return;
+        }
         if (GetHp() <= 0)
         {
             Die();
@@ -69,7 +75,24 @@ public class NPCBase : EnemyBase
 
             if (dist <= attackRange)
             {
+                // ========================
+                // 攻撃前 → ターゲット方向へ向き直す
+                // ========================
+                Vector3 dir = (m_target.position - transform.position);
+                dir.y = 0;
+
+                if (dir.sqrMagnitude > 0.001f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir);
+                    transform.rotation = Quaternion.Slerp(
+                        transform.rotation,
+                        targetRot,
+                        Time.deltaTime * 10f 
+                    );
+                }
+
                 StartCoroutine(DoAttack());
+                return;
             }
             else
             {
