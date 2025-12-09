@@ -6,7 +6,7 @@ using Mirror;
 [System.Serializable]
 public class CharacterParameter
 {
-    [SyncVar, Header("HP ※デフォルト値:100"), Range(0f, 100f)] public float hp;
+    [SyncVar, Header("HP ※デフォルト値:100"), Range(0f, 1000f)] public float hp;
     [SyncVar, Header("攻撃力 ※デフォルト値:20"), Range(0f, 50f)] public float power;
     [SyncVar, Header("移動速度 ※デフォルト値:8.0"), Range(0f, 50f)] public float moveSpeed;
     [SyncVar, Header("スタミナ ※デフォルト値:5.0"), Range(0f, 50f)] public float stamina;
