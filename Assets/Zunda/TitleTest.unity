@@ -184,7 +184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 827424827}
   videoPlayer: {fileID: 132270205}
-  time: 20
+  time: 5
   SceneName: ConnectionScene
 --- !u!328 &132270205
 VideoPlayer:
@@ -3937,7 +3937,13 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1738731438
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6759351726498218081, guid: c87e73d07409b7f4ba9917f540c34df8, type: 3}
+      propertyPath: sceneId
+      value: 2349780379
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: -4731065315782688339, guid: c87e73d07409b7f4ba9917f540c34df8, type: 3}
+    - {fileID: 6759351726498218081, guid: c87e73d07409b7f4ba9917f540c34df8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
-using UnityEditor.SearchService;
+
 
 public class TitlePlayVideo : MonoBehaviour
 {
@@ -18,10 +18,14 @@ public class TitlePlayVideo : MonoBehaviour
 
     [Header("シーン遷移")]
     [SerializeField] string SceneName = "";
+
+    //private FadeManager fadeManager;
     //動画用
     private bool isVideoPlaying = false;
     //シーン遷移用
     private bool isScene = false;
+    private bool isFade = false;
+    private float FadeTime = 0.5f;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +36,14 @@ public class TitlePlayVideo : MonoBehaviour
 
         //時間がたったら関数を呼び出す
         Invoke(nameof(StartVideo), time);
+        Invoke(nameof(StartInput), 3);       //３秒起ったらシーン遷移のクリックができるようになる
+    }
+
+    // クリックするまでの待機時間
+    void StartInput()
+    {
+        isScene = true;
+        Debug.Log("シーン遷移できるようになりました");
     }
 
     void StartVideo()
@@ -51,9 +63,38 @@ public class TitlePlayVideo : MonoBehaviour
     //動画のアルファ値を１する
     void OnPlayingAlpha()
     {
-        Color c = image.color;
-        c.a = 1f;
-        image.color = c;
+        Color color = image.color;
+        color.a = 1f;
+        image.color = color;
+    }
+
+    IEnumerator FadeOut()
+    {
+        Color color = image.color;
+        // アルファ値を0から1へ変化させる
+        for (float t = 0; t < FadeTime; t += Time.deltaTime)
+        {
+            color.a = Mathf.Lerp(0, 1, t / FadeTime);
+            image.color = color;
+            yield return null;
+        }
+        color.a = 1f;
+        image.color = color;
+    }
+
+    IEnumerator FadeIn()
+    {
+        Color color = image.color;
+        // アルファ値を1から0へ変化させる
+        for (float t = 0; t < FadeTime; t += Time.deltaTime)
+        {
+            color.a = Mathf.Lerp(1, 0, t / FadeTime);
+            image.color = color;
+            yield return null;
+        }
+        color.a = 0f;
+        image.color = color;
+        isFade = false;
     }
 
     //動画の入力処理
@@ -69,16 +110,23 @@ public class TitlePlayVideo : MonoBehaviour
                 videoPlayer.Stop();
                 //再生時間を頭まで戻す
                 videoPlayer.time = 0;
-                //アルファ値を0にする
                 isVideoPlaying = false;
-                OffPlayingAlpha();
+                isFade = true;
+                //アルファ値を0にする
+                StartCoroutine(FadeIn());
+                //OffPlayingAlpha();
+                //
+                isScene = true;
                 //時間がたったら関数を呼び出す
                 Invoke(nameof(StartVideo), time);
             }
             else
             {
+                //
+                isScene = false;
                 //アルファ値を1にする
-                OnPlayingAlpha();
+                //OnPlayingAlpha();
+                StartCoroutine(FadeOut());
                 //動画を再生する
                 videoPlayer.Play();
             }
