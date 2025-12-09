@@ -29,15 +29,12 @@ public class PartEquippedState : IItemState_Tanabe
 
         item.transform.parent = item.GetPlayerTransform();
 
-        if(item.GetComponent<SetPart_Tanabe>().GetPartType() == SetPart_Tanabe.PartType.LONGBARREL)
+        if(item.GetComponent<SetPart_Tanabe>().GetPartType() == SetPart_Tanabe.PartType.LONGBARREL && item.GetPlayerData().GetWeaponID() == Player_Tanabe.WeaponID.GUN)
         {
             item.transform.localPosition = new Vector3(0.73f, 0.125f, 0.85f);
             //item.transform.localScale = baseScale * 0.17f;
             item.transform.localScale = baseScale * 0.3f;
-            if(item.GetPlayerData().GetWeaponID() == Player_Tanabe.WeaponID.GUN)
-            {
-                item.transform.parent = item.GetPlayerData().GetGunHead();
-            }
+            item.transform.parent = item.GetPlayerData().GetGunHead();
         }
         else
         {

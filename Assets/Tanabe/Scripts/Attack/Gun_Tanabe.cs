@@ -176,7 +176,7 @@ public class Gun_Tanabe : NetworkBehaviour
 
         obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
 
-        m_soundPlayer.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
+        m_soundPlayer?.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
     }
 
     // ÉVÉáÉbÉgÉKÉì
@@ -194,8 +194,8 @@ public class Gun_Tanabe : NetworkBehaviour
 
             obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
         }
-        m_soundPlayer.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
-        m_soundPlayer.SetSoundCount(10);
+        m_soundPlayer?.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
+        m_soundPlayer?.SetSoundCount(10);
     }
 
     // êÎíe
@@ -207,6 +207,8 @@ public class Gun_Tanabe : NetworkBehaviour
         NetworkServer.Spawn(obj);
 
         obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
+
+        m_soundPlayer?.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
     }
 
     private float GetRandomPoint()
