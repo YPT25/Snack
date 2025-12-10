@@ -24,6 +24,9 @@ public class EnemyBase : CharacterBase
 
     protected CharacterType m_enemyCharacterType = CharacterType.ENEMY_TYPE;
 
+    //ダメージ演出用
+    private DamagePerformance m_damagePerformance;
+
     public virtual void Start()
     {
         if (isServer)
@@ -46,6 +49,15 @@ public class EnemyBase : CharacterBase
 
         target.RpcDamage(GetPower());
         Debug.Log($"{name} が {target.name} に攻撃！ ダメージ:{GetPower()}");
+    }
+
+    public override void Damage(float _damage)
+    {
+        base.Damage(_damage);
+        if (this.isLocalPlayer)
+        {
+            m_damagePerformance?.Damage();
+        }
     }
 
     /// <summary>

@@ -4661,8 +4661,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1e148b6719e71540bab19c0843f6049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gunSprite: {fileID: 6716320978788991965}
-  _hammerSprite: {fileID: 6634622511077543215}
+  _weaponImage: {fileID: 0}
+  _gunSprite: {fileID: 0}
+  _hammerSprite: {fileID: 0}
+  _poppcornSprite: {fileID: 0}
+  _watagashiSprite: {fileID: 0}
 --- !u!114 &3741271307128069128
 MonoBehaviour:
   m_ObjectHideFlags: 0
