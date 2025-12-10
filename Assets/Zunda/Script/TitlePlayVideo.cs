@@ -4,11 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
-<<<<<<< HEAD
-
-=======
-//using UnityEditor.SearchService;
->>>>>>> origin/main
 
 public class TitlePlayVideo : MonoBehaviour
 {
