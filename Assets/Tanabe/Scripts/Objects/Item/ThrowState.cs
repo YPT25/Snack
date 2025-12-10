@@ -50,7 +50,7 @@ public class ThrowState : IItemState_Tanabe
             return;
         }
         m_deleteTimer -= Time.deltaTime;
-        if(m_deleteTimer <= 0)
+        if(m_deleteTimer <= 0 && item.GetComponent<HandItem_Tanabe>() == null)
         {
             item.DestroysGameObject();
             item.DestroysGameObject(item.GetEffectObject());
