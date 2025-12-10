@@ -101,6 +101,7 @@ public class MPlayerBase : EnemyBase
         {
             Die();
         }
+        if(Input.GetKeyDown(KeyCode.R)) { base.Damage(10); }
 
         if(!GetIsMove())
         {

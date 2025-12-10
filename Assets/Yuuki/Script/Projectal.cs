@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-
-
-
-
 /// <summary>
 /// 弾丸の基本処理
 /// ・サーバーでのみ当たり判定処理を行う
@@ -16,14 +12,16 @@ public class Projectile : NetworkBehaviour
 {
     [SerializeField]
     private float damage = 10f;
-    private MPlayerBase owner;
+
+    private EnemyBase owner;   // ← EnemyBase に変更！
 
     [SerializeField] private float lifeTime = 3f;
 
-    public void Initialize(MPlayerBase shooter, float power)
+    public void Initialize(EnemyBase shooter, float power)
     {
         owner = shooter;
         damage = power;
+
         Invoke(nameof(DestroySelf), lifeTime);
     }
 
@@ -31,12 +29,16 @@ public class Projectile : NetworkBehaviour
     {
         if (!isServer) return;
 
-        CharacterBase target = other.GetComponent<CharacterBase>();
-        if (target != null && target != owner)
-        {
-            owner.Attack(target);
-            DestroySelf();
-        }
+        EnemyBase target = other.GetComponent<EnemyBase>();
+        if (target == null) return;
+
+        // 自己ヒット防止
+        if (target == owner) return;
+
+        // 攻撃
+        owner.Attack(target);
+
+        DestroySelf();
     }
 
     private void DestroySelf()

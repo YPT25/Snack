@@ -212,7 +212,7 @@ MonoBehaviour:
     moveSpeed: 5
     stamina: 0
   m_canFriendlyFire: 0
-  m_enemyType: 1
+  m_enemyType: 2
   detectRange: 10
   attackRange: 2
   randomWalkInterval: 2
