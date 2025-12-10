@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2417015762783942346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5959915076301733803}
+  m_Layer: 0
+  m_Name: HeadPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5959915076301733803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2417015762783942346}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4034480643932756442}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6267209046975025765
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,6 +62,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4034480643932756442}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6660521128816589830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4227956047692597393}
+  - component: {fileID: 3518469628562009830}
+  m_Layer: 0
+  m_Name: AttackCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4227956047692597393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6660521128816589830}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.579228, y: -0.579228, z: -0.40557975, w: 0.40557975}
+  m_LocalPosition: {x: 0.056305524, y: 0, z: -0.0076211914}
+  m_LocalScale: {x: 0.013333333, y: 0.069371656, z: 0.0944743}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3503455950457065873}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3518469628562009830
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6660521128816589830}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5, y: 2, z: 1.5}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &6888477031083471984
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,13 +141,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6888477031083471984}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.58083737, y: 0.58083737, z: 0.40327162, w: 0.40327162}
+  m_LocalRotation: {x: -0.579228, y: 0.579228, z: 0.40557975, w: 0.40557975}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 10, y: 75, z: 15}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4227956047692597393}
   m_Father: {fileID: 4034480643932756442}
-  m_LocalEulerAnglesHint: {x: -69.544, y: 180, z: -90}
+  m_LocalEulerAnglesHint: {x: -70, y: 180, z: -90}
 --- !u!33 &7850676039060346073
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -150,6 +235,7 @@ Transform:
   m_Children:
   - {fileID: 3503455950457065873}
   - {fileID: 1115135221016037999}
+  - {fileID: 5959915076301733803}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &-5839359116608523217
@@ -225,14 +311,20 @@ MonoBehaviour:
   mouseSensitivity: 3
   rotationSmooth: 10
   m_respawnIcon: {fileID: 21300000, guid: d0d5ac316655cce499f0e4289f879d49, type: 3}
+  padSensitivityMultiplier: 20
+  padDeadZone: 0.02
+  padInvertY: 1
   iscanMove: 1
   fpsCameraPoint: {fileID: 1115135221016037999}
   tpsCameraOffset: {x: 0, y: 2, z: -4}
   tpsFOV: 60
   fpsFOV: 75
+  jumpForce: 10
+  forwardForce: 3
   debuffDuration: 3
   damageInterval: 1
   damageAmount: 5
+  attachOffset: {x: 0, y: 0.5, z: 0}
 --- !u!114 &-2655463952413534563
 MonoBehaviour:
   m_ObjectHideFlags: 0
