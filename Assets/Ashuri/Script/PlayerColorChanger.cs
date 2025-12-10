@@ -109,4 +109,37 @@ public class PlayerColorChanger : NetworkBehaviour
         }
     }
 
+    // ----------------------------------------------------
+    // 利用可能マテリアルの Getter（外部から読み取る用）
+    // ----------------------------------------------------
+    public Material[] GetAvailableMaterials()
+    {
+        // 利用可能なマテリアル配列をそのまま返す
+        return availableMaterials;
+    }
+
+    // ----------------------------------------------------
+    // 利用可能マテリアルの Setter（外部から変更する用）
+    // ----------------------------------------------------
+    public void SetAvailableMaterials(Material[] newMaterials)
+    {
+        // nullチェック：もし設定する配列が null なら無視する
+        if (newMaterials == null)
+            return;
+
+        // 新しいマテリアル配列をそのままセットする
+        availableMaterials = newMaterials;
+
+        // 現在のインデックスが範囲外になる可能性があるので補正する
+        if (currentMaterialIndex >= availableMaterials.Length)
+        {
+            // インデックスが範囲外なら 0 に戻す
+            currentMaterialIndex = 0;
+
+            // 変更をすぐ適用して見た目を更新する
+            ApplyMaterial(currentMaterialIndex);
+        }
+    }
+
+
 }

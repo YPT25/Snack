@@ -1,5 +1,4 @@
 using Mirror;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,92 +11,126 @@ public class testPlayerMenberCheck : NetworkBehaviour
     // 元のマテリアルを保存
     private Material _defaultMaterial;
 
-    // ===============================
-    // 現在触れている人数
-    // ===============================
+    // 現在触れている人数（同期）
     [SyncVar]
     private int _touchPlayerCount = 0;
 
-    // ===============================
-    // マテリアルの状態を全クライアントへ反映するための SyncVar
-    // ・"default" または "touch" などを送る
-    // ===============================
+    // 触れているプレイヤーIDリスト（同期）
+    public SyncList<uint> touchingPlayerIds = new SyncList<uint>();
+
+    // マテリアル状態（同期）
     [SyncVar(hook = nameof(OnMaterialStateChanged))]
     private string _materialState = "default";
 
-    // Start は最初に呼ばれる
+    [Header("このオブジェクトに割り当てるID (A=1, B=2など)")]
+    [Tooltip("触れたプレイヤーに渡すID")]
+    [SerializeField] private int _assignId = 1;
+
+
+    // デフォルトマテリアルを保存する
     void Start()
     {
-        // デフォルトのマテリアルを保存
         _defaultMaterial = GetComponent<Renderer>().material;
     }
 
-    // ===============================
-    // マテリアル状態が変わった時に呼ばれる（クライアント全員）
-    // ===============================
+
+    // マテリアルの状態が変わったときに呼ばれる
     private void OnMaterialStateChanged(string oldState, string newState)
     {
-        // 新しい状態に応じてマテリアル変更
         if (newState == "touch")
         {
-            // タッチ状態のマテリアルを反映
+            // タッチ中のマテリアルを設定
             GetComponent<Renderer>().material = _touchMaterial;
         }
         else
         {
-            // デフォルトマテリアルを反映
+            // デフォルトマテリアルに戻す
             GetComponent<Renderer>().material = _defaultMaterial;
         }
     }
 
-    // ===============================
-    // 当たった時の処理（サーバーのみ）
-    // ===============================
+
+    // プレイヤーが入った時の処理（サーバーのみ）
     private void OnTriggerEnter(Collider other)
     {
-        // サーバーでなければ何もしない
+        // サーバー以外は処理しない
         if (!isServer) return;
 
-        // Player タグに触れた時
+        // Player タグかどうかチェック
         if (other.CompareTag("Player"))
         {
-            // プレイヤー数を増やす
+            // PlayerModelSwitcher を取得してIDを渡す
+            var switcher = other.GetComponent<PlayerModelSwitcher>();
+            if (switcher != null)
+            {
+                switcher.SetModeId(_assignId);
+            }
+
+            // NetworkIdentity からプレイヤーIDを取得
+            var identity = other.GetComponent<NetworkIdentity>();
+            if (identity != null)
+            {
+                uint playerId = identity.netId;
+
+                // リストに存在しない場合は追加
+                if (!touchingPlayerIds.Contains(playerId))
+                {
+                    touchingPlayerIds.Add(playerId);
+                }
+            }
+
+            // 触れている人数を増やす
             _touchPlayerCount++;
 
-            // マテリアル状態を “touch” に変更（全クライアントに反映される）
+            // マテリアルを touch 状態へ
             _materialState = "touch";
         }
     }
 
-    // ===============================
-    // 離れた時の処理（サーバーのみ）
-    // ===============================
+
+    // プレイヤーが離れた時の処理（サーバーのみ）
     private void OnTriggerExit(Collider other)
     {
-        // サーバーでなければ何もしない
+        // サーバー以外は処理しない
         if (!isServer) return;
 
         if (other.CompareTag("Player"))
         {
-            // 人数を減算
+            // プレイヤーのIDを取得してリストから削除
+            var identity = other.GetComponent<NetworkIdentity>();
+            if (identity != null)
+            {
+                uint playerId = identity.netId;
+
+                if (touchingPlayerIds.Contains(playerId))
+                {
+                    touchingPlayerIds.Remove(playerId);
+                }
+            }
+
+            // 人数を減らす
             _touchPlayerCount--;
 
-            // 0以下にならないように補正
+            // カウントが0になったらマテリアルを戻す
             if (_touchPlayerCount <= 0)
             {
                 _touchPlayerCount = 0;
-
-                // マテリアル状態を “default” に戻す
                 _materialState = "default";
             }
         }
     }
 
-    // ===============================
-    // 外部から人数取得
-    // ===============================
+
+    // 外部から人数を取得する
     public int GetTouchPlayerCount()
     {
         return _touchPlayerCount;
+    }
+
+
+    // 外部からプレイヤーIDリストを取得する
+    public List<uint> GetTouchingPlayerIds()
+    {
+        return new List<uint>(touchingPlayerIds);
     }
 }

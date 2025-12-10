@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 827598582647508589}
   - component: {fileID: 2808877991225013990}
   - component: {fileID: 2760218808282663596}
+  - component: {fileID: 6396016701588959279}
   m_Layer: 7
   m_Name: NormalPlayer_Color
   m_TagString: Player
@@ -382,6 +383,22 @@ MonoBehaviour:
   newPlayerPrefab:
   - {fileID: 8759962040556672278, guid: 3137c5444483dfd4dba656b036660eae, type: 3}
   - {fileID: 676404720595789358, guid: 530fb43d2f6ddef4e80baa5d13f8e947, type: 3}
+--- !u!114 &6396016701588959279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f5bbf5ab50cdff45b0bae2c799c3482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _firstGameObject: {fileID: 676404720595789358, guid: 530fb43d2f6ddef4e80baa5d13f8e947, type: 3}
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0
