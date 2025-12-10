@@ -7,30 +7,34 @@ using UnityEngine.SceneManagement;
 
 public class TitlePlayVideo : MonoBehaviour
 {
-    [Header("表示する素材")]
+    [Header("表示する素材(動画)")]
     [Tooltip("再生用のCanvas")]
-    [SerializeField] RawImage image;
+    [SerializeField] RawImage move;
     [Tooltip("再生する動画")]
     [SerializeField] VideoPlayer videoPlayer;
     [Tooltip("何秒経過したら流れるか")]
     [SerializeField] float time = 3f;
 
+    [Header("表示する素材(UI)")]
+    [Tooltip("表示用のCanvas")]
+    [SerializeField] Image ui_image;
+
     [Header("シーン遷移")]
     [SerializeField] string SceneName = "";
 
-    //private FadeManager fadeManager;
     //動画用
     private bool isVideoPlaying = false;
     //シーン遷移用
     private bool isScene = false;
-    private bool isFade = false;
+    //フェイドにかかる時間
     private float FadeTime = 0.5f;
 
     // Start is called before the first frame update
     void Start()
     {
         //アルファ値を0にする
-        OffPlayingAlpha();
+        OffMoveAlpha();
+        OffImageAlpha();
         videoPlayer.Stop();
 
         //時間がたったら関数を呼び出す
@@ -42,9 +46,11 @@ public class TitlePlayVideo : MonoBehaviour
     void StartInput()
     {
         isScene = true;
+        OnImageAlpha();
         Debug.Log("シーン遷移できるようになりました");
     }
 
+    //
     void StartVideo()
     {
         Debug.Log(time + "秒起ちました");
@@ -52,55 +58,78 @@ public class TitlePlayVideo : MonoBehaviour
     }
 
     //動画のアルファ値を０する
-    void OffPlayingAlpha()
+    void OffMoveAlpha()
     {
-        Color color = image.color;
+        Color color = move.color;
         color.a = 0f;
-        image.color = color;
+        move.color = color;
+    }
+
+    //UIのアルファ値を０する
+    void OffImageAlpha()
+    {
+        Color color = ui_image.color;
+        color.a = 0f;
+        ui_image.color = color;
     }
 
     //動画のアルファ値を１する
-    void OnPlayingAlpha()
+    void OnMoveAlpha()
     {
-        Color color = image.color;
+        Color color = move.color;
         color.a = 1f;
-        image.color = color;
+        move.color = color;
+    }
+
+    //UIのアルファ値を１にする
+    void OnImageAlpha()
+    {
+        Color color = ui_image.color;
+        color.a = 1f;
+        ui_image.color = color;
     }
 
     IEnumerator FadeOut()
     {
-        Color color = image.color;
+        Color color = move.color;
         // アルファ値を0から1へ変化させる
         for (float t = 0; t < FadeTime; t += Time.deltaTime)
         {
             color.a = Mathf.Lerp(0, 1, t / FadeTime);
-            image.color = color;
+            move.color = color;
             yield return null;
         }
         color.a = 1f;
-        image.color = color;
+        move.color = color;
     }
 
     IEnumerator FadeIn()
     {
-        Color color = image.color;
+        Color color = move.color;
         // アルファ値を1から0へ変化させる
         for (float t = 0; t < FadeTime; t += Time.deltaTime)
         {
             color.a = Mathf.Lerp(1, 0, t / FadeTime);
-            image.color = color;
+            move.color = color;
             yield return null;
         }
         color.a = 0f;
-        image.color = color;
-        isFade = false;
+        move.color = color;
     }
 
     //動画の入力処理
     void VideoInput()
     {
-        //
-        if (isVideoPlaying == true)
+        //カウント前に入力したらカウントをリセットする
+        if (Input.anyKeyDown && isVideoPlaying == false)
+        {
+            Debug.Log("カウントがリセットされました");
+            //カウントリセットする
+            CancelInvoke(nameof(StartVideo));
+            //再びカウントさせる
+            Invoke(nameof(StartVideo), time);
+        }
+        else if (isVideoPlaying == true)
         {
             if (Input.anyKeyDown)
             {
@@ -110,22 +139,22 @@ public class TitlePlayVideo : MonoBehaviour
                 //再生時間を頭まで戻す
                 videoPlayer.time = 0;
                 isVideoPlaying = false;
-                isFade = true;
                 //アルファ値を0にする
                 StartCoroutine(FadeIn());
-                //OffPlayingAlpha();
-                //
+                OnImageAlpha();
+                // シーンのフラグをtrueにする
                 isScene = true;
                 //時間がたったら関数を呼び出す
                 Invoke(nameof(StartVideo), time);
             }
             else
             {
-                //
+                //　シーンのフラグをfalseにする
                 isScene = false;
                 //アルファ値を1にする
-                //OnPlayingAlpha();
-                StartCoroutine(FadeOut());
+                OnMoveAlpha();
+                OffImageAlpha();
+                //StartCoroutine(FadeOut());
                 //動画を再生する
                 videoPlayer.Play();
             }
