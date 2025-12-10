@@ -13,7 +13,7 @@ public class Projectile : NetworkBehaviour
     [SerializeField]
     private float damage = 10f;
 
-    private EnemyBase owner;   // Å© EnemyBase Ç…ïœçXÅI
+    private EnemyBase owner;
 
     [SerializeField] private float lifeTime = 3f;
 

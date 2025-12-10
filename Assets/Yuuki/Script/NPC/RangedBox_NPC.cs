@@ -31,7 +31,7 @@ public class RangedBox_NPC : NPCBase
     }
 
     // ======================================
-    // 攻撃（NPCBase → 攻撃距離以内で呼ばれる）
+    // 攻撃
     // ======================================
     protected override IEnumerator DoAttack()
     {
@@ -40,13 +40,13 @@ public class RangedBox_NPC : NPCBase
         m_isAttacking = true;
         canAttack = false;
 
-        // --------------- 攻撃方向の計算 ----------------
+        //攻撃方向の計算
         Vector3 dir = GetShootDirection();
 
-        // --------------- 発射 ----------------
+        // 発射
         SpawnProjectile(dir);
 
-        // --------------- クールダウン ----------------
+        //クールダウン
         yield return new WaitForSeconds(attackCooldown);
 
         canAttack = true;
@@ -54,14 +54,14 @@ public class RangedBox_NPC : NPCBase
     }
 
     // ======================================
-    // 射撃方向（銃口 → ターゲット）
+    // 射撃方向
     // ======================================
     private Vector3 GetShootDirection()
     {
         if (m_target == null || muzzlePoint == null)
             return transform.forward;
 
-        // ターゲットの中心（少し上）を狙う
+        // ターゲットの中心を狙う
         Vector3 targetPos = m_target.position + Vector3.up * 1.0f;
 
         return (targetPos - muzzlePoint.position).normalized;
