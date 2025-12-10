@@ -91,7 +91,7 @@ public class HandItem_Tanabe : NetworkBehaviour
     private void RpcBody()
     {
         Vector3 headDir = m_head.transform.position - m_prevHandPos;
-        m_head.transform.rotation = Quaternion.LookRotation(headDir.normalized);
+        //m_head.transform.rotation = Quaternion.LookRotation(headDir.normalized);
 
         m_foot.transform.localPosition = /*m_item.GetPlayerTransform().position + */new Vector3(0.6f, 0.0f, 0.8f);
         Vector3 dir = m_head.transform.position - m_foot.transform.position;
