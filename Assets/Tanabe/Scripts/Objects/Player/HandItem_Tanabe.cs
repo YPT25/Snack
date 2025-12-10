@@ -17,6 +17,7 @@ public class HandItem_Tanabe : NetworkBehaviour
     [SerializeField] private GameObject m_body;
     [SerializeField] private GameObject m_foot;
     [SerializeField] private float m_attractPower;
+    private Vector3 m_prevHandPos = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
@@ -89,6 +90,9 @@ public class HandItem_Tanabe : NetworkBehaviour
     [ClientRpc]
     private void RpcBody()
     {
+        Vector3 headDir = m_head.transform.position - m_prevHandPos;
+        m_head.transform.rotation = Quaternion.LookRotation(headDir.normalized);
+
         m_foot.transform.localPosition = /*m_item.GetPlayerTransform().position + */new Vector3(0.6f, 0.0f, 0.8f);
         Vector3 dir = m_head.transform.position - m_foot.transform.position;
         m_body.transform.rotation = Quaternion.LookRotation(dir.normalized);
@@ -97,6 +101,8 @@ public class HandItem_Tanabe : NetworkBehaviour
         Vector3 scale = m_body.transform.localScale;
         scale.z = Mathf.Abs(Vector3.Distance(m_head.transform.position, m_foot.transform.position)) * 0.9f;
         m_body.transform.localScale = scale;
+
+        m_prevHandPos = m_head.transform.position;
     }
 
     [ClientRpc]
@@ -108,6 +114,7 @@ public class HandItem_Tanabe : NetworkBehaviour
             colliders[i].enabled = false;
         }
 
+        m_prevHandPos = m_head.transform.position;
         m_body.transform.parent = m_item.GetPlayerData().transform;
         m_foot.transform.parent = m_item.GetPlayerData().transform;
     }
