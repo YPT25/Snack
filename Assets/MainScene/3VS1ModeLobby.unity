@@ -494,15 +494,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 540809070}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 48.54}
+  m_LocalPosition: {x: 0, y: 0, z: 57.88153}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1131097576}
+  m_Father: {fileID: 1240354222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 13.65, y: -7.4}
+  m_AnchoredPosition: {x: 11.491278, y: 11.102362}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &603528851
@@ -846,6 +846,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _touchMaterial: {fileID: 2100000, guid: 62a8b4f150f06e9488c1307a4dcd55b9, type: 2}
+  _assignId: 1
 --- !u!65 &1124903208
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -992,35 +993,16 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1131097576}
-  - component: {fileID: 1131097575}
   - component: {fileID: 1131097578}
   - component: {fileID: 1131097577}
   - component: {fileID: 1131097579}
   m_Layer: 0
-  m_Name: NumberofParticipants
+  m_Name: NumberofParticipantsThird
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1131097575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1131097574}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70e45b74e656bf143b854e4f13bd5205, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  _menber: 2
-  _targetCheck: {fileID: 1299224720}
-  targetTMP: {fileID: 695393173}
 --- !u!4 &1131097576
 Transform:
   m_ObjectHideFlags: 0
@@ -1035,7 +1017,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 695393172}
-  - {fileID: 540809073}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1131097577
@@ -1098,15 +1079,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1131097574}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70e45b74e656bf143b854e4f13bd5205, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c32fccfe598d384e82c7377bed220d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _menber: 1
-  _targetCheck: {fileID: 1124903207}
-  targetTMP: {fileID: 540809071}
+  _targetCheck: {fileID: 1299224720}
+  targetTMP: {fileID: 695393173}
 --- !u!1 &1138060020
 GameObject:
   m_ObjectHideFlags: 0
@@ -1273,6 +1253,109 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 0
   offsetY: 0
+--- !u!1 &1240354218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1240354222}
+  - component: {fileID: 1240354220}
+  - component: {fileID: 1240354219}
+  - component: {fileID: 1240354223}
+  m_Layer: 0
+  m_Name: NumberofParticipantsFirst
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1240354219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240354218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 1240354222}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 0
+  timelineOffset: 1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  useFixedUpdate: 0
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
+--- !u!114 &1240354220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240354218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 3605087539
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!4 &1240354222
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240354218}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.658722, y: -5.4132824, z: -1.6031647}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 540809073}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1240354223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240354218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 170db871c385c4e4fa1f50ea6ce8d098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _targetCheck: {fileID: 1124903207}
+  targetTMP: {fileID: 540809071}
 --- !u!1001 &1279960888
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1385,6 +1468,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _touchMaterial: {fileID: 2100000, guid: 6f77dcd6ddaf3e94abad310dae40ef3b, type: 2}
+  _assignId: 2
 --- !u!65 &1299224721
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1607,10 +1691,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _firstMenber: {fileID: 0}
-  _thirdMenber: {fileID: 0}
-  _firstParticipants: {fileID: 1131097575}
-  _thirdParticipants: {fileID: 1131097575}
+  _firstMenber: {fileID: 1124903207}
+  _thirdMenber: {fileID: 1299224720}
+  _firstParticipants: {fileID: 1240354223}
+  _thirdParticipants: {fileID: 1131097579}
 --- !u!4 &1466748483
 Transform:
   m_ObjectHideFlags: 0
@@ -1873,5 +1957,6 @@ SceneRoots:
   - {fileID: 1232508315}
   - {fileID: 1299224724}
   - {fileID: 1124903211}
-  - {fileID: 1131097576}
   - {fileID: 1466748483}
+  - {fileID: 1131097576}
+  - {fileID: 1240354222}

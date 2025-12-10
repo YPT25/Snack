@@ -23,6 +23,9 @@ public class AshuriNetworkManager : NetworkManager
     [Tooltip("プレイヤー2のPrefab")]
     public GameObject playerPrefab2;
 
+    [Tooltip("3VS1の1人側のPrefab")]
+    public GameObject playerFirst;
+
     // ------------------------------
     // 途中参加禁止シーン設定
     // ------------------------------

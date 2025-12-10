@@ -1515,7 +1515,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2263875141883450672, guid: 9adf61f23484d0d4e9d94005e26dcbb2, type: 3}
       propertyPath: nextSceneName
-      value: GameMode
+      value: 3VS1ModeLobby
       objectReference: {fileID: 0}
     - target: {fileID: 4146922772725383478, guid: 9adf61f23484d0d4e9d94005e26dcbb2, type: 3}
       propertyPath: m_LocalPosition.x

@@ -13,10 +13,10 @@ public class LobbyManager : NetworkBehaviour
 
     [Header("ゲームを開始できるかどうかを確認するオブジェクト")]
     [Tooltip("1人側ParticipantsNumberScript")]
-    [SerializeField] private ParticipantsNumberScript _firstParticipants;
+    [SerializeField] private ParticipantsFirstScript _firstParticipants;
 
     [Tooltip("3人側ParticipantsNumberScript")]
-    [SerializeField] private ParticipantsNumberScript _thirdParticipants;
+    [SerializeField] private ParticipantsThirdScript _thirdParticipants;
 
     // ーーー シーン遷移を1回だけにするためのフラグ ーーー
     private bool _isSceneChanging = false;
@@ -30,17 +30,19 @@ public class LobbyManager : NetworkBehaviour
         if (_isSceneChanging) return;
 
         // ーーー それぞれのエリアがゲーム開始可能か ーーー
-        bool firstMenber = _firstParticipants.FirstGameStart();
-        bool thirdMenber = _thirdParticipants.ThirdGameStart();
+        // 1人側の判定
+        bool firstMenber = _firstParticipants.GameStart();
 
-        // ーーー お互いゲームを可能かどうか     ーーー
+        // 3人側の判定
+        bool thirdMenber = _thirdParticipants.GameStart();
+
+        // ーーー お互いゲームを可能かどうか     ーーー    
         bool menber = (firstMenber && thirdMenber);
 
         // ーーー 全員そろったらシーンを遷移 ーーー
         if (menber)
         {
-            //移動します
-            //Debug.LogError($"一致してます {menber} == {totalPlayers} F: {firstMenber} T : {thirdMenber}");
+            //ここでシーン遷移の演出を搭載する
 
             // 次のシーンに移動
             ChangeScene();
@@ -53,6 +55,18 @@ public class LobbyManager : NetworkBehaviour
     {
         // フラグを立てて2回呼ばれないようにする
         _isSceneChanging = true;
+
+        // 全プレイヤーのidを取得する
+        var allPlayers = FindObjectsOfType<PlayerModelSwitcher>();
+
+        foreach (var p in allPlayers)
+        {
+            // モードが1ならモデル変更
+            if (p.GetModeId() == 1)
+            {
+                p.ModelSwitch();
+            }
+        }
 
         // シーン遷移開始
         NetworkManager.singleton.ServerChangeScene("3VS1ModeGame");
