@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using Mirror;
 using System.Linq;
+using static EnemyBase;
 
 /// <summary>
 /// リスポーンUIを表示し、選択されたプレイヤーPrefabをサーバーに送信する
@@ -228,4 +229,7 @@ public class RespawnManager : NetworkBehaviour
         // 新しいプレイヤーをクライアントに日もづける
         NetworkServer.ReplacePlayerForConnection(sender, newPlayer);
     }
+
+    //一番最初のリスポーンフラグ(Trueなら選んでいない、Falseなら選ばれた)
+    public bool GetFirstResFlag() => isFirstRespawn;
 }
