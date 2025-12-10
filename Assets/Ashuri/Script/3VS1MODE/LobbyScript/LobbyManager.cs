@@ -1,14 +1,22 @@
 using Mirror;
 using UnityEngine;
+using System.Collections;
 
 public class LobbyManager : NetworkBehaviour
 {
     [Header("ゲームに参加するのを確認するオブジェクト")]
     [Tooltip("1人側FirstPersonField")]
-    [SerializeField] private testPlayerMenberCheck _firstParticipants;
+    [SerializeField] private testPlayerMenberCheck _firstMenber;
 
     [Tooltip("3人側FirstPersonField")]
-    [SerializeField] private testPlayerMenberCheck _thirdParticipants;
+    [SerializeField] private testPlayerMenberCheck _thirdMenber;
+
+    [Header("ゲームを開始できるかどうかを確認するオブジェクト")]
+    [Tooltip("1人側ParticipantsNumberScript")]
+    [SerializeField] private ParticipantsNumberScript _firstParticipants;
+
+    [Tooltip("3人側ParticipantsNumberScript")]
+    [SerializeField] private ParticipantsNumberScript _thirdParticipants;
 
     // ーーー シーン遷移を1回だけにするためのフラグ ーーー
     private bool _isSceneChanging = false;
@@ -21,19 +29,19 @@ public class LobbyManager : NetworkBehaviour
         // ーーー すでにシーン遷移中なら何もしない ーーー
         if (_isSceneChanging) return;
 
-        // ーーー それぞれのエリアに乗っている人数を取得 ーーー
-        int firstMenber = _firstParticipants.GetTouchPlayerCount();
-        int thirdMenber = _thirdParticipants.GetTouchPlayerCount();
+        // ーーー それぞれのエリアがゲーム開始可能か ーーー
+        bool firstMenber = _firstParticipants.FirstGameStart();
+        bool thirdMenber = _thirdParticipants.ThirdGameStart();
 
-        // ーーー 合計人数を計算 ーーー
-        int menber = firstMenber + thirdMenber;
-
-        // ーーー Mirror が認識しているプレイヤー数 ーーー
-        int totalPlayers = NetworkManager.singleton.numPlayers;
+        // ーーー お互いゲームを可能かどうか     ーーー
+        bool menber = (firstMenber && thirdMenber);
 
         // ーーー 全員そろったらシーンを遷移 ーーー
-        if (menber > totalPlayers)
+        if (menber)
         {
+            //移動します
+            //Debug.LogError($"一致してます {menber} == {totalPlayers} F: {firstMenber} T : {thirdMenber}");
+
             // 次のシーンに移動
             ChangeScene();
         }

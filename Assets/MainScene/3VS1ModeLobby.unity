@@ -1607,8 +1607,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _firstParticipants: {fileID: 1124903207}
-  _thirdParticipants: {fileID: 1299224720}
+  _firstMenber: {fileID: 0}
+  _thirdMenber: {fileID: 0}
+  _firstParticipants: {fileID: 1131097575}
+  _thirdParticipants: {fileID: 1131097575}
 --- !u!4 &1466748483
 Transform:
   m_ObjectHideFlags: 0
