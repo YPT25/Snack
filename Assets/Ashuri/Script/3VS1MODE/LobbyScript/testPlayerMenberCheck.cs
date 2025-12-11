@@ -59,25 +59,13 @@ public class testPlayerMenberCheck : NetworkBehaviour
         // Player タグかどうかチェック
         if (other.CompareTag("Player"))
         {
-            // PlayerModelSwitcher を取得してIDを渡す
-            var switcher = other.GetComponent<PlayerModelSwitcher>();
-            if (switcher != null)
-            {
-                switcher.SetModeId(_assignId);
-            }
+            // プレイヤーかチェックする
+            SingleTeamModelSwitcher_Ashuri singleTeamModelSwitcher_Ashuri = other.GetComponent<SingleTeamModelSwitcher_Ashuri>();
+            if (singleTeamModelSwitcher_Ashuri == null) return;
 
-            // NetworkIdentity からプレイヤーIDを取得
-            var identity = other.GetComponent<NetworkIdentity>();
-            if (identity != null)
-            {
-                uint playerId = identity.netId;
+            if (!singleTeamModelSwitcher_Ashuri.isLocalPlayer) return;
 
-                // リストに存在しない場合は追加
-                if (!touchingPlayerIds.Contains(playerId))
-                {
-                    touchingPlayerIds.Add(playerId);
-                }
-            }
+            singleTeamModelSwitcher_Ashuri.TryChangePlayer(_assignId);
 
             // 触れている人数を増やす
             _touchPlayerCount++;

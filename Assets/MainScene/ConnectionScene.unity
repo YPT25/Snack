@@ -593,6 +593,10 @@ PrefabInstance:
       value: Assets/MainScene/LobbyScene.unity
       objectReference: {fileID: 0}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: playerFirst
+      value: 
+      objectReference: {fileID: 6831450580034169496, guid: 87013ce5ac1429c49bc1079f9f5e7882, type: 3}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: offlineScene
       value: Assets/MainScene/TitleScene.unity
       objectReference: {fileID: 0}
@@ -772,6 +776,10 @@ PrefabInstance:
       propertyPath: spawnPrefabs.Array.data[37]
       value: 
       objectReference: {fileID: 3869155081836768033, guid: bc7fbde139fd451468c771e07219af16, type: 3}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: spawnPrefabs.Array.data[38]
+      value: 
+      objectReference: {fileID: 6831450580034169496, guid: 87013ce5ac1429c49bc1079f9f5e7882, type: 3}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: blockedSceneNames.Array.size
       value: 1

@@ -56,17 +56,7 @@ public class LobbyManager : NetworkBehaviour
         // フラグを立てて2回呼ばれないようにする
         _isSceneChanging = true;
 
-        // 全プレイヤーのidを取得する
-        var allPlayers = FindObjectsOfType<PlayerModelSwitcher>();
-
-        foreach (var p in allPlayers)
-        {
-            // モードが1ならモデル変更
-            if (p.GetModeId() == 1)
-            {
-                p.ModelSwitch();
-            }
-        }
+        // モデルを変更する
 
         // シーン遷移開始
         NetworkManager.singleton.ServerChangeScene("3VS1ModeGame");

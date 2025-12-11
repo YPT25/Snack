@@ -174,8 +174,13 @@ public class AshuriNetworkManager : NetworkManager
 
         GameObject selectedPrefab;
 
+        if (stateManager != null && stateManager.GetModeId(conn) == 1)
+        {
+            // モデルに応じたPrefabを選ぶ
+            selectedPrefab = playerFirst;
+        }
         // 保存されたモデルがある場合だけ切り替える
-        if (stateManager != null && stateManager.HasSavedModel(conn))
+        else if (stateManager != null && stateManager.HasSavedModel(conn))
         {
             // 保存されているモデル番号を取得
             int modelIndex = stateManager.GetSavedModel(conn);
@@ -189,15 +194,17 @@ public class AshuriNetworkManager : NetworkManager
             selectedPrefab = playerPrefab;
         }
 
+        Debug.LogError(stateManager.GetModeId(conn));
+
         // 初期位置を取得
         Transform start = GetStartPosition();
 
-        // 1つ上のコメント：プレイヤーを生成する
+        // プレイヤーを生成する
         GameObject player = (start != null)
             ? Instantiate(selectedPrefab, start.position, start.rotation)
             : Instantiate(selectedPrefab);
 
-        // 1つ上のコメント：接続中のクライアントにプレイヤーを紐づける
+        // 接続中のクライアントにプレイヤーを紐づける
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
