@@ -145,7 +145,11 @@ public class StatePlayer_Ashuri : NetworkBehaviour
 
         // 1つ上：プレイヤーのモデル番号を保存
         savedModel[conn] = modelIndex;
+
+        // 1つ上：ログを出す（デバッグ用）
+        Debug.Log($"[StatePlayer] プレイヤー {conn.connectionId} のモデル番号を {modelIndex} に保存しました");
     }
+
 
     // ----------------------------------------------------
     // 保存されているプレイヤーモデル番号を取得

@@ -187,6 +187,18 @@ public class AshuriNetworkManager : NetworkManager
 
             // モデルに応じたPrefabを選ぶ
             selectedPrefab = (modelIndex == 0 ? playerPrefab1 : playerPrefab2);
+            if(modelIndex == 0)
+            {
+                selectedPrefab = playerPrefab;
+            }
+            else if(modelIndex ==1)
+            {
+                selectedPrefab = playerPrefab1;
+            }
+            else
+            {
+                selectedPrefab = playerPrefab2;
+            }
         }
         else
         {

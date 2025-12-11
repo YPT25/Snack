@@ -22,12 +22,26 @@ public class PlayerWeaponManager : NetworkBehaviour
         CmdChangePlayer(playerNumber);
     }
 
-    // ----------------------------------------------------
-    // プレイヤーの変更処理（サーバで実行）
-    // ----------------------------------------------------
     [Command]
     private void CmdChangePlayer(int playerNumber)
     {
+        // ---- すでに同じモデルを使っているかチェック ----
+        StatePlayer_Ashuri state = StatePlayer_Ashuri.Instance;
+
+        if (state != null)
+        {
+            int currentModel = state.GetSavedModel(connectionToClient);
+
+            // 1つ上：同じモデルなら途中で終了
+            if (currentModel == playerNumber)
+            {
+                Debug.LogError($"[WeaponManager] すでにモデル {playerNumber} のため変更を行いません");
+                return;
+            }
+        }
+
+        // この下は「違うモデルに変える場合だけ」実行される
+
         GameObject oldPlayer = this.gameObject;
         NetworkConnectionToClient conn = connectionToClient;
 
@@ -37,27 +51,18 @@ public class PlayerWeaponManager : NetworkBehaviour
             oldPlayer.transform.rotation
         );
 
-        // 置き換え
         NetworkServer.ReplacePlayerForConnection(conn, newPlayer, false);
 
-        // 角度を元に戻す
         StartCoroutine(FixRotationNextFrame(newPlayer, oldPlayer.transform.rotation));
 
-        //StatePlayer_Ashuri にモデル番号を保存する
-        StatePlayer_Ashuri state = FindObjectOfType<StatePlayer_Ashuri>();
         if (state != null)
         {
             state.SavePlayerModel(conn, playerNumber);
-            Debug.Log($"[WeaponManager] モデル {playerNumber} を保存しました");
-        }
-        else
-        {
-            Debug.LogWarning("[WeaponManager] StatePlayer_Ashuri が見つかりませんでした");
         }
 
-        // 古いプレイヤー削除
         StartCoroutine(DeleteOldPlayer(oldPlayer));
     }
+
 
     // ----------------------------------------------------
     // 1フレーム後に古いプレイヤー削除

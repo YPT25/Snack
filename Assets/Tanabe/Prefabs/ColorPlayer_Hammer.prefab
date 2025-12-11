@@ -177,6 +177,8 @@ GameObject:
   - component: {fileID: 827598582647508589}
   - component: {fileID: 2977152274148280918}
   - component: {fileID: 3007194824742831071}
+  - component: {fileID: -4968568811902704172}
+  - component: {fileID: 6930088318945493636}
   m_Layer: 7
   m_Name: ColorPlayer_Hammer
   m_TagString: Player
@@ -441,6 +443,41 @@ MonoBehaviour:
   - {fileID: 7231876487223850764}
   HITTIME: 0.8
   m_damageColor: {r: 0.627451, g: 0, b: 0, a: 1}
+--- !u!114 &-4968568811902704172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d443ee3bd3d2434db1c4449e2b215a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  newPlayerPrefab:
+  - {fileID: 676404720595789358, guid: 624793d9cc157ac4d861cb60ff873717, type: 3}
+  - {fileID: 8759962040556672278, guid: 3137c5444483dfd4dba656b036660eae, type: 3}
+  - {fileID: 676404720595789358}
+--- !u!114 &6930088318945493636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30b7bc22c103ef448a023006881c70f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  newPlayerPrefab: {fileID: 3016162848710178345, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0
