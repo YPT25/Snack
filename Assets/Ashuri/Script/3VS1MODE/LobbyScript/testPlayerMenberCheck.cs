@@ -84,6 +84,14 @@ public class testPlayerMenberCheck : NetworkBehaviour
 
         if (other.CompareTag("Player"))
         {
+            // プレイヤーかチェックする
+            SingleTeamModelSwitcher_Ashuri singleTeamModelSwitcher_Ashuri = other.GetComponent<SingleTeamModelSwitcher_Ashuri>();
+            if (singleTeamModelSwitcher_Ashuri == null) return;
+
+            if (!singleTeamModelSwitcher_Ashuri.isLocalPlayer) return;
+
+            singleTeamModelSwitcher_Ashuri.TryChangePlayer(0);
+
             // プレイヤーのIDを取得してリストから削除
             var identity = other.GetComponent<NetworkIdentity>();
             if (identity != null)
