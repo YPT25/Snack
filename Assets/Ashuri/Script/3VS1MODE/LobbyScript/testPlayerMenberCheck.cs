@@ -59,6 +59,12 @@ public class testPlayerMenberCheck : NetworkBehaviour
         // Player タグかどうかチェック
         if (other.CompareTag("Player"))
         {
+            // 触れている人数を増やす
+            _touchPlayerCount++;
+
+            // マテリアルを touch 状態へ
+            _materialState = "touch";
+
             // プレイヤーかチェックする
             SingleTeamModelSwitcher_Ashuri singleTeamModelSwitcher_Ashuri = other.GetComponent<SingleTeamModelSwitcher_Ashuri>();
             if (singleTeamModelSwitcher_Ashuri == null) return;
@@ -67,11 +73,6 @@ public class testPlayerMenberCheck : NetworkBehaviour
 
             singleTeamModelSwitcher_Ashuri.TryChangePlayer(_assignId);
 
-            // 触れている人数を増やす
-            _touchPlayerCount++;
-
-            // マテリアルを touch 状態へ
-            _materialState = "touch";
         }
     }
 
@@ -84,6 +85,16 @@ public class testPlayerMenberCheck : NetworkBehaviour
 
         if (other.CompareTag("Player"))
         {
+            // 人数を減らす
+            _touchPlayerCount--;
+
+            // カウントが0になったらマテリアルを戻す
+            if (_touchPlayerCount <= 0)
+            {
+                _touchPlayerCount = 0;
+                _materialState = "default";
+            }
+
             // プレイヤーかチェックする
             SingleTeamModelSwitcher_Ashuri singleTeamModelSwitcher_Ashuri = other.GetComponent<SingleTeamModelSwitcher_Ashuri>();
             if (singleTeamModelSwitcher_Ashuri == null) return;
@@ -102,16 +113,6 @@ public class testPlayerMenberCheck : NetworkBehaviour
                 {
                     touchingPlayerIds.Remove(playerId);
                 }
-            }
-
-            // 人数を減らす
-            _touchPlayerCount--;
-
-            // カウントが0になったらマテリアルを戻す
-            if (_touchPlayerCount <= 0)
-            {
-                _touchPlayerCount = 0;
-                _materialState = "default";
             }
         }
     }
