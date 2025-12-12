@@ -34,6 +34,7 @@ public class CandyDisplayManager : MonoBehaviour
 
     // -----------------------------------------------
     // ゲーム開始時にローカルプレイヤーを探す
+    // -----------------------------------------------
     private void Start()
     {
         // ローカルプレイヤー探索の開始
@@ -42,6 +43,7 @@ public class CandyDisplayManager : MonoBehaviour
 
     // -----------------------------------------------
     // ローカルプレイヤーが見つかるまで探す処理
+    // -----------------------------------------------
     private IEnumerator FindLocalPlayer()
     {
         // ローカルプレイヤーが見つかるまで繰り返す
@@ -75,6 +77,7 @@ public class CandyDisplayManager : MonoBehaviour
 
     // -----------------------------------------------
     // 毎フレーム UI を更新する処理
+    // -----------------------------------------------
     private IEnumerator UpdateUIRoutine()
     {
         while (true)
@@ -89,6 +92,7 @@ public class CandyDisplayManager : MonoBehaviour
 
     // -----------------------------------------------
     // 所持アイテムに合わせて UI を更新する処理
+    // -----------------------------------------------
     private void UpdateCandyUI()
     {
         // 所持アイテム2種類を取得
