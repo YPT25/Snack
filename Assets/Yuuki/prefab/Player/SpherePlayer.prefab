@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7553778089189400760}
   - component: {fileID: 3642012660366611759}
   - component: {fileID: 2591342493730450978}
+  - component: {fileID: -6268562309184095356}
   m_Layer: 0
   m_Name: SpherePlayer
   m_TagString: Untagged
@@ -111,6 +112,9 @@ MonoBehaviour:
   mouseSensitivity: 3
   rotationSmooth: 10
   m_respawnIcon: {fileID: 21300000, guid: 8e3a01ba3a5657f4dbe6235687e2f8d2, type: 3}
+  padSensitivityMultiplier: 20
+  padDeadZone: 0.02
+  padInvertY: 1
   iscanMove: 1
   fpsCameraPoint: {fileID: 7536739629934794539}
   tpsCameraOffset: {x: 0, y: 2, z: -4}
@@ -174,6 +178,22 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &-6268562309184095356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798214820168749291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fda5594f00912e4982dfbdf16e69f32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_meshRenderers:
+  - {fileID: 4465058573341188606}
+  HITTIME: 0.2
+  m_damageColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &6085968863391930915
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7235926117160926551}
   - component: {fileID: 6173056339328657612}
   - component: {fileID: 8150932216926291291}
+  - component: {fileID: 2827626005635934425}
   m_Layer: 0
   m_Name: CubePlayer
   m_TagString: Untagged
@@ -111,6 +112,9 @@ MonoBehaviour:
   mouseSensitivity: 3
   rotationSmooth: 10
   m_respawnIcon: {fileID: 21300000, guid: f16875b2c9521de47b2c41ad3f60fc67, type: 3}
+  padSensitivityMultiplier: 20
+  padDeadZone: 0.02
+  padInvertY: 1
   iscanMove: 1
   fpsCameraPoint: {fileID: 7950067630265550831}
   tpsCameraOffset: {x: 0, y: 2, z: -4}
@@ -172,6 +176,22 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &2827626005635934425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15092497445577671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fda5594f00912e4982dfbdf16e69f32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_meshRenderers:
+  - {fileID: 4778858667329697814}
+  HITTIME: 0.2
+  m_damageColor: {r: 0, g: 1, b: 0.067611694, a: 1}
 --- !u!1 &5577679464552577306
 GameObject:
   m_ObjectHideFlags: 0
