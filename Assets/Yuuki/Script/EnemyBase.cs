@@ -76,17 +76,11 @@ public class EnemyBase : CharacterBase
     public virtual void Die()
     {
         Debug.Log($"{name} ÇÕì|ÇÍÇΩÅI");
-        RpcPlayDeathExplosion();
+     
         NetworkServer.Destroy(gameObject);
     }
 
-    [ClientRpc]
-    void RpcPlayDeathExplosion()
-    {
-        EnemyDeathEffect exp = GetComponent<EnemyDeathEffect>();
-        if (exp != null)
-            exp.SpawnExplosion();
-    }
+
 
     public EnemyType GetEnemyType() => m_enemyType;
     public void SetEnemyType(EnemyType _enemyType) => m_enemyType = _enemyType;
