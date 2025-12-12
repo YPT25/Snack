@@ -25,12 +25,16 @@ public class EnemyBase : CharacterBase
     protected CharacterType m_enemyCharacterType = CharacterType.ENEMY_TYPE;
 
     //ダメージ演出用
-    private DamagePerformance m_damagePerformance;
+    private DamegeEffect_Mokurin m_damagePerformance;
+   
+
 
     public virtual void Start()
     {
         if (isServer)
             SetCharacterType(m_enemyCharacterType);
+        m_damagePerformance = GetComponent<DamegeEffect_Mokurin>();
+
     }
 
     /// <summary>
@@ -54,10 +58,15 @@ public class EnemyBase : CharacterBase
     public override void Damage(float _damage)
     {
         base.Damage(_damage);
-        if (this.isLocalPlayer)
-        {
-            m_damagePerformance?.Damage();
-        }
+
+        // 全員に赤点滅を通知
+        RpcPlayDamageEffect();
+    }
+
+    [ClientRpc]
+    private void RpcPlayDamageEffect()
+    {
+        m_damagePerformance?.Damage();
     }
 
     /// <summary>
@@ -67,7 +76,16 @@ public class EnemyBase : CharacterBase
     public virtual void Die()
     {
         Debug.Log($"{name} は倒れた！");
+        RpcPlayDeathExplosion();
         NetworkServer.Destroy(gameObject);
+    }
+
+    [ClientRpc]
+    void RpcPlayDeathExplosion()
+    {
+        EnemyDeathEffect exp = GetComponent<EnemyDeathEffect>();
+        if (exp != null)
+            exp.SpawnExplosion();
     }
 
     public EnemyType GetEnemyType() => m_enemyType;

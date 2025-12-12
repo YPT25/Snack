@@ -213,6 +213,7 @@ GameObject:
   - component: {fileID: -1174409665664958660}
   - component: {fileID: -2655463952413534563}
   - component: {fileID: 8915957478013277054}
+  - component: {fileID: 5211268003005233652}
   m_Layer: 0
   m_Name: BlankBoxPlayer
   m_TagString: Untagged
@@ -376,3 +377,19 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &5211268003005233652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8692400465812118309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fda5594f00912e4982dfbdf16e69f32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_meshRenderers:
+  - {fileID: 914311142236992893}
+  HITTIME: 0.2
+  m_damageColor: {r: 1, g: 0, b: 0, a: 1}
