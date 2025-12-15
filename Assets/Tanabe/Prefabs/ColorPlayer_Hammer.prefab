@@ -5425,7 +5425,7 @@ MonoBehaviour:
   mouseSensitivity: 3
   minY: -35
   maxY: 60
-  aimingMinY: -47
+  aimingMinY: -70
   aimingMaxY: 40
 --- !u!1 &1266777307047244049
 GameObject:
