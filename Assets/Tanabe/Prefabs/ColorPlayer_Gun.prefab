@@ -46177,4 +46177,4 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  newPlayerPrefab: {fileID: 3016162848710178345, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
+  newPlayerPrefab: {fileID: 7819040012874337049, guid: a297c7de1660a814e903c77c3874d733, type: 3}
