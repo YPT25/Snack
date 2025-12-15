@@ -64,6 +64,7 @@ public class ItemBox_Tanabe : CharacterBase
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
+        if(other.GetComponentInParent<ItemStateMachine>() != null) { return; }
         this.ChangeColor(new Color(0.8f, 0f, 0f, 0f));
         m_hitTimer = HITTIME;
         RpcHit();

@@ -32,6 +32,7 @@ public class Hammer_Tanabe : NetworkBehaviour
     private bool m_isShockWave = false;
 
     private bool m_isSharpAttack = false;
+    private bool m_isBattleMode = false;
 
     // Start is called before the first frame update
     void Start()
@@ -49,6 +50,11 @@ public class Hammer_Tanabe : NetworkBehaviour
         m_attackRotation2 = Quaternion.Euler(0f, -155f, -80f);
 
         m_attackCollider.enabled = false;
+
+        if (GameObject.Find("BattleMode") != null)
+        {
+            m_isBattleMode = true;
+        }
     }
 
     // Update is called once per frame
@@ -90,7 +96,14 @@ public class Hammer_Tanabe : NetworkBehaviour
         // UŒ‚n‚ß‚Ì“®‚«
         if (m_attackTimer <= 1.0f)
         {
-            m_attackTimer += Time.deltaTime * 4.0f;
+            if (m_isBattleMode)
+            {
+                m_attackTimer += Time.deltaTime * 4.0f * 1.5f;
+            }
+            else
+            {
+                m_attackTimer += Time.deltaTime * 4.0f;
+            }
             if (m_player.GetPartType() == global::SetPart_Tanabe.PartType.SHARPBULLET)
             {
                 m_attackTimer += Time.deltaTime * 2.0f;
