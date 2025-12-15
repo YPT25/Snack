@@ -399,7 +399,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  newPlayerPrefab: {fileID: 3016162848710178345, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
+  newPlayerPrefab: {fileID: 8269363491708444832, guid: dc50908c290bfe743ba9bba8e6826a2d, type: 3}
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0
