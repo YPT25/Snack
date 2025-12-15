@@ -33,6 +33,7 @@ public class HandItem_Tanabe : NetworkBehaviour
         {
             m_isThrow = true;
             this.RpcThrow();
+            m_player = m_item.GetPlayerData();
             SphereCollider[] colliders = m_item.GetComponents<SphereCollider>();
             for (int i = 0; i < colliders.Length; i++)
             {
@@ -68,8 +69,18 @@ public class HandItem_Tanabe : NetworkBehaviour
     {
         if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || m_isDestroy || m_isAttract || other.GetComponent<Player_Tanabe>() != null) { return; }
         m_isAttract = true;
-        this.RpcHead();
+        this.RpcHead(other.ClosestPoint(m_head.transform.position));
         m_head.transform.parent = null;
+        Vector3 dir = other.ClosestPoint(m_head.transform.position) - m_head.transform.position;
+        m_head.transform.rotation = Quaternion.LookRotation(dir.normalized);
+
+        if(m_player == null) { return; }
+        m_player.GetRigidbody().useGravity = false;
+        Vector2 vec2 = new Vector2(m_head.transform.position.x, m_head.transform.position.z) - new Vector2(m_player.transform.position.x, m_player.transform.position.z);
+        float z = Mathf.Atan2(vec2.y, vec2.x) * Mathf.Rad2Deg;
+
+        Vector3 eu = Quaternion.LookRotation(dir.normalized).eulerAngles;
+        m_head.transform.rotation = Quaternion.Euler(eu.x, eu.y, z - 90f);
     }
 
     private void OnDestroy()
@@ -77,6 +88,8 @@ public class HandItem_Tanabe : NetworkBehaviour
         Destroy(m_head);
         Destroy(m_body);
         Destroy(m_foot);
+        if (m_player == null) { return; }
+        m_player.GetRigidbody().useGravity = true;
     }
 
     [ClientRpc]
@@ -114,14 +127,30 @@ public class HandItem_Tanabe : NetworkBehaviour
             colliders[i].enabled = false;
         }
 
+        m_player = m_item.GetPlayerData();
+
         m_prevHandPos = m_head.transform.position;
         m_body.transform.parent = m_item.GetPlayerData().transform;
         m_foot.transform.parent = m_item.GetPlayerData().transform;
     }
 
     [ClientRpc]
-    private void RpcHead()
+    private void RpcHead(Vector3 closestPoint)
     {
         m_head.transform.parent = null;
+        Vector3 dir = closestPoint - m_head.transform.position;
+        m_head.transform.rotation = Quaternion.LookRotation(dir.normalized);
+
+        if (m_player == null) { return; }
+        m_player.GetRigidbody().useGravity = false;
+        Vector3 velocity = m_player.GetRigidbody().velocity;
+        velocity.y = 0f;
+        m_player.GetRigidbody().velocity = velocity;
+
+        Vector2 vec2 = new Vector2(m_head.transform.position.x, m_head.transform.position.z) - new Vector2(m_player.transform.position.x, m_player.transform.position.z);
+        float z = Mathf.Atan2(vec2.y, vec2.x) * Mathf.Rad2Deg;
+
+        Vector3 eu = Quaternion.LookRotation(dir.normalized).eulerAngles;
+        m_head.transform.rotation = Quaternion.Euler(eu.x, eu.y, z - 90f);
     }
 }
