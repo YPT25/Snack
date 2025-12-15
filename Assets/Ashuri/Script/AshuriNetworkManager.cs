@@ -206,7 +206,7 @@ public class AshuriNetworkManager : NetworkManager
             selectedPrefab = playerPrefab;
         }
 
-        //Debug.LogError(stateManager.GetModeId(conn));
+        Debug.LogError(stateManager.GetModeId(conn));
 
         // 初期位置を取得
         Transform start = GetStartPosition();
