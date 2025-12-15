@@ -12,6 +12,8 @@ public class HandItem_Tanabe : NetworkBehaviour
     private bool m_isThrow = false;
     private bool m_isAttract = false;
     private bool m_isDestroy = false;
+    private Vector3 m_startDir = Vector3.zero;
+    private GameObject m_attractObject = null;
 
     [SerializeField] private GameObject m_head;
     [SerializeField] private GameObject m_body;
@@ -34,11 +36,12 @@ public class HandItem_Tanabe : NetworkBehaviour
             m_isThrow = true;
             this.RpcThrow();
             m_player = m_item.GetPlayerData();
-            SphereCollider[] colliders = m_item.GetComponents<SphereCollider>();
+            Collider[] colliders = m_item.GetComponents<Collider>();
             for (int i = 0; i < colliders.Length; i++)
             {
                 colliders[i].enabled = false;
             }
+            m_head.GetComponent<Collider>().enabled = true;
 
             m_body.transform.parent = m_item.GetPlayerData().transform;
             m_foot.transform.parent = m_item.GetPlayerData().transform;
@@ -68,14 +71,28 @@ public class HandItem_Tanabe : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || m_isDestroy || m_isAttract || other.GetComponent<Player_Tanabe>() != null) { return; }
+        
+        if (other.GetComponentInParent<ItemStateMachine>() != null && other.GetComponentInParent<ItemStateMachine>().GetItemStateType() == ItemStateType.DROP)
+        {
+            m_attractObject = other.GetComponentInParent<ItemStateMachine>().gameObject;
+            this.RpcSetAttractObject(other.GetComponentInParent<ItemStateMachine>().gameObject);
+        }
+
         m_isAttract = true;
         this.RpcHead(other.ClosestPoint(m_head.transform.position));
         m_head.transform.parent = null;
         Vector3 dir = other.ClosestPoint(m_head.transform.position) - m_head.transform.position;
         m_head.transform.rotation = Quaternion.LookRotation(dir.normalized);
 
-        if(m_player == null) { return; }
+
+        m_player = m_item.GetPlayerData();
+
+        if (m_player == null || m_attractObject != null) { return; }
         m_player.GetRigidbody().useGravity = false;
+        Vector3 velocity = m_player.GetRigidbody().velocity;
+        velocity.y = 0f;
+        m_player.GetRigidbody().velocity = velocity;
+
         Vector2 vec2 = new Vector2(m_head.transform.position.x, m_head.transform.position.z) - new Vector2(m_player.transform.position.x, m_player.transform.position.z);
         float z = Mathf.Atan2(vec2.y, vec2.x) * Mathf.Rad2Deg;
 
@@ -88,6 +105,7 @@ public class HandItem_Tanabe : NetworkBehaviour
         Destroy(m_head);
         Destroy(m_body);
         Destroy(m_foot);
+
         if (m_player == null) { return; }
         m_player.GetRigidbody().useGravity = true;
     }
@@ -96,8 +114,28 @@ public class HandItem_Tanabe : NetworkBehaviour
     private void RpcAttract(GameObject _player)
     {
         if (_player == null) { return; }
+
+        if (m_attractObject != null)
+        {
+            Vector3 objectDir = _player.transform.position - m_head.transform.position;
+            m_head.transform.position += objectDir.normalized * m_attractPower * Time.deltaTime;
+            m_attractObject.transform.position += objectDir.normalized * m_attractPower * Time.deltaTime;
+            return;
+        }
+
         Vector3 dir = m_head.transform.position - _player.transform.position;
         _player.transform.position += dir.normalized * m_attractPower * Time.deltaTime;
+
+        if(m_startDir == Vector3.zero)
+        {
+            m_startDir = dir.normalized;
+        }
+
+        if (Vector3.Distance(m_head.transform.position, m_item.GetPlayerData().transform.position) <= 1.5f && m_startDir.y > 0f)
+        {
+            m_item.GetPlayerData().GetRigidbody().AddForce(Vector3.up * 10f, ForceMode.Impulse);
+        }
+
     }
 
     [ClientRpc]
@@ -121,11 +159,13 @@ public class HandItem_Tanabe : NetworkBehaviour
     [ClientRpc]
     private void RpcThrow()
     {
-        SphereCollider[] colliders = m_item.GetComponents<SphereCollider>();
+        Collider[] colliders = m_item.GetComponents<Collider>();
         for(int i = 0; i < colliders.Length; i++)
         {
             colliders[i].enabled = false;
         }
+
+        m_head.GetComponent<Collider>().enabled = true;
 
         m_player = m_item.GetPlayerData();
 
@@ -137,11 +177,14 @@ public class HandItem_Tanabe : NetworkBehaviour
     [ClientRpc]
     private void RpcHead(Vector3 closestPoint)
     {
+        m_startDir = Vector3.zero;
         m_head.transform.parent = null;
         Vector3 dir = closestPoint - m_head.transform.position;
         m_head.transform.rotation = Quaternion.LookRotation(dir.normalized);
 
-        if (m_player == null) { return; }
+        m_player = m_item.GetPlayerData();
+
+        if (m_player == null || m_attractObject != null) { return; }
         m_player.GetRigidbody().useGravity = false;
         Vector3 velocity = m_player.GetRigidbody().velocity;
         velocity.y = 0f;
@@ -152,5 +195,11 @@ public class HandItem_Tanabe : NetworkBehaviour
 
         Vector3 eu = Quaternion.LookRotation(dir.normalized).eulerAngles;
         m_head.transform.rotation = Quaternion.Euler(eu.x, eu.y, z - 90f);
+    }
+
+    [ClientRpc]
+    private void RpcSetAttractObject(GameObject _gameObject)
+    {
+        m_attractObject = _gameObject;
     }
 }

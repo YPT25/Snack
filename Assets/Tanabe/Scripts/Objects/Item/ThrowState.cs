@@ -59,7 +59,7 @@ public class ThrowState : IItemState_Tanabe
 
     public void OnTriggerEnter(GameObject other)
     {
-        if (other.GetComponentInParent<Player_Tanabe>() != null || other.tag == "Player" || m_isExplode) { return; }
+        if (other.GetComponentInParent<Player_Tanabe>() != null || other.tag == "Player" || m_isExplode || item.GetComponent<HandItem_Tanabe>() != null) { return; }
         this.Explode();
     }
 
