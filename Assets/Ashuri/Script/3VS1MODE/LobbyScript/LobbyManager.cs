@@ -18,6 +18,9 @@ public class LobbyManager : NetworkBehaviour
     [Tooltip("3人側ParticipantsNumberScript")]
     [SerializeField] private ParticipantsThirdScript _thirdParticipants;
 
+    // モデルの変更時のフラグ
+    public bool _isChange = false;
+
     // ーーー シーン遷移を1回だけにするためのフラグ ーーー
     private bool _isSceneChanging = false;
 
@@ -56,9 +59,36 @@ public class LobbyManager : NetworkBehaviour
         // フラグを立てて2回呼ばれないようにする
         _isSceneChanging = true;
 
-
+        // モデルを変更する
+        // 接続中の全プレイヤーを取得してモデル変更
+        ChangeAllPlayerModels();
 
         // シーン遷移開始
         NetworkManager.singleton.ServerChangeScene("3VS1ModeGame");
+    }
+
+    // ----------------------------------------------------
+    // 全プレイヤーのモデルを変更する
+    // ----------------------------------------------------
+    [Server]
+    private void ChangeAllPlayerModels()
+    {
+        // 現在接続している全クライアントを取得
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            // 接続にプレイヤーが存在しない場合はスキップ
+            if (conn.identity == null) continue;
+
+            // プレイヤーから PlayerModelSwitcher を取得
+            PlayerModelSwitcher switcher =
+                conn.identity.GetComponent<PlayerModelSwitcher>();
+
+            // スクリプトが無ければスキップ
+            if (switcher == null) continue;
+
+            // モデル切り替えを実行
+            switcher.ModelButton();
+        }
+
     }
 }

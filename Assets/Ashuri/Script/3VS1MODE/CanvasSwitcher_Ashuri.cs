@@ -31,11 +31,8 @@ public class CanvasSwitcher_Ashuri : NetworkBehaviour
         // StatePlayer を取得
         StatePlayer_Ashuri state = StatePlayer_Ashuri.Instance;
 
-        // モードID（チームID）を取得
-        int teamId = state.GetModeId(conn);
-
         // Canvas を切り替える
-        SwitchCanvas(teamId);
+        //SwitchCanvas(teamId);
     }
 
     // ----------------------------------------------------

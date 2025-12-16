@@ -193,4 +193,34 @@ public class StatePlayer_Ashuri : NetworkBehaviour
 
         return 0;
     }
+
+    // ----------------------------------------------------
+    // 現在保存されている全プレイヤー情報を表示（デバッグ用）
+    // ----------------------------------------------------
+    [Server]
+    public void DebugDumpAll()
+    {
+        Debug.LogError("===== StatePlayer Dump Start =====");
+
+        // 1つ上：マテリアル情報の確認
+        foreach (var pair in playerMaterialIndex)
+        {
+            Debug.LogError($"[Material] conn={pair.Key.connectionId} value={pair.Value}");
+        }
+
+        // 1つ上：モデル情報の確認
+        foreach (var pair in savedModel)
+        {
+            Debug.LogError($"[Model] conn={pair.Key.connectionId} value={pair.Value}");
+        }
+
+        // 1つ上：ModeID 情報の確認
+        foreach (var pair in vsID)
+        {
+            Debug.LogError($"[ModeID] conn={pair.Key.connectionId} value={pair.Value}");
+        }
+
+        Debug.LogError("===== StatePlayer Dump End =====");
+    }
+
 }

@@ -13,6 +13,8 @@ public class PlayerModelSwitcher : NetworkBehaviour
     [SyncVar]
     private int _modeId = 0;
 
+    public static object Instance { get; internal set; }
+
     // モードIDを取得する
     public int GetModeId()
     {
@@ -26,32 +28,61 @@ public class PlayerModelSwitcher : NetworkBehaviour
         _modeId = id;
     }
 
-    // モデルの変更の指示
+    // ----------------------------------------------------
+    // モデル変更ボタンが押された時の処理
+    // ----------------------------------------------------
+    public void ModelButton()
+    {
+        // サーバーでのみ処理する
+        if (!isServer) return;
+
+        // StatePlayer に ModeIDを保存させる
+        // 1つ上：3VS1 で一人側になった時
+        StatePlayer_Ashuri.Instance.SetModeId(connectionToClient, _modeId);
+
+        // ModeID が 1 の時だけモデル切り替え
+        if (_modeId == 1)
+        {
+            ModelSwitch();
+        }
+    }
+
+    // ----------------------------------------------------
+    // モデル切り替え処理（サーバー専用）
+    // ----------------------------------------------------
+    [Server]
     public void ModelSwitch()
     {
-        GameObject oldPlayer = this.gameObject;
+        // 現在のプレイヤーオブジェクトを保持
+        GameObject oldPlayer = gameObject;
+
+        // 接続情報を取得
         NetworkConnectionToClient conn = connectionToClient;
 
+        // 新しいプレイヤーを生成
         GameObject newPlayer = Instantiate(
             _firstGameObject,
             oldPlayer.transform.position,
             oldPlayer.transform.rotation
         );
 
-        // 置き換え
+        // 接続に対してプレイヤーを差し替える
         NetworkServer.ReplacePlayerForConnection(conn, newPlayer, false);
 
-        // 古いプレイヤー削除
+        // 1フレーム後に古いプレイヤーを削除
         StartCoroutine(DeleteOldPlayer(oldPlayer));
     }
 
     // ----------------------------------------------------
-    // 1フレーム後に古いプレイヤー削除
+    // 1フレーム後に古いプレイヤーを削除
     // ----------------------------------------------------
     private IEnumerator DeleteOldPlayer(GameObject oldPlayer)
     {
         yield return null;
+
         if (oldPlayer != null)
+        {
             NetworkServer.Destroy(oldPlayer);
+        }
     }
 }

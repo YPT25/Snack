@@ -174,14 +174,10 @@ public class AshuriNetworkManager : NetworkManager
 
         GameObject selectedPrefab;
 
-        // Player情報を取得
-        var playerController = conn.identity != null
-            ? conn.identity.GetComponent<SingleTeamModelSwitcher_Ashuri>()
-            : null;
+        int modeIndex = stateManager.GetModeId(conn);
 
-        if (playerController != null && playerController.modeID == 1)
+        if(modeIndex == 1)
         {
-            // モデルに応じたPrefabを選ぶ
             selectedPrefab = playerFirst;
         }
         // 保存されたモデルがある場合だけ切り替える
@@ -189,9 +185,7 @@ public class AshuriNetworkManager : NetworkManager
         {
             // 保存されているモデル番号を取得
             int modelIndex = stateManager.GetSavedModel(conn);
-
             // モデルに応じたPrefabを選ぶ
-            selectedPrefab = (modelIndex == 0 ? playerPrefab1 : playerPrefab2);
             if(modelIndex == 0)
             {
                 selectedPrefab = playerPrefab;
@@ -210,8 +204,6 @@ public class AshuriNetworkManager : NetworkManager
             // 保存されていない（初回）は NetworkManager のデフォルトを使用
             selectedPrefab = playerPrefab;
         }
-
-        Debug.LogError(stateManager.GetModeId(conn));
 
         // 初期位置を取得
         Transform start = GetStartPosition();

@@ -57,24 +57,21 @@ public class testPlayerMenberCheck : NetworkBehaviour
         if (!isServer) return;
 
         // Player タグかどうかチェック
-        if (other.CompareTag("Player"))
-        {
-            // 触れている人数を増やす
-            _touchPlayerCount++;
+        if (!other.CompareTag("Player")) return;
 
-            // マテリアルを touch 状態へ
-            _materialState = "touch";
+        // 触れている人数を増やす
+        _touchPlayerCount++;
 
-            // プレイヤーかチェックする
-            SingleTeamModelSwitcher_Ashuri singleTeamModelSwitcher_Ashuri = other.GetComponent<SingleTeamModelSwitcher_Ashuri>();
-            if (singleTeamModelSwitcher_Ashuri == null) return;
+        // マテリアルを touch 状態へ
+        _materialState = "touch";
 
-            if (!singleTeamModelSwitcher_Ashuri.isLocalPlayer) return;
+        // PlayerModelSwitcher を取得
+        if (!other.TryGetComponent(out PlayerModelSwitcher holder)) return;
 
-            singleTeamModelSwitcher_Ashuri.TryChangePlayer(_assignId);
-
-        }
+        // モードIDをサーバーで直接設定
+        holder.SetModeId(_assignId);
     }
+
 
 
     // プレイヤーが離れた時の処理（サーバーのみ）
