@@ -14,6 +14,7 @@ public class HandItem_Tanabe : NetworkBehaviour
     private bool m_isDestroy = false;
     private Vector3 m_startDir = Vector3.zero;
     private GameObject m_attractObject = null;
+    private int m_lagAdjustment = 5;
 
     [SerializeField] private GameObject m_head;
     [SerializeField] private GameObject m_body;
@@ -31,6 +32,11 @@ public class HandItem_Tanabe : NetworkBehaviour
     void Update()
     {
         if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || m_isDestroy) { return; }
+        else if(m_lagAdjustment > 0)
+        {
+            m_lagAdjustment--;
+            return;
+        }
         else if(!m_isThrow && m_item.GetItemStateType() == ItemStateMachine.ItemStateType.THROW)
         {
             m_isThrow = true;
@@ -70,7 +76,7 @@ public class HandItem_Tanabe : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || m_isDestroy || m_isAttract || other.GetComponent<Player_Tanabe>() != null) { return; }
+        if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || !m_isThrow || m_isDestroy || m_isAttract || other.GetComponent<Player_Tanabe>() != null) { return; }
         
         if (other.GetComponentInParent<ItemStateMachine>() != null && other.GetComponentInParent<ItemStateMachine>().GetItemStateType() == ItemStateType.DROP)
         {
@@ -133,7 +139,7 @@ public class HandItem_Tanabe : NetworkBehaviour
 
         if (Vector3.Distance(m_head.transform.position, m_item.GetPlayerData().transform.position) <= 1.5f && m_startDir.y > 0f)
         {
-            m_item.GetPlayerData().GetRigidbody().AddForce(Vector3.up * 10f, ForceMode.Impulse);
+            m_item.GetPlayerData().GetRigidbody().AddForce(Vector3.up * 1f, ForceMode.Impulse);
         }
 
     }
