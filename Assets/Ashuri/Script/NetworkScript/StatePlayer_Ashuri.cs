@@ -173,28 +173,24 @@ public class StatePlayer_Ashuri : NetworkBehaviour
         return conn != null && savedModel.ContainsKey(conn);
     }
 
-    // モードIDを取得する
-    public int GetModeId(NetworkConnectionToClient conn)
-    {
-        if (conn == null)
-            return 0;
-
-        // 1つ上：保存されていれば返す
-        if (vsID.TryGetValue(conn, out int index))
-            return index;
-
-        // 1つ上：なければデフォルトモデル（0）
-        return 0;
-    }
-
-    // サーバー側でモードIDを設定する
+    // ----------------------------------------------------
+    // モードID保存（サーバー専用）
+    // ----------------------------------------------------
     [Server]
     public void SetModeId(NetworkConnectionToClient conn, int id)
     {
-        // 1つ上：接続が無効なら保存しない
         if (conn == null || !conn.isReady) return;
-
-        // 1つ上：プレイヤーのモデル番号を保存
         vsID[conn] = id;
+    }
+
+    // ----------------------------------------------------
+    // モードID取得（保険用）
+    // ----------------------------------------------------
+    public int GetModeId(NetworkConnectionToClient conn)
+    {
+        if (conn != null && vsID.TryGetValue(conn, out int id))
+            return id;
+
+        return 0;
     }
 }

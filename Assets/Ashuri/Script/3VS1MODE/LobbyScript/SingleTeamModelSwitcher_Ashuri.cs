@@ -5,24 +5,20 @@ using Mirror;
 
 public class SingleTeamModelSwitcher_Ashuri : NetworkBehaviour
 {
-    [Header("変更後のプレイヤーPrefab")]
-    [Tooltip("変身後のプレイヤーPrefabを入れる")]
-    public GameObject newPlayerPrefab;
+    [Header("変更後のプレイヤー番号")]
+    [Tooltip("現在のモードID 1 = 1人側:0 = ３人側")]
+    [SyncVar] public int modeID;
 
     // ----------------------------------------------------
     // アイテム側から呼び出されるメソッド
     // ----------------------------------------------------
-    public void TryChangePlayer(int i)
+    [Command]
+    public void TryChangePlayer(int id)
     {
-        if (!isLocalPlayer) return;
+        // 1つ上：サーバーでモードIDを保存
+        modeID = id;
 
-        Debug.Log("CmdChangePlayer を実行します");
-
-        // StatePlayer_Ashuriを取得する
-        StatePlayer_Ashuri statePlayer = FindObjectOfType<StatePlayer_Ashuri>();
-
-        // 1人側か３人側かを保存させる
-        statePlayer.SetModeId(connectionToClient, i);
-
+        // 1つ上：StatePlayer にも保存（復元用）
+        StatePlayer_Ashuri.Instance.SetModeId(connectionToClient, id);
     }
 }

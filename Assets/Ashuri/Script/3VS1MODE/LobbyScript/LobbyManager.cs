@@ -56,6 +56,8 @@ public class LobbyManager : NetworkBehaviour
         // フラグを立てて2回呼ばれないようにする
         _isSceneChanging = true;
 
+
+
         // シーン遷移開始
         NetworkManager.singleton.ServerChangeScene("3VS1ModeGame");
     }

@@ -174,7 +174,12 @@ public class AshuriNetworkManager : NetworkManager
 
         GameObject selectedPrefab;
 
-        if (stateManager != null && stateManager.GetModeId(conn) == 1)
+        // Player情報を取得
+        var playerController = conn.identity != null
+            ? conn.identity.GetComponent<SingleTeamModelSwitcher_Ashuri>()
+            : null;
+
+        if (playerController != null && playerController.modeID == 1)
         {
             // モデルに応じたPrefabを選ぶ
             selectedPrefab = playerFirst;

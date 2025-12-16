@@ -1168,6 +1168,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ThirdPersonField (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4035324741463550113, guid: bb42fd0c5cd818a41a52119832abfa88, type: 3}
+      propertyPath: _assignId
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5964103937246324919, guid: bb42fd0c5cd818a41a52119832abfa88, type: 3}
       propertyPath: sceneId
       value: 1933749769
