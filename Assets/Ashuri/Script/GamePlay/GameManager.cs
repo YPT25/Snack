@@ -132,7 +132,7 @@ public class GameManager : NetworkBehaviour
         Debug.Log("Time's up! Game Over (Server)");
 
         // ゲーム進行フラグをOFF
-        gameStarted = false;
+        //gameStarted = false;
 
         // SweetScoreを探して現在のスコアを取得
         SweetScore score = FindObjectOfType<SweetScore>();
