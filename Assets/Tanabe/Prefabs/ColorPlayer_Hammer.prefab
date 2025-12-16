@@ -300,8 +300,8 @@ MonoBehaviour:
   m_initialParameter:
     hp: 150
     power: 30
-    moveSpeed: 8
-    stamina: 5
+    moveSpeed: 9.5
+    stamina: 10
   playerNumber: 0
   playerName: Player
   m_weaponID: 1

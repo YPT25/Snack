@@ -313,7 +313,14 @@ public class Player_Tanabe : CharacterBase
         // 移動していない状態ならスタミナを回復する
         if (!m_isMoving)
         {
-            base.SetStamina(GetStamina() + Time.deltaTime);
+            if(m_weaponID == WeaponID.HAMMER)
+            {
+                base.SetStamina(GetStamina() + Time.deltaTime * 1.5f);
+            }
+            else
+            {
+                base.SetStamina(GetStamina() + Time.deltaTime);
+            }
         }
 
         // 着地判定処理
