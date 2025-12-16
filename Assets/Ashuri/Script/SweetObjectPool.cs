@@ -112,7 +112,7 @@ public class SweetObjectPool : NetworkBehaviour
     void Update()
     {
         // ゲームが開始されていなければ処理しない
-        if (!gameManager.gameStarted) return;
+        //if (!gameManager.gameStarted) return;
 
         // サーバーでない場合処理しない
         if (!isServer) return;
