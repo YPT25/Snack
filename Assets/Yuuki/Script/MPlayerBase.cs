@@ -11,47 +11,68 @@ using Mirror;
 /// </summary>
 public class MPlayerBase : EnemyBase
 {
+    // =========================
+    // 共通設定
+    // =========================
     [Header("プレイヤー共通設定")]
     [SerializeField] protected float mouseSensitivity = 3.0f;
     [SerializeField] protected float rotationSmooth = 10f;
     [SerializeField] private Sprite m_respawnIcon;
 
-    // Pad 用設定（Editorで微調整できるようにした）
-    [Header("Pad（右スティック）設定")]
+    // =========================
+    // Pad 設定（ローカル専用）
+    // =========================
+    [Header("Pad 設定")]
     [SerializeField] private float padSensitivityMultiplier = 20f;
     [SerializeField] private float padDeadZone = 0.02f;
     [SerializeField] private bool padInvertY = true;
 
-    protected Vector3 m_inputDir;
+    // =========================
+    // 同期用（Server Authority）
+    // =========================
+    [SyncVar] protected Vector3 m_syncMoveDir;
+    [SyncVar] protected float m_syncYaw;
+    [SyncVar] protected bool m_isMoving;
+
+    // =========================
+    // 内部状態
+    // =========================
     protected Rigidbody m_rb;
-    protected float yaw;
-    protected float pitch;
     protected Camera cam;
 
-    private bool isInitialized = false;
-    private bool isDead = false;
+    protected float yaw;
+    protected float pitch;
+
+    protected bool isInitialized = false;
+    protected bool isDead = false;
     public bool iscanMove = true;
 
-    // ===== FPS視点用 =====
-    [Header("FPS視点設定")]
+    // =========================
+    // FPS / TPS
+    // =========================
+    [Header("視点設定")]
     [SerializeField] private Transform fpsCameraPoint;
     [SerializeField] private Vector3 tpsCameraOffset = new Vector3(0, 2f, -4f);
-
     [SerializeField] private float tpsFOV = 60f;
     [SerializeField] private float fpsFOV = 75f;
+
     private bool isFPS = false;
-    // FPS時に自分の体を消すため
     private MeshRenderer[] myRenderers;
 
+    // =========================
+    // 初期化
+    // =========================
     public override void Start()
     {
         base.Start();
-        m_rb = GetComponent<Rigidbody>();
 
-        // FPS時に体を非表示にするため
+        m_rb = GetComponent<Rigidbody>();
         myRenderers = GetComponentsInChildren<MeshRenderer>();
 
-        // ローカルプレイヤー専用初期化
+        // 他人の Player は物理を止める
+        if (!isLocalPlayer && m_rb != null)
+            m_rb.isKinematic = true;
+
         if (isLocalPlayer)
         {
             cam = Camera.main;
@@ -63,188 +84,179 @@ public class MPlayerBase : EnemyBase
     {
         yield return new WaitForSeconds(0.3f);
         isInitialized = true;
-        Debug.Log($"[MPlayerBase] {name}: Initialize完了 (isLocalPlayer={isLocalPlayer})");
 
-        // LegacyInputHelper のパッド設定を同期（エディタでここを変えられる）
+        // Pad 設定を LegacyInputHelper に反映
         LegacyInputHelper.padSensitivityMultiplier = padSensitivityMultiplier;
         LegacyInputHelper.padDeadZone = padDeadZone;
         LegacyInputHelper.invertPadY = padInvertY;
     }
 
-    public override void Update()
+    // =========================
+    // Client：入力・カメラ
+    // =========================
+    private void Update()
     {
-        base.Update();
-
         if (!isLocalPlayer || !isInitialized || isDead)
             return;
 
         HandleInput();
         HandleCamera();
-
-        // マウスの埋め込み
-        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            SetHp(0);
-        }
-        if (GetHp() <= 0 && isServer)
-        {
-            Die();
-        }
-        if(Input.GetKeyDown(KeyCode.R)) { base.Damage(10); }
-
-        if(!GetIsMove())
-        {
-            iscanMove = false;
-        }
+        HandleCursor();
     }
 
-    protected virtual void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!isLocalPlayer || !isInitialized || isDead)
             return;
 
-        Move();
+        Move_Local();
     }
 
+    // =========================
+    // 入力
+    // =========================
     protected virtual void HandleInput()
     {
-        // ====== 移動入力（共通化）======
         Vector2 moveAxis = LegacyInputHelper.GetMoveAxis();
-        m_inputDir = new Vector3(moveAxis.x, 0, moveAxis.y).normalized;
+        Vector3 dir = new Vector3(moveAxis.x, 0, moveAxis.y).normalized;
 
-        // ====== 攻撃 ======
-        if (LegacyInputHelper.GetAttackDown())
-            CmdAttackInput();
-
-        // ====== FPS/TPS切り替え（右クリック or Pad L2） ======
         bool aiming = LegacyInputHelper.GetAim();
         SetFPS(aiming);
 
-        // マウスカーソル処理（Altキーで解除）
-        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+        CmdSetMove(dir, yaw);
+
+        if (LegacyInputHelper.GetAttackDown())
+            CmdAttackInput();
     }
 
-    // FPS視点への切り替え
+    [Command]
+    private void CmdSetMove(Vector3 dir, float yawValue)
+    {
+        m_syncMoveDir = dir;
+        m_syncYaw = yawValue;
+        m_isMoving = dir.sqrMagnitude > 0.01f;
+    }
+
+    // =========================
+    // Client：移動再生
+    // =========================
+    protected virtual void Move_Local()
+    {
+        if (m_rb == null) return;
+
+        // ===== 移動入力なし / 移動不可 =====
+        if (!m_isMoving || !iscanMove)
+        {
+            // ★ Y は絶対に触らない
+            Vector3 v = m_rb.velocity;
+            m_rb.velocity = new Vector3(0f, v.y, 0f);
+            return;
+        }
+
+        Vector3 camForward = cam.transform.forward;
+        camForward.y = 0;
+        camForward.Normalize();
+
+        Vector3 camRight = cam.transform.right;
+        camRight.y = 0;
+        camRight.Normalize();
+
+        Vector3 moveDir =
+            camForward * m_syncMoveDir.z +
+            camRight * m_syncMoveDir.x;
+
+        float speed = GetMoveSpeed();
+
+        // ★ 重力を完全に尊重
+        Vector3 currentVel = m_rb.velocity;
+        Vector3 targetVel = new Vector3(
+            moveDir.x * speed,
+            currentVel.y,
+            moveDir.z * speed
+        );
+
+        m_rb.velocity = targetVel;
+    }
+
+    // =========================
+    // カメラ・回転
+    // =========================
+    protected virtual void HandleCamera()
+    {
+        if (cam == null) return;
+
+        Vector2 lookAxis = LegacyInputHelper.GetLookAxis();
+
+        yaw += lookAxis.x * mouseSensitivity;
+        pitch -= lookAxis.y * mouseSensitivity;
+        pitch = Mathf.Clamp(pitch, -80f, 85f);
+
+        transform.rotation = Quaternion.Euler(0, yaw, 0);
+
+        if (isFPS && fpsCameraPoint != null)
+        {
+            cam.transform.position = fpsCameraPoint.position;
+            cam.transform.rotation = Quaternion.Euler(pitch, yaw, 0);
+            return;
+        }
+
+        Vector3 offset = Quaternion.Euler(pitch, yaw, 0) * tpsCameraOffset;
+        cam.transform.position = transform.position + offset;
+        cam.transform.LookAt(transform.position + Vector3.up * 1.5f);
+    }
+
     private void SetFPS(bool flag)
     {
         isFPS = flag;
 
-        // FPS時はモデルを非表示に
         foreach (var r in myRenderers)
             r.enabled = !flag;
 
-        // FOV切り替え
         if (cam != null)
-        {
             cam.fieldOfView = isFPS ? fpsFOV : tpsFOV;
-        }
     }
 
+    // =========================
+    // 攻撃
+    // =========================
     [Command]
     private void CmdAttackInput()
     {
         OnAttackInput();
     }
 
-    /// <summary>
-    /// カメラとプレイヤーの回転処理
-    /// </summary>
-    protected virtual void HandleCamera()
+    protected virtual void OnAttackInput()
     {
-        if (cam == null) return;
-
-        // LegacyInputHelper 側で padDeadZone / padSensitivity 等を反映している
-        Vector2 lookAxis = LegacyInputHelper.GetLookAxis();
-
-        // ここでマウスSensitivity を適用（padで戻された値は既に padMultiplier がかかっている）
-        float mouseX = lookAxis.x * mouseSensitivity;
-        float mouseY = lookAxis.y * mouseSensitivity;
-
-        yaw += mouseX;
-        pitch -= mouseY;
-        pitch = Mathf.Clamp(pitch, -80f, 85f);
-
-        // ===== プレイヤー水平回転 =====
-        Quaternion targetRot = Quaternion.Euler(0, yaw, 0);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSmooth);
-
-        // ===== FPS視点 =====
-        if (isFPS)
-        {
-            if (fpsCameraPoint != null)
-            {
-                cam.transform.position = fpsCameraPoint.position;
-                cam.transform.rotation = Quaternion.Euler(pitch, yaw, 0);
-            }
-            return;
-        }
-
-        // ===== TPS視点 =====
-        Vector3 offset = Quaternion.Euler(pitch, yaw, 0) * tpsCameraOffset;
-        cam.transform.position = transform.position + offset;
-        cam.transform.LookAt(transform.position + Vector3.up * 1.5f);
+        // 派生クラスで実装
     }
 
-    protected virtual void Move()
+    // =========================
+    // Server：死亡管理
+    // =========================
+    [ServerCallback]
+    private void LateUpdate()
     {
-        if (m_rb == null || cam == null) return;
-        if (iscanMove)
-        {
-            Vector3 camForward = cam.transform.forward;
-            camForward.y = 0;
-            camForward.Normalize();
+        if (isDead) return;
 
-            Vector3 camRight = cam.transform.right;
-            camRight.y = 0;
-            camRight.Normalize();
-
-            Vector3 moveDir = (camForward * m_inputDir.z + camRight * m_inputDir.x).normalized;
-
-            float speed = GetMoveSpeed();
-            Vector3 velocity = moveDir * speed;
-
-            m_rb.velocity = new Vector3(velocity.x, m_rb.velocity.y, velocity.z);
-        }
-        else
-        {
-            if (m_rb != null)
-                m_rb.velocity = Vector3.zero; // ピタッと止める
-            return;
-        }
+        if (GetHp() <= 0)
+            Die();
     }
 
-    // ===== 死亡処理 =====
     [Server]
     public override void Die()
     {
         if (isDead) return;
         isDead = true;
 
-        Debug.Log($"{name} が死亡。リスポーンUI表示へ");
-
-        RpcSetDeadState(true);
-
+        RpcSetDeadState();
         TargetShowRespawnUI(connectionToClient);
+    }
+
+    [ClientRpc]
+    private void RpcSetDeadState()
+    {
+        if (m_rb != null)
+            m_rb.velocity = Vector3.zero;
     }
 
     [TargetRpc]
@@ -255,31 +267,28 @@ public class MPlayerBase : EnemyBase
 
         if (RespawnManager.Instance != null)
             RespawnManager.Instance.ShowRespawnUI();
-        else
-            Debug.LogWarning("RespawnManager が見つかりません");
     }
 
-    [ClientRpc]
-    protected void RpcSetDeadState(bool value)
+    // =========================
+    // Cursor
+    // =========================
+    private void HandleCursor()
     {
-        if (value && m_rb != null)
-            m_rb.velocity = Vector3.zero;
-    }
-
-    protected virtual void OnAttackInput()
-    {
-        Debug.Log($"{name} Attack Input");
-    }
-
-    private void CursorController()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKey(KeyCode.LeftAlt))
         {
-            Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
+
+    // =========================
+    // Getter
+    // =========================
     public Sprite GetRespawnIcon() => m_respawnIcon;
-    //視点の状態を渡す
     public bool GetIsFPS() => isFPS;
 }

@@ -17,91 +17,135 @@ public class NormalBox_Player : MPlayerBase
     [SerializeField] private Collider m_attackCollider;
     [SerializeField] private Collider m_hitCollider;
     [SerializeField] private float m_attackDuration = 0.5f;
+
     [Header("倒れる中心")]
     [SerializeField] private Transform attackPivot;
 
-    private bool m_isAttacking = false;
-    // 多段ヒット防止用
+    // =========================
+    // 同期用
+    // =========================
+    [SyncVar] private bool m_isAttacking = false;
+
+    // 多段ヒット防止（Server）
     private HashSet<CharacterBase> hitTargets = new HashSet<CharacterBase>();
 
+    // =========================
+    // 初期化
+    // =========================
     public override void Start()
     {
         base.Start();
-        SetEnemyType(EnemyType.TYPE_A);
 
-        if (m_attackCollider != null)
+        if (isServer)
+            SetEnemyType(EnemyType.TYPE_A);
+
+        if (m_attackCollider)
             m_attackCollider.enabled = false;
 
         if (modelRoot == null)
-        {
             Debug.LogError("modelRoot に kabeteki を割り当ててください。");
-        }
     }
 
+    // =========================
+    // 攻撃入力（Client）
+    // =========================
     protected override void OnAttackInput()
     {
-        if (!m_isAttacking)
-            StartCoroutine(AttackCoroutine());
+        if (!isLocalPlayer || m_isAttacking)
+            return;
+
+        CmdRequestAttack();
     }
 
-    private IEnumerator AttackCoroutine()
+    // =========================
+    // 攻撃開始要求（Server）
+    // =========================
+    [Command]
+    private void CmdRequestAttack()
     {
+        if (m_isAttacking) return;
+
         m_isAttacking = true;
         hitTargets.Clear();
 
-        float elapsed = 0f;
-        float duration = m_attackDuration;
+        RpcPlayAttackAnimation();
+        StartCoroutine(AttackDurationRoutine());
+    }
 
+    // =========================
+    // 攻撃アニメーション（Client）
+    // =========================
+    [ClientRpc]
+    private void RpcPlayAttackAnimation()
+    {
+        StartCoroutine(AttackAnimation());
+    }
+
+    private IEnumerator AttackAnimation()
+    {
         iscanMove = false;
 
-        // pivotが無ければmodelRootをpivotとして扱う
         Transform pivot = attackPivot != null ? attackPivot : modelRoot;
 
         Quaternion startRot = pivot.localRotation;
         Quaternion targetRot = startRot * Quaternion.Euler(90f, 0f, 0f);
 
-        m_attackCollider.enabled = true;
+        if (m_attackCollider)
+            m_attackCollider.enabled = true;
 
-        // ===== 倒れるアニメ =====
-        while (elapsed < duration)
+        float elapsed = 0f;
+        while (elapsed < m_attackDuration)
         {
-            pivot.localRotation = Quaternion.Slerp(startRot, targetRot, elapsed / duration);
+            pivot.localRotation =
+                Quaternion.Slerp(startRot, targetRot, elapsed / m_attackDuration);
             elapsed += Time.deltaTime;
             yield return null;
         }
         pivot.localRotation = targetRot;
 
-        // 攻撃オフ
-        m_attackCollider.enabled = false;
+        if (m_attackCollider)
+            m_attackCollider.enabled = false;
 
-        // 元に戻るアニメ
         elapsed = 0f;
-        while (elapsed < duration)
+        while (elapsed < m_attackDuration)
         {
-            pivot.localRotation = Quaternion.Slerp(targetRot, startRot, elapsed / duration);
+            pivot.localRotation =
+                Quaternion.Slerp(targetRot, startRot, elapsed / m_attackDuration);
             elapsed += Time.deltaTime;
             yield return null;
         }
         pivot.localRotation = startRot;
 
         iscanMove = true;
+    }
+
+    // =========================
+    // 攻撃終了（Server）
+    // =========================
+    [Server]
+    private IEnumerator AttackDurationRoutine()
+    {
+        yield return new WaitForSeconds(m_attackDuration * 2f);
         m_isAttacking = false;
     }
 
+    // =========================
+    // 当たり判定（Server）
+    // =========================
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (!m_isAttacking || !isServer) return;
+        if (!m_isAttacking)
+            return;
 
         CharacterBase target = other.GetComponent<CharacterBase>();
+        if (target == null) return;
+        if (target == this) return;
 
-        // ★多段ヒット防止
-        if (target != null && target != this)
-        {
-            if (!hitTargets.Contains(target))
-            {
-                hitTargets.Add(target);   // 一度当たった相手は記録
-                Attack(target);           // 攻撃実行
-            }
-        }
+        if (hitTargets.Contains(target))
+            return;
+
+        hitTargets.Add(target);
+        Attack(target);
     }
 }

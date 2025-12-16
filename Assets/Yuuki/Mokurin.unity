@@ -363,7 +363,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5071c8e0e91d8d74babd40dc51cae094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
 --- !u!136 &701291979
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -852,7 +851,7 @@ PrefabInstance:
     - target: {fileID: 5531071235842707636, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
       propertyPath: playerPrefabs.Array.data[2]
       value: 
-      objectReference: {fileID: 4325873028579072576, guid: 87f16deb9e198bc4589d8b3c840a1a2d, type: 3}
+      objectReference: {fileID: 3137441575326038061, guid: 87f16deb9e198bc4589d8b3c840a1a2d, type: 3}
     - target: {fileID: 5531071235842707636, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
       propertyPath: playerPrefabs.Array.data[3]
       value: 

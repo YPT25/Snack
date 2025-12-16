@@ -9,11 +9,9 @@ public class DummyPlayer : MPlayerBase
 
         if (isServer)
         {
-            // 起動直後に即死亡 → リスポーンUIへ
             SetHp(0);
-            Die();
         }
     }
 
-    public override void Update() { } 
+    public override void Update() { }
 }
