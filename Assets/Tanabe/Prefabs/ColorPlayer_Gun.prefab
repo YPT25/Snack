@@ -46000,7 +46000,7 @@ MonoBehaviour:
   m_initialParameter:
     hp: 100
     power: 20
-    moveSpeed: 8
+    moveSpeed: 11
     stamina: 5
   playerNumber: 0
   playerName: Player

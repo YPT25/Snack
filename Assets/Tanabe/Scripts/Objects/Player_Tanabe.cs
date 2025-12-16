@@ -275,10 +275,25 @@ public class Player_Tanabe : CharacterBase
             m_headObject = null;
             // エイム状態を強制的にOFFにする
             m_isAiming = false;
+
+            // セットパーツを装備しているときのみ通す
+            if (m_setPart != null)
+            {
+                m_removeEquippedTimer = 1.0f;
+                // 装備しているセットパーツの取得
+                ItemStateMachine item = m_setPart.GetComponent<ItemStateMachine>();
+                // セットパーツ情報をnullにする
+                this.SetPart(null);
+                // 装備していたセットパーツをドロップ状態に遷移する
+                CmdChangeState_Item(item, ItemStateMachine.ItemStateType.DROP);
+                // セットパーツを上方向に飛ばす処理
+                Vector3 moveVector = new Vector3((float)UnityEngine.Random.Range(-10, 11) * 0.1f, 3.0f, (float)UnityEngine.Random.Range(-10, 11) * 0.1f);
+                this.CmdAddForce_Item(item, moveVector.normalized * 5.0f, ForceMode.Impulse);
+            }
         }
 
         // ゲームオプションがあるかつ、ポーズ状態なら通す
-        if(m_gameOption != null && m_gameOption.IsPause())
+        if (m_gameOption != null && m_gameOption.IsPause())
         {
             // ハンマーのプレイヤーかつ、攻撃時のみ通す
             if (m_hammer != null && m_hammer.IsAttack())
@@ -315,7 +330,7 @@ public class Player_Tanabe : CharacterBase
         {
             if(m_weaponID == WeaponID.HAMMER)
             {
-                base.SetStamina(GetStamina() + Time.deltaTime * 1.5f);
+                base.SetStamina(GetStamina() + Time.deltaTime * 2f);
             }
             else
             {
