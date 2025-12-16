@@ -1510,27 +1510,27 @@ PrefabInstance:
       objectReference: {fileID: 150940166520934941, guid: 1a2727721aff3e34b856cef24208fa4a, type: 3}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[0].spawnProbability
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[1].spawnProbability
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[2].spawnProbability
-      value: 0
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[3].spawnProbability
-      value: 0
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[4].spawnProbability
-      value: 0
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[5].spawnProbability
-      value: 0
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 9173439645307546014, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: m_LocalPosition.x
