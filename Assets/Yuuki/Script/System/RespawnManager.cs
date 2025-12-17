@@ -105,5 +105,6 @@ public class RespawnManager : MonoBehaviour
             Instantiate(prefab, respawnPoint.position, Quaternion.identity);
 
         NetworkServer.ReplacePlayerForConnection(conn, newPlayer);
+        newPlayer.GetComponent<MPlayerBase>().TargetOnRespawned(conn);
     }
 }

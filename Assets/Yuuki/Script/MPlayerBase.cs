@@ -43,6 +43,7 @@ public class MPlayerBase : EnemyBase
     protected float yaw;
     protected float pitch;
 
+    protected bool isRespawnUIOpen = false;
     protected bool isInitialized = false;
     protected bool isDead = false;
     public bool iscanMove = true;
@@ -262,7 +263,12 @@ public class MPlayerBase : EnemyBase
     [TargetRpc]
     private void TargetShowRespawnUI(NetworkConnection target)
     {
-        StartCoroutine(WaitAndShowRespawnUI());
+        isRespawnUIOpen = true;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        RespawnManager.Instance.ShowRespawnUI();
     }
 
     //生成されるまで待つ
@@ -282,6 +288,9 @@ public class MPlayerBase : EnemyBase
     // =========================
     private void HandleCursor()
     {
+        if (isRespawnUIOpen)
+            return;
+
         if (Input.GetKey(KeyCode.LeftAlt))
         {
             Cursor.lockState = CursorLockMode.None;
@@ -307,6 +316,25 @@ public class MPlayerBase : EnemyBase
         }
 
         RespawnManager.Instance.ServerRespawn(index, connectionToClient);
+    }
+
+    //リスポーンが完了したことを通知する
+    [TargetRpc]
+    public void TargetOnRespawned(NetworkConnection target)
+    {
+        // 生き返り
+        isDead = false;
+        isRespawnUIOpen = false;
+
+        // 念のため停止解除
+        m_isMoving = false;
+
+        if (m_rb != null)
+            m_rb.velocity = Vector3.zero;
+
+        // Cursor 戻す
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // =========================
