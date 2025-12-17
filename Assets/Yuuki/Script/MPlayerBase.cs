@@ -265,8 +265,7 @@ public class MPlayerBase : EnemyBase
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        if (RespawnManager.Instance != null)
-            RespawnManager.Instance.ShowRespawnUI();
+        RespawnManager.Instance.ShowRespawnUI();
     }
 
     // =========================
@@ -284,6 +283,12 @@ public class MPlayerBase : EnemyBase
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
+    }
+
+    [Command]
+    public void CmdRequestRespawn(int index)
+    {
+        RespawnManager.Instance.ServerRespawn(index, connectionToClient);
     }
 
     // =========================
