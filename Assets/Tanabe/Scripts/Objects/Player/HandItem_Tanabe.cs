@@ -137,10 +137,10 @@ public class HandItem_Tanabe : NetworkBehaviour
             m_startDir = dir.normalized;
         }
 
-        if (Vector3.Distance(m_head.transform.position, m_item.GetPlayerData().transform.position) <= 1.5f && m_startDir.y > 0f)
-        {
-            m_item.GetPlayerData().GetRigidbody().AddForce(Vector3.up * 1f, ForceMode.Impulse);
-        }
+        //if (Vector3.Distance(m_head.transform.position, m_item.GetPlayerData().transform.position) <= 1.5f && m_startDir.y > 0f)
+        //{
+        //    m_item.GetPlayerData().GetRigidbody().AddForce(Vector3.up * 1f, ForceMode.Impulse);
+        //}
 
     }
 
