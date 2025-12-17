@@ -47,7 +47,7 @@ public class RespawnManager : NetworkBehaviour
     {
         if (respawnUI != null)
         {
-            respawnUI.SetActive(false);
+            respawnUI.SetActive(true);
             Debug.Log("[RespawnManager] UI初期化完了 (非アクティブ)");
         }
         else
