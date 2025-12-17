@@ -70,7 +70,7 @@ public class MoveState : IPlayerState_Tanabe
         {
             m_player.ChangeState(new IdleState(m_player));
             move = Vector3.zero;
-            if (!m_player.GetIsHitBomb())
+            if (!m_player.GetIsHitBomb() && !m_player.GetIsAttract())
             {
                 m_player.GetRigidbody().velocity = new Vector3(0f, m_player.GetRigidbody().velocity.y, 0f);
             }
@@ -87,10 +87,10 @@ public class MoveState : IPlayerState_Tanabe
             {
                 m_player.ChangeState(new AttackChargeState(m_player));
             }
-            move = Vector3.zero;
-            if (!m_player.GetIsHitBomb())
+            //move = Vector3.zero;
+            if (!m_player.GetIsHitBomb() && !m_player.GetIsAttract())
             {
-                m_player.GetRigidbody().velocity = new Vector3(0f, m_player.GetRigidbody().velocity.y, 0f);
+                //m_player.GetRigidbody().velocity = new Vector3(0f, m_player.GetRigidbody().velocity.y, 0f);
             }
         }
         // 右クリックを感知したら狙うステートに遷移する
@@ -98,10 +98,10 @@ public class MoveState : IPlayerState_Tanabe
             Input.GetAxisRaw("Aiming Pad") != 0.0f  && m_player.GetWeaponID() == Player_Tanabe.WeaponID.GUN && m_player.GetIsAttack())
         {
             m_player.ChangeState(new AimingState(m_player));
-            move = Vector3.zero;
-            if (!m_player.GetIsHitBomb())
+            //move = Vector3.zero;
+            if (!m_player.GetIsHitBomb() && !m_player.GetIsAttract())
             {
-                m_player.GetRigidbody().velocity = new Vector3(0f, m_player.GetRigidbody().velocity.y, 0f);
+                //m_player.GetRigidbody().velocity = new Vector3(0f, m_player.GetRigidbody().velocity.y, 0f);
             }
         }
 
@@ -113,11 +113,21 @@ public class MoveState : IPlayerState_Tanabe
 
     public void FixedUpdate()
     {
-        if(m_player.GetIsHitBomb()) { return; }
-        // 移動速度の設定
-        Vector3 velocity = m_player.GetRigidbody().velocity;
-        Vector3 velocityChange = m_targetVelocity - new Vector3(velocity.x, 0, velocity.z);
-        m_player.GetRigidbody().AddForce(velocityChange / Time.fixedDeltaTime, ForceMode.Acceleration);
+        m_player.Move(m_targetVelocity);
+
+        //if(m_player.GetIsHitBomb()) { return; }
+
+        //// 移動速度の設定
+        //Vector3 velocity = m_player.GetRigidbody().velocity;
+        //Vector3 velocityChange = m_targetVelocity - new Vector3(velocity.x, 0, velocity.z);
+        //if (m_player.GetIsAttract())
+        //{
+        //    m_player.GetRigidbody().AddForce(velocityChange * 0.5f / Time.fixedDeltaTime, ForceMode.Acceleration);
+        //}
+        //else
+        //{
+        //    m_player.GetRigidbody().AddForce(velocityChange / Time.fixedDeltaTime, ForceMode.Acceleration);
+        //}
     }
 
     public void Exit()

@@ -52,11 +52,15 @@ public class AttackChargeState : IPlayerState_Tanabe
 
     public void FixedUpdate()
     {
-        if (m_player.GetIsHitBomb()) { return; }
-        // ˆÚ“®‘¬“x‚Ìİ’è
-        Vector3 velocity = m_player.GetRigidbody().velocity;
-        Vector3 velocityChange = m_targetVelocity - new Vector3(velocity.x, 0, velocity.z);
-        m_player.GetRigidbody().AddForce(velocityChange / Time.fixedDeltaTime, ForceMode.Acceleration);
+        if (m_player.GetIsHitBomb() || m_player.GetIsAttract()) { return; }
+
+        m_player.Move(m_targetVelocity);
+
+        //if (m_player.GetIsHitBomb()) { return; }
+        //// ˆÚ“®‘¬“x‚Ìİ’è
+        //Vector3 velocity = m_player.GetRigidbody().velocity;
+        //Vector3 velocityChange = m_targetVelocity - new Vector3(velocity.x, 0, velocity.z);
+        //m_player.GetRigidbody().AddForce(velocityChange / Time.fixedDeltaTime, ForceMode.Acceleration);
     }
 
     public void Exit()
