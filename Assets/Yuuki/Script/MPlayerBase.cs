@@ -288,6 +288,15 @@ public class MPlayerBase : EnemyBase
     [Command]
     public void CmdRequestRespawn(int index)
     {
+        Debug.Log($"[Server] CmdRequestRespawn received. index={index}");
+        Debug.Log($"[Server] RespawnManager.Instance = {RespawnManager.Instance}");
+
+        if (RespawnManager.Instance == null)
+        {
+            Debug.LogError("[Server] RespawnManager.Instance is NULL");
+            return;
+        }
+
         RespawnManager.Instance.ServerRespawn(index, connectionToClient);
     }
 

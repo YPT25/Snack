@@ -1765,9 +1765,14 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
-  - {fileID: 1385275247721876855, guid: d818fd49aa1ae4141a99b784f01fc007, type: 3}
-  - {fileID: 4909810242615913557, guid: 7c64dff23163b8d4cb05abd74eea0434, type: 3}
-  - {fileID: 2805715037223341844, guid: 86be28d542aa5c646a3d9f526ef992a8, type: 3}
+  - {fileID: 15092497445577671, guid: 5a88d8cd6d4557b499a26cfc0bd188b9, type: 3}
+  - {fileID: 1798214820168749291, guid: 4f47bdad471a43d4db87e7fac7a766e6, type: 3}
+  - {fileID: 3137441575326038061, guid: 87f16deb9e198bc4589d8b3c840a1a2d, type: 3}
+  - {fileID: 8692400465812118309, guid: 77c5fddcca0ee164fb6be3d010cdd9e4, type: 3}
+  - {fileID: 7791981793982540393, guid: adafa387c3bf885438c1e504f4de60e3, type: 3}
+  - {fileID: 6456614125583922063, guid: e40639acb0300e84b88602499214bc67, type: 3}
+  - {fileID: 2148735108058455076, guid: 40d9169a398148d4b8a144ff43507a4e, type: 3}
+  - {fileID: 2910117256335892721, guid: ea97a11ec2dfa784fba2cc34b083b37e, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
