@@ -125,9 +125,9 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         ItemStateMachine item = m_items[_index];
         m_items[_index] = null;
 
-        if(!this.isLocalPlayer || item == null) { return; }
+        if(!this.isLocalPlayer) { return; }
         m_leftHand.SetIsHand(false);
-
+        if(item == null) { return; }
         // アイテムの種類を参照し、それぞれの処理を行う
         switch (item.GetItemType())
         {

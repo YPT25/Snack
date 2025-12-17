@@ -42,7 +42,7 @@ public class PreparingThrowState : IItemState_Tanabe
             item.transform.position = m_gunHead.position + m_gunHead.forward * 0.5f;
         }
 
-        if(!item.GetPlayerData().isLocalPlayer) { return; }
+        //if(!item.GetPlayerData().isLocalPlayer) { return; }
         //// 左クリックを感知したら攻撃ステートに遷移する
         //if (Input.GetButtonDown("Attack") || Input.GetAxisRaw("Shot") != 0.0f)
         //{
