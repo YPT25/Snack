@@ -28,10 +28,12 @@ public class HandItem_Tanabe : NetworkBehaviour
         m_item = GetComponent<ItemStateMachine>();
     }
 
-    [ServerCallback]
     void Update()
     {
         if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || m_isDestroy) { return; }
+        this.GetComponent<Rigidbody>().mass = 0f;
+
+        if (!isServer) { return; }
         else if(m_lagAdjustment > 0)
         {
             m_lagAdjustment--;
@@ -57,8 +59,9 @@ public class HandItem_Tanabe : NetworkBehaviour
 
         if(m_isAttract && !m_isDestroy)
         {
-            this.RpcAttract(m_item.GetPlayerData().gameObject);
-            if(Vector3.Distance(m_head.transform.position, m_item.GetPlayerData().transform.position) <= 1.5f)
+            //this.RpcAttract(m_item.GetPlayerData().gameObject);
+            if (Vector3.Distance(m_head.transform.position, m_item.GetPlayerData().transform.position) <= 1.5f ||
+                Vector3.Distance(m_head.transform.position + new Vector3(0f, 1.5f, 0f), m_item.GetPlayerData().transform.position) <= 1.5f)
             {
                 Destroy(m_item.gameObject);
                 m_isDestroy = true;
@@ -73,21 +76,54 @@ public class HandItem_Tanabe : NetworkBehaviour
         }
     }
 
-    [ServerCallback]
-    private void OnTriggerEnter(Collider other)
+    private void FixedUpdate()
     {
-        if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || !m_isThrow || m_isDestroy || m_isAttract || other.GetComponent<Player_Tanabe>() != null) { return; }
-        
-        if (other.GetComponentInParent<ItemStateMachine>() != null && other.GetComponentInParent<ItemStateMachine>().GetItemStateType() == ItemStateType.DROP)
+        if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || m_isDestroy) { return; }
+        if(m_player == null) { return; }
+        if (m_attractObject != null)
         {
-            m_attractObject = other.GetComponentInParent<ItemStateMachine>().gameObject;
-            this.RpcSetAttractObject(other.GetComponentInParent<ItemStateMachine>().gameObject);
+            Vector3 objectDir = m_player.transform.position - m_head.transform.position;
+            m_head.transform.position += objectDir.normalized * m_attractPower * Time.deltaTime;
+            m_attractObject.transform.position += objectDir.normalized * m_attractPower * Time.deltaTime;
+            return;
         }
 
+        if (m_player.isLocalPlayer && m_isAttract && !m_isDestroy)
+        {
+            m_player.SetIsAttract(true);
+            Vector3 dir = m_head.transform.position + new Vector3(0f, 1.5f, 0f) - m_player.transform.position;
+            //m_player.GetComponent<Rigidbody>().AddForceAtPosition(dir.normalized / Time.fixedDeltaTime, m_head.transform.position + new Vector3(0f, 1.5f, 0f), ForceMode.Acceleration);
+            m_player.GetComponent<Rigidbody>().AddForceAtPosition(dir.normalized, m_head.transform.position + new Vector3(0f, 1.5f, 0f), ForceMode.VelocityChange);
+            if(m_player.GetRigidbody().velocity.magnitude > 25f)
+            {
+                m_player.GetRigidbody().velocity *= 0.9f;
+            }
+
+            Vector3 velocity = m_player.GetRigidbody().velocity;
+            Vector3 velocityChange = (dir.normalized * 15f) - new Vector3(velocity.x, velocity.y, velocity.z);
+            //m_player.GetRigidbody().AddForce(velocityChange / Time.fixedDeltaTime, ForceMode.Acceleration);
+
+            //m_player.GetComponent<Rigidbody>().AddForce(dir.normalized * m_attractPower, ForceMode.Force);
+        }
+
+
+    }
+
+    [ServerCallback]
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || !m_isThrow || m_isDestroy || m_isAttract || collision.collider.GetComponent<Player_Tanabe>() != null) { return; }
+
+        if (collision.collider.GetComponentInParent<ItemStateMachine>() != null && collision.collider.GetComponentInParent<ItemStateMachine>().GetItemStateType() == ItemStateType.DROP)
+        {
+            m_attractObject = collision.collider.GetComponentInParent<ItemStateMachine>().gameObject;
+            this.RpcSetAttractObject(collision.collider.GetComponentInParent<ItemStateMachine>().gameObject);
+        }
+        m_time = 2.5f;
         m_isAttract = true;
-        this.RpcHead(other.ClosestPoint(m_head.transform.position));
+        this.RpcHead(collision.collider.ClosestPoint(m_head.transform.position));
         m_head.transform.parent = null;
-        Vector3 dir = other.ClosestPoint(m_head.transform.position) - m_head.transform.position;
+        Vector3 dir = collision.collider.ClosestPoint(m_head.transform.position) - m_head.transform.position;
         m_head.transform.rotation = Quaternion.LookRotation(dir.normalized);
 
 
@@ -106,6 +142,39 @@ public class HandItem_Tanabe : NetworkBehaviour
         m_head.transform.rotation = Quaternion.Euler(eu.x, eu.y, z - 90f);
     }
 
+    [ServerCallback]
+    private void OnTriggerEnter(Collider other)
+    {
+        //if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || !m_isThrow || m_isDestroy || m_isAttract || other.GetComponent<Player_Tanabe>() != null) { return; }
+        
+        //if (other.GetComponentInParent<ItemStateMachine>() != null && other.GetComponentInParent<ItemStateMachine>().GetItemStateType() == ItemStateType.DROP)
+        //{
+        //    m_attractObject = other.GetComponentInParent<ItemStateMachine>().gameObject;
+        //    this.RpcSetAttractObject(other.GetComponentInParent<ItemStateMachine>().gameObject);
+        //}
+
+        //m_isAttract = true;
+        //this.RpcHead(other.ClosestPoint(m_head.transform.position));
+        //m_head.transform.parent = null;
+        //Vector3 dir = other.ClosestPoint(m_head.transform.position) - m_head.transform.position;
+        //m_head.transform.rotation = Quaternion.LookRotation(dir.normalized);
+
+
+        //m_player = m_item.GetPlayerData();
+
+        //if (m_player == null || m_attractObject != null) { return; }
+        //m_player.GetRigidbody().useGravity = false;
+        //Vector3 velocity = m_player.GetRigidbody().velocity;
+        //velocity.y = 0f;
+        //m_player.GetRigidbody().velocity = velocity;
+
+        //Vector2 vec2 = new Vector2(m_head.transform.position.x, m_head.transform.position.z) - new Vector2(m_player.transform.position.x, m_player.transform.position.z);
+        //float z = Mathf.Atan2(vec2.y, vec2.x) * Mathf.Rad2Deg;
+
+        //Vector3 eu = Quaternion.LookRotation(dir.normalized).eulerAngles;
+        //m_head.transform.rotation = Quaternion.Euler(eu.x, eu.y, z - 90f);
+    }
+
     private void OnDestroy()
     {
         Destroy(m_head);
@@ -114,6 +183,7 @@ public class HandItem_Tanabe : NetworkBehaviour
 
         if (m_player == null) { return; }
         m_player.GetRigidbody().useGravity = true;
+        m_player.SetIsAttract(false);
     }
 
     [ClientRpc]

@@ -78,6 +78,8 @@ public class DropState : IItemState_Tanabe
             return;
         }
 
+        Player_Tanabe prevPlayerData = item.GetPlayerData();
+
         item.SetPlayerData(player);
         item.RpcSetPlayerData(player);
 
@@ -87,6 +89,10 @@ public class DropState : IItemState_Tanabe
         }
         else
         {
+            if(prevPlayerData != null)
+            {
+                prevPlayerData.RpcSetEquipStandbyItem(null);
+            }
             player.RpcSetEquipStandbyItem(item);
         }
     }

@@ -37,6 +37,7 @@ public class ItemStateMachine : NetworkBehaviour
 
     private Rigidbody m_rb = null;
     private Collider m_collider = null;
+    private bool m_isStart = false;
     [SyncVar] private Transform playerTransform = null;
     [SyncVar] private Player_Tanabe m_playerData;
     [SyncVar] private ItemStateType m_stateType;
@@ -75,12 +76,14 @@ public class ItemStateMachine : NetworkBehaviour
             //m_effectObject.transform.localPosition = new Vector3(0f, 2f, 0f);
             m_effectObject.transform.localPosition = new Vector3(0f, 0f, 0f);
         }
+        m_isStart = true;
     }
 
     // 更新関数
     [ServerCallback]
     void Update()
     {
+        if(!m_isStart) { return; }
         currentState?.Update();
     }
 
@@ -164,7 +167,9 @@ public class ItemStateMachine : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if(m_stateType == ItemStateType.THROW) { return; }
+        if (!m_isStart) { return; }
+
+        if (m_stateType == ItemStateType.THROW) { return; }
         // 現在のステートにisTrigger衝突が起きたことを通知する
         currentState?.OnTriggerEnter(other.gameObject);
     }
@@ -172,6 +177,8 @@ public class ItemStateMachine : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerStay(Collider other)
     {
+        if (!m_isStart) { return; }
+
         // 現在のステートにisTrigger衝突が起きたことを通知する
         currentState?.OnTriggerEnter(other.gameObject);
     }
@@ -179,6 +186,8 @@ public class ItemStateMachine : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerExit(Collider other)
     {
+        if (!m_isStart) { return; }
+
         // 現在のステートにisTrigger衝突が外れたことを通知する
         currentState?.OnTriggerExit(other);
     }
@@ -186,6 +195,8 @@ public class ItemStateMachine : NetworkBehaviour
     [ServerCallback]
     private void OnCollisionStay(Collision collision)
     {
+        if (!m_isStart) { return; }
+
         if (m_itemType != ItemType.TRAP && m_itemType != ItemType.TRAP_BOMB) { return; }
         // 現在のステートにisTrigger衝突が起きたことを通知する
         currentState?.OnTriggerEnter(collision.gameObject);
@@ -194,6 +205,8 @@ public class ItemStateMachine : NetworkBehaviour
     [ServerCallback]
     private void OnCollisionExit(Collision collision)
     {
+        if (!m_isStart) { return; }
+
         if (m_itemType != ItemType.TRAP && m_itemType != ItemType.SETPART) { return; }
         // 現在のステートに衝突が離れたことを通知する
         currentState?.OnCollisionExit(collision.collider);

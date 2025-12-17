@@ -84,6 +84,8 @@ public class Player_Tanabe : CharacterBase
     // 爆発が当たっているか
     [SyncVar] private bool m_isHitBomb = false;
 
+    private bool m_isAttract = false;
+
     // 重力
     [SyncVar] private float m_prevGravity = 0.0f;
 
@@ -462,6 +464,23 @@ public class Player_Tanabe : CharacterBase
         m_currentState.Enter();
     }
 
+    public void Move(Vector3 _targetVelocity)
+    {
+        if (GetIsHitBomb()) { return; }
+
+        // 移動速度の設定
+        Vector3 velocity = GetRigidbody().velocity;
+        Vector3 velocityChange = _targetVelocity - new Vector3(velocity.x, 0, velocity.z);
+        if (GetIsAttract())
+        {
+            GetRigidbody().AddForce(velocityChange * 0.5f / Time.fixedDeltaTime, ForceMode.Acceleration);
+        }
+        else
+        {
+            GetRigidbody().AddForce(velocityChange / Time.fixedDeltaTime, ForceMode.Acceleration);
+        }
+    }
+
     // 攻撃準備処理
     public void AttackCharge()
     {
@@ -681,6 +700,11 @@ public class Player_Tanabe : CharacterBase
         return m_isHitBomb;
     }
 
+    public bool GetIsAttract()
+    {
+        return m_isAttract;
+    }
+
     // ポーズ中か
     public bool IsPause()
     {
@@ -807,6 +831,11 @@ public class Player_Tanabe : CharacterBase
     public void SetIsHitBomb(bool _flag)
     {
         m_isHitBomb = _flag;
+    }
+
+    public void SetIsAttract(bool _flag)
+    {
+        m_isAttract = _flag;
     }
 
     // プレイヤーの名前の設定
