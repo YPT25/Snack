@@ -28,7 +28,10 @@ public class DropState : IItemState_Tanabe
             item.transform.localScale = baseScale * 0.3f;
         }
         //item.GetComponent<BoxCollider>().isTrigger = false;
-        item.GetColiider().isTrigger = false;
+        if (item.GetColiider() != null)
+        {
+            item.GetColiider().isTrigger = false;
+        }
         item.SetPlayerData(null);
         Debug.Log("Drop:ŠJŽn");
     }

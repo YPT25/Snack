@@ -23,7 +23,10 @@ public class SuckState : IItemState_Tanabe
             item.transform.localScale = baseScale * 0.3f;
         }
         //item.GetComponent<BoxCollider>().isTrigger = true;
-        item.GetColiider().isTrigger = true;
+        if(item.GetColiider() != null)
+        {
+            item.GetColiider().isTrigger = true;
+        }
         Debug.Log("Suck:ŠJŽn");
     }
 

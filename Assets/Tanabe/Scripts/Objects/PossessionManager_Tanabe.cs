@@ -124,7 +124,8 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         Debug.Log("useitem!!!!");
         ItemStateMachine item = m_items[_index];
         m_items[_index] = null;
-        if(!this.isLocalPlayer) { return; }
+
+        if(!this.isLocalPlayer || item == null) { return; }
         m_leftHand.SetIsHand(false);
 
         // アイテムの種類を参照し、それぞれの処理を行う
