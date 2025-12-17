@@ -115,7 +115,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     {
         bool prevFlag = m_isMaxItem;
         m_isMaxItem = false;
-        if (m_items[_index] != null && m_items[_index].GetItemType() == ItemStateMachine.ItemType.THROW && m_player.GetIsThrow())
+        if (m_items[_index] != null && m_items[_index].GetItemType() == ItemStateMachine.ItemType.THROW && m_player != null && m_player.GetIsThrow())
         {
             // 10ŒŽ24“ú‚±‚±‚¾‚¯“¯Šú‚³‚¹‚é
             m_isMaxItem = prevFlag;

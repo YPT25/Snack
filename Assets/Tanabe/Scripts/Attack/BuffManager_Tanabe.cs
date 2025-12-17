@@ -173,6 +173,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
     public void RpcHeal_Multiple(GameObject _effect)
     {
         if (m_playerData == null) { return; }
+        if (_effect == null) { return; }
 
         //GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing());
         //NetworkServer.Spawn(obj);
@@ -204,6 +205,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
     public void RpcPowerUp(GameObject _effect, int randNum)
     {
         if (m_playerData == null) { return; }
+        if(_effect == null) { return; }
 
         _effect.transform.parent = m_playerData.transform;
 
@@ -245,6 +247,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
     public void RpcSpeedUp(GameObject _effect)
     {
         if (m_playerData == null) { return; }
+        if (_effect == null) { return; }
 
         _effect.transform.parent = m_playerData.transform;
         _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
