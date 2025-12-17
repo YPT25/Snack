@@ -124,6 +124,6 @@ public class VS_GameManager : NetworkBehaviour
     private void Update()
     {
         // 時間管理はすべてコルーチンで行うため、Updateでは何もしない
-        StatePlayer_Ashuri.Instance.DebugDumpAll();
+        //StatePlayer_Ashuri.Instance.DebugDumpAll();
     }
 }
