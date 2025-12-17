@@ -262,8 +262,17 @@ public class MPlayerBase : EnemyBase
     [TargetRpc]
     private void TargetShowRespawnUI(NetworkConnection target)
     {
+        StartCoroutine(WaitAndShowRespawnUI());
+    }
+
+    //生成されるまで待つ
+    private IEnumerator WaitAndShowRespawnUI()
+    {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        while (RespawnManager.Instance == null)
+            yield return null;
 
         RespawnManager.Instance.ShowRespawnUI();
     }
