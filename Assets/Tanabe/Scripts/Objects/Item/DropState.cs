@@ -66,6 +66,8 @@ public class DropState : IItemState_Tanabe
 
         Player_Tanabe player = other.GetComponent<Player_Tanabe>();
 
+        if(player != null && player.GetWeaponID() == Player_Tanabe.WeaponID.NONE) { return; }
+
         if (player == null ||
             //item.GetPlayerData() != null && item.GetItemType() != ItemStateMachine.ItemType.POINT ||
             item.GetItemType() != ItemStateMachine.ItemType.POINT && item.GetItemType() != ItemStateMachine.ItemType.SETPART && player.GetPossesionManager().IsMaxPossession())
