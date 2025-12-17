@@ -868,9 +868,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d07918435a96064096e8c204e85266e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   playerPrefabs:
   - {fileID: 3661638811899144881, guid: ead02e9d84700cf409fd1c9e456327cb, type: 3}
   respawnPoint: {fileID: 1796343095}
@@ -982,7 +979,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 8269363491708444832, guid: dc50908c290bfe743ba9bba8e6826a2d, type: 3}
+  playerPrefab: {fileID: 8204045488749284168, guid: 176dcd954aa337a4d8865d531b98288f, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
