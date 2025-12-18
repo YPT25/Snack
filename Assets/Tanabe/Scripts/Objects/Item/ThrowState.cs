@@ -29,6 +29,11 @@ public class ThrowState : IItemState_Tanabe
             item.GetRigidbody().AddForce(playerVec * 30.0f, ForceMode.Impulse);
             item.GetRigidbody().useGravity = false;
         }
+        else if(item.GetPlayerData().GetWeaponID() == Player_Tanabe.WeaponID.HAMMER)
+        {
+            Vector3 playerVec = item.GetPlayerData().GetCameraForward();
+            item.GetRigidbody().AddForce(playerVec * 45.0f, ForceMode.Impulse);
+        }
         else
         {
             Vector3 playerVec = item.GetPlayerData().GetCameraForward();

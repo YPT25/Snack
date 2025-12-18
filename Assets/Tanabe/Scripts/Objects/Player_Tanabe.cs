@@ -442,6 +442,14 @@ public class Player_Tanabe : CharacterBase
             m_jumpRequest = false;
         }
 
+        if (isGrounded)
+        {
+            Vector3 velocity = m_rb.velocity;
+            velocity.x *= 0.97f;
+            velocity.z *= 0.97f;
+            m_rb.velocity = velocity;
+        }
+
         // プレイヤーのY回転をカメラのY回転に合わせる
         Vector3 camForward = m_cameraTransform.forward;
         camForward.y = 0;
