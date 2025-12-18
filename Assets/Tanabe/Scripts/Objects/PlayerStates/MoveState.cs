@@ -105,8 +105,6 @@ public class MoveState : IPlayerState_Tanabe
             }
         }
 
-        m_player.SetPrevShotButton(Input.GetAxisRaw("Shot"));
-
         // ˆÚ“®‘¬“x‚ÌZo
         m_targetVelocity = move * m_player.GetMoveSpeed() * dashSpeed;
     }
