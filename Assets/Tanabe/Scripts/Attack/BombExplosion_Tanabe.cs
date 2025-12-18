@@ -46,7 +46,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
 
         foreach (Collider hit in colliders)
         {
-            if (hit.isTrigger || hit.GetComponent<NetworkIdentity>() == null) { continue; }
+            if (!hit.enabled || hit.isTrigger || hit.GetComponent<NetworkIdentity>() == null || hit.GetComponent<HandItem_Tanabe>() == null && hit.GetComponentInParent<HandItem_Tanabe>() != null) { continue; }
 
             if(_isDamage)
             {
@@ -75,7 +75,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
 
         foreach (Collider hit in colliders)
         {
-            if (hit.isTrigger || hit.GetComponent<NetworkIdentity>() != null) { continue; }
+            if (!hit.enabled || hit.isTrigger || hit.GetComponent<NetworkIdentity>() != null || hit.GetComponent<HandItem_Tanabe>() == null && hit.GetComponentInParent<HandItem_Tanabe>() != null) { continue; }
             if (hit.attachedRigidbody == null) { continue; }
             hit.attachedRigidbody.AddExplosionForce(m_explosionForce * 5.0f, transform.position, m_explosionRadius, m_upwardsModifier, ForceMode.Impulse);
         }
@@ -103,7 +103,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
 
         foreach (Collider hit in colliders)
         {
-            if(hit.gameObject == _parentPlayer) { continue; }
+            if(!hit.enabled || hit.gameObject == _parentPlayer || hit.GetComponent<HandItem_Tanabe>() == null && hit.GetComponentInParent<HandItem_Tanabe>() != null) { continue; }
 
             Rigidbody rb = hit.attachedRigidbody;
 

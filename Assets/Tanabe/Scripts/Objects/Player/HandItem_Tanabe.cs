@@ -92,18 +92,11 @@ public class HandItem_Tanabe : NetworkBehaviour
         {
             m_player.SetIsAttract(true);
             Vector3 dir = m_head.transform.position + new Vector3(0f, 1.5f, 0f) - m_player.transform.position;
-            //m_player.GetComponent<Rigidbody>().AddForceAtPosition(dir.normalized / Time.fixedDeltaTime, m_head.transform.position + new Vector3(0f, 1.5f, 0f), ForceMode.Acceleration);
             m_player.GetComponent<Rigidbody>().AddForceAtPosition(dir.normalized, m_head.transform.position + new Vector3(0f, 1.5f, 0f), ForceMode.VelocityChange);
             if(m_player.GetRigidbody().velocity.magnitude > 25f)
             {
                 m_player.GetRigidbody().velocity *= 0.9f;
             }
-
-            Vector3 velocity = m_player.GetRigidbody().velocity;
-            Vector3 velocityChange = (dir.normalized * 15f) - new Vector3(velocity.x, velocity.y, velocity.z);
-            //m_player.GetRigidbody().AddForce(velocityChange / Time.fixedDeltaTime, ForceMode.Acceleration);
-
-            //m_player.GetComponent<Rigidbody>().AddForce(dir.normalized * m_attractPower, ForceMode.Force);
         }
 
 
