@@ -4,15 +4,32 @@ using UnityEngine;
 
 public class BWStartButton : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    // プレイヤーが乗っているかどうか
+    private bool isGetOn = false;
+
+    private void OnTriggerEnter(Collider other)
     {
-        
+        if(other.gameObject.CompareTag("Player"))
+        {
+            // 乗っていたらture
+            isGetOn = true;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerExit(Collider other)
     {
-        
+        if(other.gameObject.CompareTag("Player"))
+        {
+            // 降りたらfalse
+            isGetOn = false;
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーが乗っているかどうかを取得する
+    /// </summary>
+    public bool GetOn()
+    {
+        return isGetOn;
     }
 }
