@@ -13,17 +13,7 @@ public class GameStartButton : NetworkBehaviour // NetworkBehaviourを継承
     // Start is called before the first frame update
     void Start()
     {
-        // オブジェクトがトリガーであることを確認のコメントアウトを解除し、Collision用に修正
-        Collider comp = GetComponent<Collider>();
-        if (comp != null && comp.isTrigger) // ★変更点：isTriggerがONだと警告を出す
-        {
-            Debug.LogWarning("Collider on " + gameObject.name + " is set to Trigger. For collision detection, 'Is Trigger' should be OFF. Please disable 'Is Trigger'.");
-        }
-        // Rigidbodyがアタッチされているか確認（コリジョンには必須）
-        if (GetComponent<Rigidbody>() == null)
-        {
-            Debug.LogError("Rigidbody is required for collision detection on " + gameObject.name + ". Please add a Rigidbody component.");
-        }
+       
     }
 
     // Update is called once per frame
@@ -33,13 +23,13 @@ public class GameStartButton : NetworkBehaviour // NetworkBehaviourを継承
     }
 
     // プレイヤーがこのオブジェクトに衝突したときに呼ばれる（コリジョン用）
-    void OnCollisionEnter(Collision collision) // ★変更点：OnCollisionEnter に変更、引数を Collision 型に
+    private void OnTriggerEnter(Collider other)
     {
         // サーバー上でのみ処理を実行し、クライアントへ同期させる
         if (!isServer) return; // サーバーでなければ処理しない
         if (isTrigger) return;
         // ★変更点：衝突したオブジェクトのGameObjectを取得し、タグを確認
-        if (collision.gameObject.CompareTag("Player")) // 触れたのがPlayerタグのオブジェクトか確認
+        if (other.gameObject.CompareTag("Player")) // 触れたのがPlayerタグのオブジェクトか確認
         {
             Debug.Log("Player collided with the button! Starting fade and scene transition.");
             // 全てのクライアントにフェードアウトとシーン遷移を指示する
