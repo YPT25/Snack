@@ -51,7 +51,13 @@ public class BombExplosion_Tanabe : NetworkBehaviour
             if(_isDamage)
             {
                 CharacterBase characterBase = hit.gameObject.GetComponent<CharacterBase>();
-                if (characterBase != null)
+                Player_Tanabe player = hit.gameObject.GetComponent<Player_Tanabe>();
+                // ハンマープレイヤーはダメージを半減する
+                if(player != null && player.GetWeaponID() == Player_Tanabe.WeaponID.HAMMER)
+                {
+                    characterBase.RpcDamage((float)((int)(_damage / 2)));
+                }
+                else if (characterBase != null)
                 {
                     characterBase.RpcDamage(_damage);
                 }
@@ -102,6 +108,18 @@ public class BombExplosion_Tanabe : NetworkBehaviour
             Rigidbody rb = hit.attachedRigidbody;
 
             if (hit.GetComponent<NetworkIdentity>() == null) { continue; }
+
+            CharacterBase characterBase = hit.gameObject.GetComponent<CharacterBase>();
+            Player_Tanabe player = hit.gameObject.GetComponent<Player_Tanabe>();
+            // 爆発によるダメージを与える
+            if (player != null && player.GetWeaponID() == Player_Tanabe.WeaponID.HAMMER)
+            {
+                characterBase.RpcDamage(10);
+            }
+            else if (characterBase != null)
+            {
+                characterBase.RpcDamage(20);
+            }
 
             if (rb != null)
             {
