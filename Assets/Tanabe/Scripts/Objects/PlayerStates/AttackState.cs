@@ -104,8 +104,6 @@ public class AttackState : IPlayerState_Tanabe
             }
             m_player.ChangeState(new IdleState(m_player));
         }
-
-        m_player.SetPrevShotButton(Input.GetAxisRaw("Shot"));
     }
 
     public void FixedUpdate()

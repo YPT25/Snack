@@ -386,12 +386,12 @@ public class Player_Tanabe : CharacterBase
             if (Input.GetButtonDown("Attack")                                           && this.GetPart() == null ||
                 this.GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f    && this.GetPart() == null)
             {
-                this.SetPrevShotButton(Input.GetAxisRaw("Shot"));
                 this.CmdChangeState_Item(m_equipStandbyItem, ItemStateMachine.ItemStateType.PARTEQUIPPED);
                 //m_equipStandbyItem.ChangeState(m_equipStandbyItem, ItemStateMachine.ItemStateType.PARTEQUIPPED);
                 this.CmdSetEquipStandbyItem(m_equipStandbyItem);
             }
         }
+        this.SetPrevShotButton(Input.GetAxisRaw("Shot"));
         // ˆÚ“®ƒtƒ‰ƒO‚ªfalse‚Ì‚Æ‚«‚Í‚±‚êˆÈãˆ—‚µ‚È‚¢
         if (!base.GetIsMove())
         {
