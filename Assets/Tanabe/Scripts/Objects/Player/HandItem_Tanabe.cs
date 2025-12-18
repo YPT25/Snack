@@ -88,18 +88,24 @@ public class HandItem_Tanabe : NetworkBehaviour
             return;
         }
 
-        if (m_player.isLocalPlayer && m_isAttract && !m_isDestroy)
+        if (isServer && m_isAttract && !m_isDestroy)
         {
-            m_player.SetIsAttract(true);
-            Vector3 dir = m_head.transform.position + new Vector3(0f, 1.5f, 0f) - m_player.transform.position;
-            m_player.GetComponent<Rigidbody>().AddForceAtPosition(dir.normalized, m_head.transform.position + new Vector3(0f, 1.5f, 0f), ForceMode.VelocityChange);
-            if(m_player.GetRigidbody().velocity.magnitude > 25f)
-            {
-                m_player.GetRigidbody().velocity *= 0.9f;
-            }
+            RpcPlayerAttract();
         }
+    }
 
+    [ClientRpc]
+    public void RpcPlayerAttract()
+    {
+        if (m_player == null) { return; }
 
+        m_player.SetIsAttract(true);
+        Vector3 dir = m_head.transform.position + new Vector3(0f, 1.5f, 0f) - m_player.transform.position;
+        m_player.GetComponent<Rigidbody>().AddForceAtPosition(dir.normalized, m_head.transform.position + new Vector3(0f, 1.5f, 0f), ForceMode.VelocityChange);
+        if (m_player.GetRigidbody().velocity.magnitude > 25f)
+        {
+            m_player.GetRigidbody().velocity *= 0.9f;
+        }
     }
 
     [ServerCallback]
