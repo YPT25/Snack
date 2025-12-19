@@ -18,16 +18,32 @@ public class MoviePlayerChanger : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isLocalPlayer) return;
         if(Input.GetKeyDown(KeyCode.C))
         {
             ModelSwitch();
+
+            // ThreePlayerUI という名前の GameObject を検索
+            GameObject uiRoot = GameObject.Find("ThreePlayerUI");
+
+            // UIオブジェクトが存在するか確認
+            if (uiRoot != null)
+            {
+                // UIをまとめたGameObjectを非表示にする
+                uiRoot.SetActive(false);
+            }
+            else
+            {
+                // 見つからなかった場合のデバッグ用ログ
+                Debug.LogWarning("ThreePlayerUI が見つかりません");
+            }
         }
     }
 
     // ----------------------------------------------------
     // モデル切り替え処理（サーバー専用）
     // ----------------------------------------------------
-    [Server]
+    [Command]
     public void ModelSwitch()
     {
         // 現在のプレイヤーオブジェクトを保持

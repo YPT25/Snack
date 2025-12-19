@@ -598,7 +598,7 @@ PrefabInstance:
       objectReference: {fileID: 8269363491708444832, guid: dc50908c290bfe743ba9bba8e6826a2d, type: 3}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: offlineScene
-      value: Assets/MainScene/TitleScene.unity
+      value: Assets/Ashuri/offScene.unity
       objectReference: {fileID: 0}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: playerPrefab
@@ -622,7 +622,7 @@ PrefabInstance:
       objectReference: {fileID: 746360336}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: spawnPrefabs.Array.size
-      value: 46
+      value: 47
       objectReference: {fileID: 0}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: spawnPrefabs.Array.data[0]
@@ -808,6 +808,10 @@ PrefabInstance:
       propertyPath: spawnPrefabs.Array.data[45]
       value: 
       objectReference: {fileID: 7444387902871704433, guid: 5975d5a6904fced499ba8e316a332c0a, type: 3}
+    - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
+      propertyPath: spawnPrefabs.Array.data[46]
+      value: 
+      objectReference: {fileID: 8204045488749284168, guid: 176dcd954aa337a4d8865d531b98288f, type: 3}
     - target: {fileID: 5393284343121868821, guid: 3ccf346f4704e164b8e9a44beb49e3f0, type: 3}
       propertyPath: blockedSceneNames.Array.size
       value: 1

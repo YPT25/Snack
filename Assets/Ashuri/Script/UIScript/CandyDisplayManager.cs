@@ -20,6 +20,18 @@ public class CandyDisplayManager : MonoBehaviour
     [Tooltip("綿菓子画像")]
     [SerializeField] private Sprite _fluffy;
 
+    [Tooltip("ハンドの画像")]
+    [SerializeField] private Sprite _handItem;
+
+    [Tooltip("ドリンク(パワーアップ)")]
+    [SerializeField] private Sprite _drink_power;
+
+    [Tooltip("ドリンク(スピード)")]
+    [SerializeField] private Sprite _drink_speed;
+
+    [Tooltip("ドリンク(HP)")]
+    [SerializeField] private Sprite _drink_hp;
+
     [Tooltip("何もないときの透明画像")]
     [SerializeField] private Sprite _transparent;
 
@@ -30,7 +42,7 @@ public class CandyDisplayManager : MonoBehaviour
     private PossessionManager_Tanabe _possession;
 
     // 所持アイテムの２枠
-    private ItemType[] _items = new ItemType[2];
+    private ItemNameID[] _items = new ItemNameID[2];
 
     // -----------------------------------------------
     // ゲーム開始時にローカルプレイヤーを探す
@@ -96,7 +108,7 @@ public class CandyDisplayManager : MonoBehaviour
     private void UpdateCandyUI()
     {
         // 所持アイテム2種類を取得
-        _possession.GetItem(out _items[0], out _items[1]);
+        _possession.GetItemName(out _items[0], out _items[1]);
 
         // 左側のアイコン切り替え
         SetSprite(_leftSprite, _items[0]);
@@ -107,19 +119,47 @@ public class CandyDisplayManager : MonoBehaviour
 
     // -----------------------------------------------
     // アイテムの種類に応じて Sprite を更新する共通処理
-    private void SetSprite(Image target, ItemType type)
+    private void SetSprite(Image target, ItemNameID type)
     {
         // 罠アイテム（綿菓子）
-        if (type == ItemType.TRAP)
+        if (type == ItemNameID.WATAGASHI)
         {
             target.sprite = _fluffy;
             return;
         }
 
         // 投擲アイテム（ポップコーン）
-        if (type == ItemType.THROW)
+        if (type == ItemNameID.POPCORN)
         {
             target.sprite = _popcorn;
+            return;
+        }
+
+        // 缶バフ（HP回復）
+        if (type == ItemNameID.DRINK_HEALING)
+        {
+            target.sprite = _drink_hp;
+            return;
+        }
+
+        // 缶バフ（パワーアップ）
+        if (type == ItemNameID.DRINK_POWERUP)
+        {
+            target.sprite = _drink_power;
+            return;
+        }
+
+        // 缶バフ（スピード）
+        if (type == ItemNameID.DRINK_SPEEDUP)
+        {
+            target.sprite = _drink_speed;
+            return;
+        }
+
+        // 投擲アイテム（ハンド）
+        if (type == ItemNameID.HOOKHAND)
+        {
+            target.sprite = _handItem;
             return;
         }
 

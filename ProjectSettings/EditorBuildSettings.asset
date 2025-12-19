@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Yuuki/Mokurin.unity
     guid: c58eae9cad815114682451fa1af56c36
+  - enabled: 1
+    path: Assets/Ashuri/offScene.unity
+    guid: 0a3ba4b8319f74f4eb1af164b267e4d9
   m_configObjects: {}
