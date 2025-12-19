@@ -1021,7 +1021,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _spawnAreaVertices.Array.size
@@ -1094,7 +1094,7 @@ PrefabInstance:
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[6].prefab
       value: 
-      objectReference: {fileID: 7444387902871704433, guid: 5975d5a6904fced499ba8e316a332c0a, type: 3}
+      objectReference: {fileID: 3869155081836768033, guid: bc7fbde139fd451468c771e07219af16, type: 3}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[7].prefab
       value: 
@@ -1125,7 +1125,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[6].spawnProbability
-      value: 0.1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8145624455892894639, guid: b5a18e934b12a0c4e88c9884dd637653, type: 3}
       propertyPath: _sweetPrefabs.Array.data[7].spawnProbability
@@ -6607,6 +6607,10 @@ PrefabInstance:
       propertyPath: m_RenderMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3760913866121670197, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: _gum
+      value: 
+      objectReference: {fileID: 21300000, guid: fc20165acd44efa458d09f9ff9daf057, type: 3}
     - target: {fileID: 3760913866121670197, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
       propertyPath: _drink_hp
       value: 

@@ -32,6 +32,9 @@ public class CandyDisplayManager : MonoBehaviour
     [Tooltip("ドリンク(HP)")]
     [SerializeField] private Sprite _drink_hp;
 
+    [Tooltip("ドリンク(HP)")]
+    [SerializeField] private Sprite _gum;
+
     [Tooltip("何もないときの透明画像")]
     [SerializeField] private Sprite _transparent;
 
@@ -160,6 +163,13 @@ public class CandyDisplayManager : MonoBehaviour
         if (type == ItemNameID.HOOKHAND)
         {
             target.sprite = _handItem;
+            return;
+        }
+
+        // 投擲アイテム（ハンド）
+        if (type == ItemNameID.BUBBLEGUM)
+        {
+            target.sprite = _gum;
             return;
         }
 
