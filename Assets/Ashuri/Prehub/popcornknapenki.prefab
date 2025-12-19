@@ -205,6 +205,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_itemType: 3
+  m_itemNameID: 2
   moveSpeed: 8
   rotateSpeed: 30
   m_point: 0
