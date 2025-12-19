@@ -177,7 +177,7 @@ public class AshuriNetworkManager : NetworkManager
         int modeIndex = stateManager.GetModeId(conn);
 
         if(modeIndex == 1)
-        {
+        {   
             selectedPrefab = playerFirst;
         }
         // 保存されたモデルがある場合だけ切り替える

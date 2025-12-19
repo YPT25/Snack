@@ -18,7 +18,7 @@ public class DebugItemGenerator : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null) { return; }
+        //if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null) { return; }
 
         // 生成したか確認する
         if (_isTrigger) return;
@@ -27,10 +27,7 @@ public class DebugItemGenerator : NetworkBehaviour
         _isTrigger = true;
 
         // アイテムを生成する
-        GameObject obj = Instantiate(m_itemPrefab);
-
-        // 生成位置をこのオブジェクトの位置に合わせる
-        obj.transform.position = transform.position;
+        GameObject obj = Instantiate(m_itemPrefab, transform.position, Quaternion.identity);
 
         // ネットワーク上にスポーンさせる
         NetworkServer.Spawn(obj);
