@@ -241,4 +241,13 @@ public class PossessionManager_Tanabe : NetworkBehaviour
         if (m_items[0] != null) { _firstType = m_items[0].GetItemType(); }
         if (m_items[1] != null) { _secondType = m_items[1].GetItemType(); }
     }
+
+
+    // ‚Á‚Ä‚¢‚éƒAƒCƒeƒ€–¼‚Ìæ“¾
+    public void GetItemName(out ItemStateMachine.ItemNameID _firstItemName, out ItemStateMachine.ItemNameID _secondItemName)
+    {
+        _firstItemName = _secondItemName = ItemStateMachine.ItemNameID.NONE_NAME;
+        if (m_items[0] != null) { _firstItemName = m_items[0].GetItemNameID(); }
+        if (m_items[1] != null) { _secondItemName = m_items[1].GetItemNameID(); }
+    }
 }

@@ -185,6 +185,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_itemType: 4
+  m_itemNameID: 4
   moveSpeed: 8
   rotateSpeed: 30
   m_point: 0

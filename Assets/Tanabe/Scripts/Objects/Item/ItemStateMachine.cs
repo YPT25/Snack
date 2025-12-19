@@ -28,9 +28,24 @@ public class ItemStateMachine : NetworkBehaviour
         PARTEQUIPPED,
     }
 
+    public enum ItemNameID
+    {
+        NONE_NAME,
+        CANDY,
+        POPCORN,
+        HOOKHAND,
+        WATAGASHI,
+        BUBBLEGUM,
+        DRINK_POWERUP,
+        DRINK_SPEEDUP,
+        DRINK_HEALING,
+    }
+
+
     // 現在のステート
     private IItemState_Tanabe currentState;
     [SyncVar, Header("アイテムの種類"), SerializeField] private ItemType m_itemType;
+    [SyncVar, Header("アイテム名"), SerializeField] private ItemNameID m_itemNameID;
     [Header("移動速度 ※デフォルト値:8.0"), SerializeField, Range(0f, 100f)] public float moveSpeed;
     [Header("回転速度 ※デフォルト値:30.0"), SerializeField, Range(0f, 100f)] public float rotateSpeed;
     [Header("ポイント"), SerializeField, Range(0f, 100f)] private float m_point;
@@ -288,6 +303,12 @@ public class ItemStateMachine : NetworkBehaviour
     public ItemStateType GetItemStateType()
     {
         return m_stateType;
+    }
+
+    // アイテム名の取得
+    public ItemNameID GetItemNameID()
+    {
+        return m_itemNameID;
     }
 
     public BuffManager_Tanabe.Buff.BuffType GetBuffType()
