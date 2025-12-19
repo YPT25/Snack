@@ -96,7 +96,7 @@ public class Bullet_Tanabe : NetworkBehaviour
     {
         m_power = _power / 2f;
         this.transform.localScale = this.transform.localScale * 0.6f;
-        m_activeTime = 0.4f;
+        m_activeTime = 0.6f;
         m_speed *= 0.7f;
         m_forward = _moveVector;
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;

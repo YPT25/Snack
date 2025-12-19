@@ -737,7 +737,7 @@ public class Player_Tanabe : CharacterBase
         {
             if (prevPartType == global::SetPart_Tanabe.PartType.LONGBARREL)
             {
-                SetPower(GetPower() - 40f);
+                SetPower(GetPower() - 20f);
             }
             else if (prevPartType == global::SetPart_Tanabe.PartType.SHARPBULLET)
             {
@@ -751,7 +751,7 @@ public class Player_Tanabe : CharacterBase
 
                 if (_setPart.GetPartType() == global::SetPart_Tanabe.PartType.LONGBARREL)
                 {
-                    SetPower(GetPower() + 40f);
+                    SetPower(GetPower() + 20f);
                 }
                 else if (_setPart.GetPartType() == global::SetPart_Tanabe.PartType.SHARPBULLET)
                 {
