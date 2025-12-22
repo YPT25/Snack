@@ -296,7 +296,7 @@ MonoBehaviour:
   m_head: {fileID: 1123801378522507576}
   m_body: {fileID: 7184715723170336024}
   m_foot: {fileID: 7887338188260873364}
-  m_attractPower: 20
+  m_attractPower: 40
 --- !u!65 &7122459383624143764
 BoxCollider:
   m_ObjectHideFlags: 0
