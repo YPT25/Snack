@@ -1595,6 +1595,10 @@ PrefabInstance:
       propertyPath: _assignId
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4035324741463550113, guid: bb42fd0c5cd818a41a52119832abfa88, type: 3}
+      propertyPath: _touchMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 68c16d903689a5c45a72a2d727797ecf, type: 2}
     - target: {fileID: 5964103937246324919, guid: bb42fd0c5cd818a41a52119832abfa88, type: 3}
       propertyPath: sceneId
       value: 1933749769
@@ -12113,7 +12117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2028138775747723309, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.483609
+      value: -5.12
       objectReference: {fileID: 0}
     - target: {fileID: 2028138775747723309, guid: 88a340d8a07130b49aa12b5cf04cbc79, type: 3}
       propertyPath: m_LocalPosition.y
@@ -12414,6 +12418,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FirstPersonField (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1588823231147438968, guid: d8cbf8d544f7f624c88b652c90f16a9a, type: 3}
+      propertyPath: _touchMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: ca8bfeaf73963fc468060050cbffed7d, type: 2}
     - target: {fileID: 5561589474407430013, guid: d8cbf8d544f7f624c88b652c90f16a9a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -95.907684
