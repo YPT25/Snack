@@ -38,13 +38,14 @@ public class TrapState : IItemState_Tanabe
         else
         {
             m_deleteTimer = 12.0f;
-            item.transform.localScale = new Vector3(baseScale.x, baseScale.y * 0.05f, baseScale.z);
+            //item.transform.localScale = new Vector3(baseScale.x, baseScale.y * 0.05f, baseScale.z);
+            item.transform.localScale = new Vector3(baseScale.x, baseScale.y, baseScale.z);
         }
 
         item.SetIsKinematic(false);
         item.SetUseGravity(true);
         item.GetRigidbody().freezeRotation = true;
-        item.GetComponent<BoxCollider>().isTrigger = false;
+        item.GetComponent<Collider>().isTrigger = false;
 
         item.gameObject.layer = 0;
 
@@ -94,7 +95,7 @@ public class TrapState : IItemState_Tanabe
             m_trapInterval -= Time.deltaTime;
             if (m_trapInterval <= 0.0f)
             {
-                item.GetRigidbody().mass = 999f;
+                //item.GetRigidbody().mass = 999f;
             }
             return;
         }
@@ -158,8 +159,8 @@ public class TrapState : IItemState_Tanabe
         item.GetEffectObject().SetActive(true);
         item.transform.localScale = Vector3.one * scale.x * 0.1f;
         item.gameObject.GetComponent<MeshRenderer>().enabled = false;
-        item.GetComponent<BoxCollider>().enabled = false;
-        item.RpcExplode(Vector3.one * scale.x * 0.1f, true);
+        item.GetComponent<Collider>().enabled = false;
+        item.RpcExplode(Vector3.one * scale.x * 0.1f, true, Vector3.one * (3f + scale.x * 0.3f));
 
         BombExplosion_Tanabe test = item.GetComponent<BombExplosion_Tanabe>();
         if (test != null)
