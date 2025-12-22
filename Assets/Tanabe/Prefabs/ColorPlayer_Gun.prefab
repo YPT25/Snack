@@ -46136,11 +46136,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe4b8ae5ec923f40be656d2a349b62f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   m_meshRenderers:
   - {fileID: 4104587751331642941}
   - {fileID: 732385616165175390}
   - {fileID: 6641148949644351198}
   - {fileID: 7176457726010826844}
+  - {fileID: 5958864861568846143}
+  - {fileID: 7754383216267980194}
+  - {fileID: 9118792145805681066}
   HITTIME: 0.8
   m_damageColor: {r: 0.627451, g: 0, b: 0, a: 1}
 --- !u!114 &-4856608573071777273
@@ -46177,4 +46183,4 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  newPlayerPrefab: {fileID: 7819040012874337049, guid: a297c7de1660a814e903c77c3874d733, type: 3}
+  modeID: 0

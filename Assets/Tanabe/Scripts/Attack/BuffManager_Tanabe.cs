@@ -31,8 +31,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
     BuffEffectGenerator_Tanabe m_effectGenerator;
 
     // Start is called before the first frame update
-    void Start()
+    public override void OnStartServer()
     {
+        base.OnStartServer();
+        m_playerData = GetComponent<Player_Tanabe>();
+        m_effectGenerator = GameObject.Find("BuffEffectGenerator").GetComponent<BuffEffectGenerator_Tanabe>();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
         m_playerData = GetComponent<Player_Tanabe>();
         m_effectGenerator = GameObject.Find("BuffEffectGenerator").GetComponent<BuffEffectGenerator_Tanabe>();
     }

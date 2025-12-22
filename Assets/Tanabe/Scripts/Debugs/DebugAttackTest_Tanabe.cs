@@ -6,12 +6,22 @@ using Mirror;
 public class DebugAttackTest_Tanabe : NetworkBehaviour
 {
     private CharacterBase m_parentCharacter;
+    [SerializeField] private GameObject m_hitEffectPrefab;
 
     // Trigger衝突判定処理
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
         if (m_parentCharacter == null || other.isTrigger) { return; }
+
+        if (m_hitEffectPrefab != null)
+        {
+            Vector3 dir = this.transform.position - other.transform.position;
+            Quaternion rotation = Quaternion.LookRotation(dir.normalized);
+            
+            GameObject obj = Instantiate(m_hitEffectPrefab, this.transform.position, rotation);
+            NetworkServer.Spawn(obj);
+        }
 
         // キャラクターデータの取得
         CharacterBase characterBase = other.GetComponent<CharacterBase>();
