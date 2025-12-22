@@ -436,11 +436,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe4b8ae5ec923f40be656d2a349b62f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   m_meshRenderers:
   - {fileID: 4349610632563845787}
   - {fileID: 5037158226421774451}
   - {fileID: 3778292530368735981}
   - {fileID: 7231876487223850764}
+  - {fileID: 20454875961815084}
+  - {fileID: 7058580165728239456}
+  - {fileID: 6337982882180732078}
   HITTIME: 0.8
   m_damageColor: {r: 0.627451, g: 0, b: 0, a: 1}
 --- !u!114 &-4968568811902704172
@@ -477,7 +483,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  newPlayerPrefab: {fileID: 3016162848710178345, guid: a72478876f69c8a4aa0e1175e19aa8f8, type: 3}
+  modeID: 0
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0
@@ -21000,6 +21006,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  m_hitEffectPrefab: {fileID: 5626000664429399749, guid: 97b2c02d94723384db2cbafa9d56c11d, type: 3}
 --- !u!1 &4911674108078285613
 GameObject:
   m_ObjectHideFlags: 0
@@ -21205,6 +21212,11 @@ MonoBehaviour:
   _rightSprite: {fileID: 5274005681051449105}
   _popcorn: {fileID: 21300000, guid: 6c70bf0aee83f95438837263e863911e, type: 3}
   _fluffy: {fileID: 21300000, guid: 930987dc181daa84da3ccc30890f6483, type: 3}
+  _handItem: {fileID: 0}
+  _drink_power: {fileID: 0}
+  _drink_speed: {fileID: 0}
+  _drink_hp: {fileID: 0}
+  _gum: {fileID: 0}
   _transparent: {fileID: 21300000, guid: 4123e33cf1466ca4a9dd84b794e3c860, type: 3}
 --- !u!1 &5437537402754741317
 GameObject:

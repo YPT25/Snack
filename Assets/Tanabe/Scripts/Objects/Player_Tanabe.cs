@@ -115,6 +115,8 @@ public class Player_Tanabe : CharacterBase
         // 頭のオブジェクトが取得できれば登録しておく
         m_headObject = this.GetComponentInChildren<HeadObject_Tanabe>()?.gameObject;
 
+        m_damagePerformance = GetComponent<DamagePerformance>();
+
         // 目オブジェクトの見た目設定
         m_eyesObject[0]?.SetActive(true);
         m_eyesObject[1]?.SetActive(false);
@@ -150,6 +152,8 @@ public class Player_Tanabe : CharacterBase
         m_eyesObject[0]?.SetActive(true);
         m_eyesObject[1]?.SetActive(false);
 
+        m_damagePerformance = GetComponent<DamagePerformance>();
+
         // ローカルプレイヤーではない物のみ通す
         if (!this.isLocalPlayer)
         {
@@ -168,8 +172,6 @@ public class Player_Tanabe : CharacterBase
                 m_playerManager.SetCameraController(m_cameraController);
             }
         }
-
-        m_damagePerformance = GetComponent<DamagePerformance>();
 
         // デバッグ時のみ
         m_debugParameterText = GameObject.Find("DebugParameterText")?.GetComponent<DebugParameterText_Tanabe>();
@@ -567,10 +569,7 @@ public class Player_Tanabe : CharacterBase
     public override void Damage(float _damage)
     {
         base.Damage(_damage);
-        if(this.isLocalPlayer)
-        {
-            m_damagePerformance?.Damage();
-        }
+        m_damagePerformance?.Damage();
     }
 
 

@@ -13,6 +13,7 @@ public class ShockWave_Tanabe : NetworkBehaviour
     [SyncVar] private float m_wavePower = 1.0f;
 
     private GameObject m_parentPlayer;
+    [SerializeField] private GameObject m_hitEffectPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -72,6 +73,13 @@ public class ShockWave_Tanabe : NetworkBehaviour
         Rigidbody rb = other.attachedRigidbody;
         if (rb != null)
         {
+            if (m_hitEffectPrefab != null)
+            {
+                Vector3 position = new Vector3(other.transform.position.x, m_parentPlayer.transform.position.y - 0.8f, other.transform.position.z);
+                GameObject obj = Instantiate(m_hitEffectPrefab, position, m_hitEffectPrefab.transform.rotation);
+                NetworkServer.Spawn(obj);
+            }
+
             // ”š•—‚Ì—Í‚ð‰Á‚¦‚é
             //rb.AddExplosionForce(m_explosionForce, transform.position, this.transform.localScale.x, m_upwardsModifier, ForceMode.Impulse);
             this.RpcAddExplosionForce(other.gameObject);
