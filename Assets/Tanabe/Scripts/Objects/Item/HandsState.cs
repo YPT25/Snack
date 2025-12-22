@@ -23,7 +23,7 @@ public class HandsState : IItemState_Tanabe
             return;
         }
 
-        if (item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
+        if (item.GetItemType() != ItemStateMachine.ItemType.TRAP_BOMB && item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
         {
             item.transform.localScale = baseScale * 0.3f;
         }

@@ -259,9 +259,10 @@ public class ItemStateMachine : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcExplode(Vector3 _scale, bool _isMeshRenderer)
+    public void RpcExplode(Vector3 _scale, bool _isMeshRenderer, Vector3 _explosionScale)
     {
         GetEffectObject().transform.position = this.transform.position;
+        GetEffectObject().transform.localScale = _explosionScale;
         this.SetIsKinematic(true);
         this.GetEffectObject().SetActive(true);
         this.GetEffectObject().transform.parent = null;

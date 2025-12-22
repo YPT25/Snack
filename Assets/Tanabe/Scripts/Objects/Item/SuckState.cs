@@ -18,7 +18,7 @@ public class SuckState : IItemState_Tanabe
         item.SetUseGravity(false);
         item.SetIsKinematic(true);
         baseScale = item.transform.localScale;
-        if (item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
+        if (item.GetItemType() != ItemStateMachine.ItemType.TRAP_BOMB && item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
         {
             item.transform.localScale = baseScale * 0.3f;
         }

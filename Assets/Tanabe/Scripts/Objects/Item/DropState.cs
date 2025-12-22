@@ -23,7 +23,7 @@ public class DropState : IItemState_Tanabe
         {
             item.transform.localScale = baseScale * 0.6f;
         }
-        else if (item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
+        else if (item.GetItemType() != ItemStateMachine.ItemType.TRAP_BOMB && item.GetItemType() != ItemStateMachine.ItemType.TRAP && item.GetItemType() != ItemStateMachine.ItemType.THROW && item.GetItemType() != ItemStateMachine.ItemType.BUFF)
         {
             item.transform.localScale = baseScale * 0.3f;
         }

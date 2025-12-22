@@ -34251,6 +34251,7 @@ GameObject:
   - component: {fileID: 5049295474495187402}
   - component: {fileID: 5226238897800034304}
   - component: {fileID: 2731948599496569352}
+  - component: {fileID: -2904335061304200675}
   m_Layer: 0
   m_Name: Explosion_2_Bomb_Yellow
   m_TagString: Untagged
@@ -34269,7 +34270,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.0543551, y: 0.5, z: -6.2325177}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3420294388760406644}
   - {fileID: 9053531388245038053}
@@ -39077,6 +39078,18 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-2904335061304200675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7110971443591067513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8feec890872c74ba3656202ff614e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7588187105470176895
 GameObject:
   m_ObjectHideFlags: 0
