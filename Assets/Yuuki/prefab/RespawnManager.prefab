@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3875100923431586431}
   - component: {fileID: 5531071235842707636}
-  - component: {fileID: -250524813364518273}
+  - component: {fileID: 6782221035214716947}
   m_Layer: 0
   m_Name: RespawnManager
   m_TagString: Untagged
@@ -54,7 +54,7 @@ MonoBehaviour:
   respawnPoint: {fileID: 0}
   respawnUI: {fileID: 7635245534724109926}
   buttonPrefab: {fileID: 6732263417880473299, guid: 866566057bea5d141b0e32ed4b0a0492, type: 3}
---- !u!114 &-250524813364518273
+--- !u!114 &6782221035214716947
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

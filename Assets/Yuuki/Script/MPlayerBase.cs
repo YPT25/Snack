@@ -29,7 +29,7 @@ public class MPlayerBase : EnemyBase
     protected Camera cam;
 
     private bool isInitialized = false;
-    private bool isDead = false;
+    [SyncVar] private bool isDead = false;
     public bool iscanMove = true;
 
     // ===== FPS視点用 =====
