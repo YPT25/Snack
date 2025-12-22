@@ -6607,6 +6607,10 @@ PrefabInstance:
       propertyPath: m_RenderMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1339820589068160995, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e6690c55b8b9f8b4aa1eb2d179df988c, type: 3}
     - target: {fileID: 3760913866121670197, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
       propertyPath: _gum
       value: 
