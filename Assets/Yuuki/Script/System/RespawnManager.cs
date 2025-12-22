@@ -12,99 +12,224 @@ using static EnemyBase;
 /// - 2回目以降は「今生きているNPCと同じ EnemyType のキャラのみ」選択可能
 /// - ReplacePlayerForConnection で古い本体は自動削除される
 /// </summary>
-public class RespawnManager : MonoBehaviour
+public class RespawnManager : NetworkBehaviour
 {
+    // ================================
+    // Singleton（クライアント専用）
+    // ================================
     public static RespawnManager Instance { get; private set; }
 
     [Header("リスポーン設定")]
-    [SerializeField] private List<GameObject> playerPrefabs;
+    [Tooltip("選択できるプレイヤーのPrefabリスト")]
+    [SerializeField] private List<GameObject> playerPrefabs = new List<GameObject>();
+
+    [Tooltip("リスポーン地点")]
     [SerializeField] private Transform respawnPoint;
 
-    [Header("UI")]
+    [Header("UI設定")]
+    [Tooltip("リスポーン用UIのルートパネル（Canvas配下）")]
     [SerializeField] private GameObject respawnUI;
+
+    [Tooltip("キャラ選択ボタンのプレハブ")]
     [SerializeField] private Button buttonPrefab;
 
-    private bool isWaiting = false;
+    private bool isWaitingForSelection = false;
+
+    // 最初の1回だけ全キャラ判定
     private bool isFirstRespawn = true;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        Instance = this;
+    }
+
+    private void Start()
+    {
+        if (respawnUI != null)
         {
-            Destroy(gameObject);
+            respawnUI.SetActive(false);
+            Debug.Log("[RespawnManager] UI初期化完了 (非アクティブ)");
+        }
+        else
+        {
+            Debug.LogError("[RespawnManager] respawnUI が設定されていません！");
+        }
+    }
+
+    // ======================================================
+    // 今シーンに存在する EnemyType を取得（クライアント側実行OK）
+    // ======================================================
+    private HashSet<EnemyBase.EnemyType> GetAliveEnemyTypes()
+    {
+        var set = new HashSet<EnemyBase.EnemyType>();
+
+        EnemyBase[] enemies = FindObjectsOfType<EnemyBase>();
+        foreach (var e in enemies)
+        {
+            if (e == null) continue;
+
+            try
+            {
+                set.Add(e.GetEnemyType());
+            }
+            catch { }
+        }
+
+        return set;
+    }
+
+    // ======================================================
+    // UIを表示（生きているNPCのタイプに応じたフィルタ）
+    // ======================================================
+    public void ShowRespawnUI()
+    {
+        Debug.Log("[RespawnManager] ShowRespawnUI() 呼び出し");
+
+        if (respawnUI == null || buttonPrefab == null)
+        {
+            Debug.LogError("[RespawnManager] UIまたはボタンPrefabなし！");
             return;
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        respawnUI.SetActive(false);
-    }
+        // UIを一旦クリア
+        foreach (Transform child in respawnUI.transform)
+            Destroy(child.gameObject);
 
-    // =========================
-    // UI表示（Local専用）
-    // =========================
-    public void ShowRespawnUI()
-    {
-        if (respawnUI == null || buttonPrefab == null)
-            return;
+        List<int> allowedIndices = new List<int>();
 
-        foreach (Transform c in respawnUI.transform)
-            Destroy(c.gameObject);
-
-        for (int i = 0; i < playerPrefabs.Count; i++)
+        // -----------------------------
+        // 最初の1回は全キャラ表示
+        // -----------------------------
+        if (isFirstRespawn)
         {
-            int index = i;
-            GameObject prefab = playerPrefabs[index];
+            Debug.Log("[RespawnManager] 最初の選択 → 全てのキャラを表示");
+
+            for (int i = 0; i < playerPrefabs.Count; i++)
+                allowedIndices.Add(i);
+        }
+        else
+        {
+            // -----------------------------
+            // 2回目以降 → NPCのEnemyTypeでフィルタ
+            // -----------------------------
+            HashSet<EnemyBase.EnemyType> aliveTypes = GetAliveEnemyTypes();
+            Debug.Log("[RespawnManager] 生存NPCタイプ: " + string.Join(", ", aliveTypes));
+
+            for (int i = 0; i < playerPrefabs.Count; i++)
+            {
+                var prefab = playerPrefabs[i];
+                if (prefab == null) continue;
+
+                var enemyBase = prefab.GetComponent<EnemyBase>();
+                if (enemyBase == null)
+                {
+                    // 想定外だけど一応許可する
+                    allowedIndices.Add(i);
+                    continue;
+                }
+
+                var prefabType = enemyBase.GetEnemyType();
+
+                if (aliveTypes.Contains(prefabType))
+                {
+                    allowedIndices.Add(i);
+                }
+            }
+
+            // 該当無し → フォールバックで全表示
+            if (allowedIndices.Count == 0)
+            {
+                Debug.Log("[RespawnManager] 該当タイプが無いため全表示へフォールバック");
+                for (int i = 0; i < playerPrefabs.Count; i++)
+                    allowedIndices.Add(i);
+            }
+        }
+
+        // -----------------------------
+        // ボタンを生成
+        // -----------------------------
+        foreach (int index in allowedIndices)
+        {
+            int captured = index;
+            GameObject prefab = playerPrefabs[captured];
             if (prefab == null) continue;
 
-            Button btn = Instantiate(buttonPrefab, respawnUI.transform);
+            var btn = Instantiate(buttonPrefab, respawnUI.transform);
 
+            // 名前
             var text = btn.GetComponentInChildren<TMP_Text>();
             if (text) text.text = prefab.name;
 
-            var icon = btn.GetComponentInChildren<Image>();
+            // アイコン
+            var img = btn.GetComponentInChildren<Image>();
             var mp = prefab.GetComponent<MPlayerBase>();
-            if (icon && mp && mp.GetRespawnIcon())
-                icon.sprite = mp.GetRespawnIcon();
+            if (img && mp)
+            {
+                Sprite icon = mp.GetRespawnIcon();
+                if (icon) img.sprite = icon;
+            }
 
-            btn.onClick.AddListener(() => OnCharacterSelected(index));
+            btn.onClick.AddListener(() => OnCharacterSelected(captured));
         }
 
         respawnUI.SetActive(true);
-        isWaiting = true;
+        isWaitingForSelection = true;
+        Debug.Log("[RespawnManager] リスポーンUI表示完了");
     }
 
+    // ======================================================
+    // キャラ選択
+    // ======================================================
     private void OnCharacterSelected(int index)
     {
-        if (!isWaiting) return;
+        if (!isWaitingForSelection)
+            return;
 
-        isWaiting = false;
+        isWaitingForSelection = false;
         respawnUI.SetActive(false);
+
+        Debug.Log($"[RespawnManager] 選択: {playerPrefabs[index].name}");
+
+        // ここで「初回フラグ」を false にする
         isFirstRespawn = false;
 
-        // ★ LocalPlayer 経由で Command を送る
-        NetworkClient.localPlayer
-            .GetComponent<MPlayerBase>()
-            .CmdRequestRespawn(index);
+        CmdRequestRespawn(index);
     }
 
-    // =========================
-    // Server専用：実リスポーン
-    // =========================
-    [Server]
-    public void ServerRespawn(int index, NetworkConnectionToClient conn)
+    // ======================================================
+    // サーバー側 Respawn
+    // ======================================================
+    [Command(requiresAuthority = false)]
+    private void CmdRequestRespawn(int index, NetworkConnectionToClient sender = null)
     {
-        if (index < 0 || index >= playerPrefabs.Count) return;
-        if (respawnPoint == null) return;
+        if (index < 0 || index >= playerPrefabs.Count)
+        {
+            Debug.LogWarning("[RespawnManager] indexエラー");
+            return;
+        }
 
-        if (conn.identity != null)
-            NetworkServer.Destroy(conn.identity.gameObject);
+        if (respawnPoint == null)
+        {
+            Debug.LogError("[RespawnManager] respawnPoint 未設定");
+            return;
+        }
+
+        // 旧プレイヤーの削除
+        if (sender.identity != null)
+        {
+            GameObject oldPlayer = sender.identity.gameObject;
+            NetworkServer.Destroy(oldPlayer);
+        }
 
         GameObject prefab = playerPrefabs[index];
-        GameObject newPlayer =
-            Instantiate(prefab, respawnPoint.position, Quaternion.identity);
+        // 新しいプレイヤーを生成する
+        GameObject newPlayer = Instantiate(prefab, respawnPoint.position, Quaternion.identity);
+        Debug.Log($"[RespawnManager] 新しいプレイヤー生成: {prefab.name}");
 
-        NetworkServer.ReplacePlayerForConnection(conn, newPlayer);
-        newPlayer.GetComponent<MPlayerBase>().TargetOnRespawned(conn);
+        // 新しいプレイヤーをクライアントに日もづける
+        NetworkServer.ReplacePlayerForConnection(sender, newPlayer);
     }
+
+    //一番最初のリスポーンフラグ(Trueなら選んでいない、Falseなら選ばれた)
+    public bool GetFirstResFlag() => isFirstRespawn;
 }

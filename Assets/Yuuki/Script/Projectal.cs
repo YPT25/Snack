@@ -10,27 +10,21 @@ using Mirror;
 /// </summary>
 public class Projectile : NetworkBehaviour
 {
-    [SyncVar] private NetworkIdentity ownerNetId;
+    [SerializeField]
+    private float damage = 10f;
+
+    private EnemyBase owner;
 
     [SerializeField] private float lifeTime = 3f;
 
-    [SerializeField] private float damage = 10.0f;
-
-    // ======================================
-    // ‰Šú‰»iServerj
-    // ======================================
-    [Server]
     public void Initialize(EnemyBase shooter, float power)
     {
-        ownerNetId = shooter.netIdentity;
+        owner = shooter;
         damage = power;
 
         Invoke(nameof(DestroySelf), lifeTime);
     }
 
-    // ======================================
-    // “–‚½‚è”»’èiServerj
-    // ======================================
     private void OnTriggerEnter(Collider other)
     {
         if (!isServer) return;
@@ -39,19 +33,17 @@ public class Projectile : NetworkBehaviour
         if (target == null) return;
 
         // ©ŒÈƒqƒbƒg–h~
-        if (target.netIdentity == ownerNetId) return;
+        if (target == owner) return;
 
-        target.Damage(damage);
+        // UŒ‚
+        owner.Attack(target);
 
         DestroySelf();
     }
 
-    // ======================================
-    // ”jŠü
-    // ======================================
-    [Server]
     private void DestroySelf()
     {
-        NetworkServer.Destroy(gameObject);
+        if (isServer)
+            NetworkServer.Destroy(gameObject);
     }
 }

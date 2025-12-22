@@ -5,238 +5,238 @@ using Mirror;
 using UnityEngine.AI;
 public class NPCBase : EnemyBase
 {
-    // =========================
-    // 同期用（Server → Client）
-    // =========================
     [SyncVar] protected bool m_isAttacking = false;
-    [SyncVar] protected Vector3 m_syncDestination;
-    [SyncVar] protected bool m_isMoving = false;
-
-    // =========================
-    // 内部参照
-    // =========================
     protected Transform m_target;
     protected Rigidbody m_rb;
     protected NavMeshAgent agent;
 
-    // =========================
-    // WayPoint
-    // =========================
+    // WayPoint 読み込み用（子オブジェクトの Transform を入れる）
     protected Transform[] m_waypoints;
-    protected int m_currentWaypoint = 0;
+    private int m_currentWaypoint = 0;
 
-    // =========================
-    // AI設定
-    // =========================
     [Header("AI基本設定")]
-    [SerializeField] protected float detectRange = 10f;
-    [SerializeField] protected float attackRange = 2f;
-    [SerializeField] protected float randomWalkInterval = 2f;
+    [SerializeField] protected float detectRange = 10f;       // 索敵範囲
+    [SerializeField] protected float attackRange = 2f;        // 攻撃範囲
+    [SerializeField] protected float randomWalkInterval = 2f; // ランダム歩行 切替時間
     [SerializeField] protected float walkSpeedMultiplier = 0.5f;
 
     private float randomWalkTimer = 0f;
     private Vector3 randomDir;
     private float fallDeathY = -5f;
-
-    // =========================
-    // 初期化
-    // =========================
     public override void Start()
     {
         base.Start();
-
         m_rb = GetComponent<Rigidbody>();
-        TryGetComponent(out agent);
+        TryGetComponent<NavMeshAgent>(out agent);
 
-        // Server：AI判断のみ（NavMeshは使わない）
-        if (isServer && agent != null)
+        if (agent != null)
         {
-            agent.enabled = false;
-        }
-
-        // Client：見た目の移動をNavMeshで再生
-        if (!isServer && agent != null)
-        {
+            // Agent側の速度は GetMoveSpeed() と連動させるために最初の速度を保存
             agent.speed = GetMoveSpeed() * walkSpeedMultiplier;
             agent.updateRotation = true;
             agent.updatePosition = true;
         }
     }
 
-    // =========================
-    // Server：AI判断
-    // =========================
+    // ======================================
+    // Server Side AI Update
+    // ======================================
     [ServerCallback]
     public override void Update()
     {
-        if (!GetIsMove())
-            return;
-
-        // 落下死
-        if (transform.position.y < fallDeathY)
+        if (GetIsMove())
         {
-            Die();
-            return;
-        }
 
-        if (GetHp() <= 0)
-        {
-            Die();
-            return;
-        }
 
-        base.Update();
-
-        if (m_isAttacking)
-            return;
-
-        // ===== ターゲットあり =====
-        if (m_target != null)
-        {
-            float dist = Vector3.Distance(transform.position, m_target.position);
-
-            // 見失い
-            if (dist > detectRange * 1.5f)
+            if (transform.position.y < fallDeathY)
             {
-                m_target = null;
-                m_isMoving = false;
+                Debug.Log($"{name} はステージ外へ落下しました（Y={transform.position.y}）。死亡扱い。");
+                Die();
+                return;
+            }
+            if (GetHp() <= 0)
+            {
+                Die();
+            }
+
+            base.Update();
+
+            if (m_isAttacking) return;
+
+            // ターゲットがいるなら追跡または攻撃
+            if (m_target != null)
+            {
+                float dist = Vector3.Distance(transform.position, m_target.position);
+
+                // 索敵圏外
+                if (dist > detectRange * 1.5f)
+                {
+                    m_target = null;
+                    // agent を停止
+                    if (agent != null && agent.isOnNavMesh) agent.ResetPath();
+                    return;
+                }
+
+                if (dist <= attackRange)
+                {
+                    // ========================
+                    // 攻撃前 → ターゲット方向へ向き直す
+                    // ========================
+                    Vector3 dir = (m_target.position - transform.position);
+                    dir.y = 0;
+
+                    if (dir.sqrMagnitude > 0.001f)
+                    {
+                        Quaternion targetRot = Quaternion.LookRotation(dir);
+                        transform.rotation = Quaternion.Slerp(
+                            transform.rotation,
+                            targetRot,
+                            Time.deltaTime * 10f
+                        );
+                    }
+
+                    StartCoroutine(DoAttack());
+                    return;
+                }
+                else
+                {
+                    ChaseTarget();
+                }
                 return;
             }
 
-            // 攻撃範囲
-            if (dist <= attackRange)
+            // ターゲットを探す
+            FindHeroTarget();
+            if (m_target != null) return;
+
+            // 巡回ポイントがあれば巡回
+            if (m_waypoints != null && m_waypoints.Length > 0)
             {
-                Vector3 dir = m_target.position - transform.position;
-                dir.y = 0f;
-
-                if (dir.sqrMagnitude > 0.001f)
-                    transform.rotation = Quaternion.LookRotation(dir);
-
-                StartCoroutine(DoAttack());
+                Patrol();
                 return;
             }
 
-            // 追跡
-            ChaseTarget();
-            return;
+            // 無ければランダム歩行
+            RandomWalk();
         }
 
-        // ===== 索敵 =====
-        FindHeroTarget();
-        if (m_target != null)
-            return;
-
-        // ===== 巡回 =====
-        if (m_waypoints != null && m_waypoints.Length > 0)
-        {
-            Patrol();
-            return;
-        }
-
-        // ===== ランダム歩行 =====
-        RandomWalk();
     }
 
-    // =========================
-    // Client：移動の再生
-    // =========================
-    private void LateUpdate()
-    {
-        if (isServer) return;
-        if (agent == null) return;
-
-        if (!m_isMoving || m_isAttacking)
-        {
-            agent.isStopped = true;
-            return;
-        }
-
-        agent.isStopped = false;
-        agent.SetDestination(m_syncDestination);
-    }
-
-    // =========================
-    // WayPoint 自動取得（派生クラス用）
-    // =========================
+    // ======================================
+    //  WayPoint自動ロード
+    // ======================================
     [Server]
     protected Transform[] FindWayPoints(string rootName)
     {
         GameObject root = GameObject.Find(rootName);
-        if (root == null)
-        {
-            Debug.LogWarning($"[NPCBase] WayPoint Root '{rootName}' が見つかりません");
-            return null;
-        }
+        if (root == null) return null;
 
-        List<Transform> points = new List<Transform>();
+        List<Transform> pts = new List<Transform>();
         foreach (Transform child in root.transform)
         {
-            points.Add(child);
+            pts.Add(child);
         }
-
-        return points.ToArray();
+        return pts.ToArray();
     }
 
-    // =========================
-    // ランダム歩行（Server）
-    // =========================
+    // ======================================
+    //  ランダム歩行
+    // ======================================
     [Server]
     private void RandomWalk()
     {
         randomWalkTimer -= Time.deltaTime;
-        if (randomWalkTimer <= 0f)
+        if (randomWalkTimer <= 0)
         {
             randomWalkTimer = randomWalkInterval;
+
             randomDir = new Vector3(
                 Random.Range(-1f, 1f),
-                0f,
+                0,
                 Random.Range(-1f, 1f)
             ).normalized;
         }
 
-        Vector3 move =
-            randomDir * GetMoveSpeed() * walkSpeedMultiplier;
+        Vector3 move = randomDir * GetMoveSpeed() * walkSpeedMultiplier * Time.deltaTime;
 
-        m_syncDestination = transform.position + move;
-        m_isMoving = true;
-    }
-
-    // =========================
-    // 巡回（Server）
-    // =========================
-    [Server]
-    protected void Patrol()
-    {
-        if (m_waypoints == null || m_waypoints.Length == 0)
-            return;
-
-        Transform wp = m_waypoints[m_currentWaypoint];
-        m_syncDestination = wp.position;
-        m_isMoving = true;
-
-        if (Vector3.Distance(transform.position, wp.position) <= 1f)
+        if (agent != null && agent.isOnNavMesh)
         {
-            m_currentWaypoint =
-                (m_currentWaypoint + 1) % m_waypoints.Length;
+            // NavMesh があるなら目的地を短く指定して移動させる（少しずつ）
+            Vector3 dest = transform.position + move;
+            agent.speed = GetMoveSpeed() * walkSpeedMultiplier;
+            agent.SetDestination(dest);
+        }
+        else
+        {
+            transform.position += move;
+            if (randomDir.sqrMagnitude > 0.01f) transform.forward = randomDir;
         }
     }
 
-    // =========================
-    // 追跡（Server）
-    // =========================
+    // ======================================
+    //  巡回 WayPoint
+    // ======================================
+    [Server]
+    protected void Patrol()
+    {
+        if (m_waypoints == null || m_waypoints.Length == 0) return;
+
+        Transform wp = m_waypoints[m_currentWaypoint];
+        Vector3 dest = wp.position;
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.speed = GetMoveSpeed() * walkSpeedMultiplier;
+            agent.SetDestination(dest);
+
+            // 到達判定は NavMeshAgent の残り距離を利用（ただし agent.pathPending を考慮）
+            if (!agent.pathPending && agent.remainingDistance <= 1.0f)
+            {
+                m_currentWaypoint = (m_currentWaypoint + 1) % m_waypoints.Length;
+            }
+        }
+        else
+        {
+            Vector3 dir = (dest - transform.position).normalized;
+            transform.position += dir * GetMoveSpeed() * walkSpeedMultiplier * Time.deltaTime;
+            if (dir.sqrMagnitude > 0.01f) transform.forward = dir;
+
+            if (Vector3.Distance(transform.position, dest) < 1f)
+            {
+                m_currentWaypoint = (m_currentWaypoint + 1) % m_waypoints.Length;
+            }
+        }
+    }
+
+    // ======================================
+    // 追跡
+    // ======================================
     [Server]
     protected virtual void ChaseTarget()
     {
-        if (m_target == null)
-            return;
+        if (m_target == null) return;
 
-        m_syncDestination = m_target.position;
-        m_isMoving = true;
+        Vector3 dest = m_target.position;
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.speed = GetMoveSpeed();
+            agent.SetDestination(dest);
+        }
+        else
+        {
+            Vector3 dir = (dest - transform.position).normalized;
+            transform.position += dir * GetMoveSpeed() * Time.deltaTime;
+
+            if (dir.sqrMagnitude > 0.01f)
+                transform.forward = dir;
+        }
     }
 
-    // =========================
-    // HERO探索（Server）
-    // =========================
+
+    // ======================================
+    // HERO（プレイヤー）探索
+    // ======================================
     [Server]
     protected void FindHeroTarget()
     {
@@ -257,16 +257,15 @@ public class NPCBase : EnemyBase
             }
         }
 
-        m_target = result;
+        if (result != null)
+            m_target = result;
     }
 
-    // =========================
-    // 攻撃（派生クラス実装）
-    // =========================
+    // ======================================
+    // 攻撃（子クラスが実装）
+    // ======================================
     protected virtual IEnumerator DoAttack()
     {
-        m_isAttacking = true;
-        m_isMoving = false;
         yield break;
     }
 }

@@ -22,9 +22,7 @@ public class SphereBox_NPC : NPCBase
         base.Start();
 
         if (isServer)
-        {
             m_waypoints = FindWayPoints("SphereWayPoint");
-        }
 
         baseSpeed = GetMoveSpeed();
 
@@ -33,59 +31,45 @@ public class SphereBox_NPC : NPCBase
     }
 
     // ======================================
-    // 突撃攻撃（Server）
+    // 突撃（dash）
     // ======================================
     protected override IEnumerator DoAttack()
     {
-        if (m_isAttacking)
-            yield break;
-
+        if (m_isAttacking) yield break;
         m_isAttacking = true;
-        m_isMoving = true;
 
-        float elapsed = 0f;
+        float dashTime = dashDuration;
+
         float dashSpeed = baseSpeed * dashSpeedMultiplier;
 
-        // ★ 突撃開始時の基準位置を保持
-        Vector3 dashOrigin = transform.position;
-        Vector3 dashDir = transform.forward;
-
+        // ON
         if (m_attackCollider)
             m_attackCollider.enabled = true;
 
-        while (elapsed < dashDuration)
+        float t = 0;
+        while (t < dashTime)
         {
-            elapsed += Time.deltaTime;
-
-            // ★ 経過時間ベースで目的地を更新
-            float moveDist = dashSpeed * elapsed;
-            m_syncDestination = dashOrigin + dashDir * moveDist;
-
+            t += Time.deltaTime;
+            transform.position += transform.forward * dashSpeed * Time.deltaTime;
             yield return null;
         }
 
+        // OFF
         if (m_attackCollider)
             m_attackCollider.enabled = false;
 
-        m_isMoving = false;
         m_isAttacking = false;
     }
 
-    // ======================================
-    // 攻撃ヒット判定（Serverのみ）
-    // ======================================
+    // 攻撃判定
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (!m_isAttacking)
-            return;
+        if (!m_isAttacking) return;
 
         CharacterBase target = other.GetComponent<CharacterBase>();
-        if (target == null)
-            return;
-
-        if (target.GetCharacterType() == CharacterType.ENEMY_TYPE)
-            return;
+        if (target == null) return;
+        if (target.GetCharacterType() == CharacterType.ENEMY_TYPE) return;
 
         Attack(target);
     }

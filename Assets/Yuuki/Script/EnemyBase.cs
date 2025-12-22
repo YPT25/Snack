@@ -26,7 +26,7 @@ public class EnemyBase : CharacterBase
 
     //ダメージ演出用
     private DamegeEffect_Mokurin m_damagePerformance;
-   
+
 
 
     public virtual void Start()
@@ -76,7 +76,7 @@ public class EnemyBase : CharacterBase
     public virtual void Die()
     {
         Debug.Log($"{name} は倒れた！");
-     
+
         NetworkServer.Destroy(gameObject);
     }
 

@@ -16,13 +16,8 @@ public class DebuffNPC : NPCBase
     [Header("取り付き位置")]
     [SerializeField] private Vector3 attachOffset = new Vector3(0, 0.5f, 0);
 
-    // =========================
-    // 同期用
-    // =========================
-    [SyncVar] private bool m_isAttached = false;
-    [SyncVar] private NetworkIdentity m_attachedTargetNetId;
-
     private bool canAttach = true;
+    private CharacterBase attachedTarget;
 
     public override void Start()
     {
@@ -31,12 +26,12 @@ public class DebuffNPC : NPCBase
     }
 
     // ======================================
-    // 攻撃（Server）
+    // 攻撃処理（NPCBase から呼ばれる）
     // ======================================
     protected override IEnumerator DoAttack()
     {
-        if (m_isAttacking || m_target == null)
-            yield break;
+        if (m_isAttacking) yield break;
+        if (m_target == null) yield break;
 
         m_isAttacking = true;
 
@@ -44,7 +39,7 @@ public class DebuffNPC : NPCBase
         if (agent != null && agent.isOnNavMesh)
             agent.ResetPath();
 
-        // 飛びつき（Serverのみ物理）
+        // 飛びつき
         if (m_rb != null)
         {
             m_rb.AddForce(
@@ -53,18 +48,20 @@ public class DebuffNPC : NPCBase
             );
         }
 
+        // 衝突受付まで少し待つ
         yield return new WaitForSeconds(0.2f);
+
         m_isAttacking = false;
     }
 
     // ======================================
-    // 衝突 → 取り付き（Server）
+    // 衝突 → 取り付き
     // ======================================
-    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (!canAttach || m_isAttached)
-            return;
+        if (!isServer) return;
+        if (!canAttach) return;
+        if (attachedTarget != null) return;
 
         CharacterBase target = other.GetComponent<CharacterBase>();
         if (target == null) return;
@@ -74,14 +71,11 @@ public class DebuffNPC : NPCBase
     }
 
     // ======================================
-    // 取り付き + デバフ（Server）
+    // 取り付き + デバフ
     // ======================================
-    [Server]
     private IEnumerator AttachAndDebuff(CharacterBase target)
     {
-        canAttach = false;
-        m_isAttached = true;
-        m_attachedTargetNetId = target.netIdentity;
+        attachedTarget = target;
 
         // ターゲット行動停止
         target.SetIsMove(false);
@@ -93,13 +87,20 @@ public class DebuffNPC : NPCBase
         m_rb.isKinematic = true;
         m_rb.useGravity = false;
 
-        // Client に見た目同期
-        RpcAttach(target.netIdentity);
+        // 頭へ吸着
+        Transform head = target.transform.Find("HeadPoint");
+        if (head == null) head = target.transform;
+
+        transform.SetParent(head, false);
+        transform.localPosition = attachOffset;
+        transform.localRotation = Quaternion.identity;
 
         float timer = 0f;
         while (timer < debuffDuration)
         {
             target.Damage(damageAmount);
+            target.RpcDamage(damageAmount);
+
             timer += damageInterval;
             yield return new WaitForSeconds(damageInterval);
         }
@@ -111,8 +112,7 @@ public class DebuffNPC : NPCBase
         target.RpcSetIsAttack(true);
 
         // 離脱
-        RpcDetach();
-
+        transform.SetParent(null);
         m_rb.isKinematic = false;
         m_rb.useGravity = true;
 
@@ -122,35 +122,10 @@ public class DebuffNPC : NPCBase
 
         m_rb.AddForce(pushDir, ForceMode.Impulse);
 
-        m_isAttached = false;
-        m_attachedTargetNetId = null;
+        attachedTarget = null;
 
+        // クールタイム
         yield return new WaitForSeconds(1f);
         canAttach = true;
-    }
-
-    // ======================================
-    // Client：取り付き再生
-    // ======================================
-    [ClientRpc]
-    private void RpcAttach(NetworkIdentity targetNetId)
-    {
-        if (targetNetId == null) return;
-
-        Transform head = targetNetId.transform.Find("HeadPoint");
-        if (head == null) head = targetNetId.transform;
-
-        transform.SetParent(head, false);
-        transform.localPosition = attachOffset;
-        transform.localRotation = Quaternion.identity;
-    }
-
-    // ======================================
-    // Client：離脱再生
-    // ======================================
-    [ClientRpc]
-    private void RpcDetach()
-    {
-        transform.SetParent(null);
     }
 }
