@@ -9,6 +9,11 @@ public class BWStartManager : NetworkBehaviour
     [Tooltip("BWStartButton をすべてアタッチする")]
     [SerializeField] private List<BWStartButton> _BWButton = new List<BWStartButton>();
 
+    public string nextSceneName = "YourNextSceneName"; // 遷移先のシーン名
+
+    //シーン遷移するか
+    private bool isTrigger = false;
+
     // Start is called before the first frame update
     public override void OnStartServer()
     {
@@ -69,5 +74,34 @@ public class BWStartManager : NetworkBehaviour
     {
         // 実際の開始処理はここに書く
         Debug.Log("バトルロワイヤル開始！");
+
+        // 全てのクライアントにフェードアウトとシーン遷移を指示する
+        RpcRequestSceneChange();
+        //トリガーを発動させる
+        isTrigger = true;
+    }
+
+    // クライアントでフェードアウトとシーン遷移を開始するRPC
+    [ClientRpc]
+    void RpcRequestSceneChange()
+    {
+        if (FadeManager.Instance != null)
+        {
+            // フェードアウトとシーン遷移を開始
+            // コルーチンはモノビヘイビアからしか実行できないため、FadeManagerのInstanceから呼び出す
+            StartCoroutine(FadeManager.Instance.FadeOutAndLoadScene(nextSceneName));
+        }
+        else
+        {
+            Debug.LogError("FadeManager.Instance not found! Make sure FadeManager is on an active Canvas and has been initialized.");
+            // フェードマネージャーが見つからない場合でも、シーン遷移だけは試みる（フェードなし）
+            if (isServer)
+            {
+                NetworkManager.singleton.ServerChangeScene(nextSceneName);
+            }
+        }
+        // プレイヤー番号をリセット
+        ((AshuriNetworkManager)NetworkManager.singleton).PlayerNumberReset();
+
     }
 }
