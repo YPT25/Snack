@@ -125,10 +125,10 @@ public class BuffManager_Tanabe : NetworkBehaviour
         {
             case Buff.BuffType.HEAL_MULTIPLE:
                 {
-                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing());
+                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_Healing().transform.rotation, m_playerData.transform);
                     NetworkServer.Spawn(obj);
-                    obj.transform.parent = m_playerData.transform;
-                    obj.transform.localPosition = new Vector3(0f, -1f, 0f);
+                    //obj.transform.parent = m_playerData.transform;
+                    //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
                     RpcHeal_Multiple(obj);
                     break;
                 }
@@ -139,27 +139,27 @@ public class BuffManager_Tanabe : NetworkBehaviour
                     // 1～3の間でランダムな値を取得し、1なら通す
                     if (randNum == 1)
                     {
-                        obj = Instantiate(m_effectGenerator.GetEffect_PowerDown());
+                        obj = Instantiate(m_effectGenerator.GetEffect_PowerDown(), m_playerData.transform.position + new Vector3(0f, 1f, 0f), m_effectGenerator.GetEffect_PowerDown().transform.rotation, m_playerData.transform);
                         NetworkServer.Spawn(obj);
-                        obj.transform.parent = m_playerData.transform;
-                        obj.transform.localPosition = new Vector3(0f, 1f, 0f);
+                        //obj.transform.parent = m_playerData.transform;
+                        //obj.transform.localPosition = new Vector3(0f, 1f, 0f);
                     }
                     else
                     {
-                        obj = Instantiate(m_effectGenerator.GetEffect_PowerUp());
+                        obj = Instantiate(m_effectGenerator.GetEffect_PowerUp(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_PowerUp().transform.rotation, m_playerData.transform);
                         NetworkServer.Spawn(obj);
-                        obj.transform.parent = m_playerData.transform;
-                        obj.transform.localPosition = new Vector3(0f, -1f, 0f);
+                        //obj.transform.parent = m_playerData.transform;
+                        //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
                     }
                     RpcPowerUp(obj, randNum);
                     break;
                 }
             case Buff.BuffType.SPEED_UP:
                 {
-                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_SpeedUp());
+                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_SpeedUp(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_SpeedUp().transform.rotation, m_playerData.transform);
                     NetworkServer.Spawn(obj);
-                    obj.transform.parent = m_playerData.transform;
-                    obj.transform.localPosition = new Vector3(0f, -1f, 0f);
+                    //obj.transform.parent = m_playerData.transform;
+                    //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
                     RpcSpeedUp(obj);
                     break;
                 }
@@ -180,13 +180,17 @@ public class BuffManager_Tanabe : NetworkBehaviour
     [ClientRpc]
     public void RpcHeal_Multiple(GameObject _effect)
     {
-        if (m_playerData == null) { return; }
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+            if(m_playerData == null) { return; }
+        }
         if (_effect == null) { return; }
 
         //GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing());
         //NetworkServer.Spawn(obj);
-        _effect.transform.parent = m_playerData.transform;
-        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        //_effect.transform.parent = m_playerData.transform;
+        //_effect.transform.localPosition = new Vector3(0f, -1f, 0f);
         if(!this.isLocalPlayer) { return; }
 
         Buff buff = new Buff();
@@ -212,20 +216,24 @@ public class BuffManager_Tanabe : NetworkBehaviour
     [ClientRpc]
     public void RpcPowerUp(GameObject _effect, int randNum)
     {
-        if (m_playerData == null) { return; }
-        if(_effect == null) { return; }
-
-        _effect.transform.parent = m_playerData.transform;
-
-        // 1～3の間でランダムな値を取得し、1なら通す
-        if (randNum == 1)
+        if (m_playerData == null)
         {
-            _effect.transform.localPosition = new Vector3(0f, 1f, 0f);
+            m_playerData = GetComponent<Player_Tanabe>();
+            if (m_playerData == null) { return; }
         }
-        else
-        {
-            _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
-        }
+        if (_effect == null) { return; }
+
+        //_effect.transform.parent = m_playerData.transform;
+
+        //// 1～3の間でランダムな値を取得し、1なら通す
+        //if (randNum == 1)
+        //{
+        //    _effect.transform.localPosition = new Vector3(0f, 1f, 0f);
+        //}
+        //else
+        //{
+        //    _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        //}
 
         if(!this.isLocalPlayer) { return; }
 
@@ -254,11 +262,15 @@ public class BuffManager_Tanabe : NetworkBehaviour
     [ClientRpc]
     public void RpcSpeedUp(GameObject _effect)
     {
-        if (m_playerData == null) { return; }
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+            if (m_playerData == null) { return; }
+        }
         if (_effect == null) { return; }
 
-        _effect.transform.parent = m_playerData.transform;
-        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        //_effect.transform.parent = m_playerData.transform;
+        //_effect.transform.localPosition = new Vector3(0f, -1f, 0f);
         if (!this.isLocalPlayer) { return; }
 
         Buff buff = new Buff();

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6822055061546214805}
   - component: {fileID: 8341595918109518789}
   - component: {fileID: 3062052805843123223}
+  - component: {fileID: 230356101125996397}
   m_Layer: 0
   m_Name: HitHammerEffect
   m_TagString: Untagged
@@ -4883,3 +4884,16 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &230356101125996397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5626000664429399749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72847d866b4aea448ba3f2bcbd96173e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RENDERTIME: 2

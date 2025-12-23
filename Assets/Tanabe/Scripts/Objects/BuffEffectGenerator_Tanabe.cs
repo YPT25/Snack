@@ -1,8 +1,9 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuffEffectGenerator_Tanabe : MonoBehaviour
+public class BuffEffectGenerator_Tanabe : NetworkBehaviour
 {
     [SerializeField] private GameObject m_powerUp;
     [SerializeField] private GameObject m_powerDown;
