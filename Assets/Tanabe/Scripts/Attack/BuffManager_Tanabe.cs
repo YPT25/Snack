@@ -29,10 +29,6 @@ public class BuffManager_Tanabe : NetworkBehaviour
     private List<Buff> m_buffs = new List<Buff>();
     Player_Tanabe m_playerData;
     BuffEffectGenerator_Tanabe m_effectGenerator;
-    [SerializeField] private GameObject m_powerUp;
-    [SerializeField] private GameObject m_powerDown;
-    [SerializeField] private GameObject m_speedUp;
-    [SerializeField] private GameObject m_healing;
 
 
     // Start is called before the first frame update
@@ -130,8 +126,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
         {
             case Buff.BuffType.HEAL_MULTIPLE:
                 {
-                    //GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_Healing().transform.rotation, m_playerData.transform);
-                    GameObject obj = Instantiate(m_healing, m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_healing.transform.rotation, m_playerData.transform);
+                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_Healing().transform.rotation, m_playerData.transform);
                     NetworkServer.Spawn(obj);
                     //obj.transform.parent = m_playerData.transform;
                     //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
@@ -145,16 +140,14 @@ public class BuffManager_Tanabe : NetworkBehaviour
                     // 1Å`3ÇÃä‘Ç≈ÉâÉìÉ_ÉÄÇ»ílÇéÊìæÇµÅA1Ç»ÇÁí Ç∑
                     if (randNum == 1)
                     {
-                        //obj = Instantiate(m_effectGenerator.GetEffect_PowerDown(), m_playerData.transform.position + new Vector3(0f, 1f, 0f), m_effectGenerator.GetEffect_PowerDown().transform.rotation, m_playerData.transform);
-                        obj = Instantiate(m_powerDown, m_playerData.transform.position + new Vector3(0f, 1f, 0f), m_powerDown.transform.rotation, m_playerData.transform);
+                        obj = Instantiate(m_effectGenerator.GetEffect_PowerDown(), m_playerData.transform.position + new Vector3(0f, 1f, 0f), m_effectGenerator.GetEffect_PowerDown().transform.rotation, m_playerData.transform);
                         NetworkServer.Spawn(obj);
                         //obj.transform.parent = m_playerData.transform;
                         //obj.transform.localPosition = new Vector3(0f, 1f, 0f);
                     }
                     else
                     {
-                        //obj = Instantiate(m_effectGenerator.GetEffect_PowerUp(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_PowerUp().transform.rotation, m_playerData.transform);
-                        obj = Instantiate(m_powerUp, m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_powerUp.transform.rotation, m_playerData.transform);
+                        obj = Instantiate(m_effectGenerator.GetEffect_PowerUp(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_PowerUp().transform.rotation, m_playerData.transform);
                         NetworkServer.Spawn(obj);
                         //obj.transform.parent = m_playerData.transform;
                         //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
@@ -164,7 +157,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
                 }
             case Buff.BuffType.SPEED_UP:
                 {
-                    GameObject obj = Instantiate(m_speedUp, m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_speedUp.transform.rotation, m_playerData.transform);
+                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_SpeedUp(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_SpeedUp().transform.rotation, m_playerData.transform);
                     NetworkServer.Spawn(obj);
                     //obj.transform.parent = m_playerData.transform;
                     //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
