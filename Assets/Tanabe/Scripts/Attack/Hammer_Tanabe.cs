@@ -338,7 +338,7 @@ public class Hammer_Tanabe : NetworkBehaviour
         RaycastHit hit;
 
         // ’…’n”»’èˆ—
-        bool isGrounded = Physics.Raycast(_hammerHeadPosition, Vector3.down, out hit, 2.1f, 9);
+        bool isGrounded = Physics.Raycast(_hammerHeadPosition + new Vector3(0f, 1f, 0f), Vector3.down, out hit, 3.1f, 9);
 
         if (!isGrounded) { return; }
 
