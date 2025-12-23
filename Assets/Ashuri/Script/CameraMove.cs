@@ -5,27 +5,27 @@ using Mirror;
 
 public class CameraMove : NetworkBehaviour
 {
-    [Header("移動速度の設定")]
-    [Tooltip("プレイヤーの移動速度を調整します")]
+    [Header("移動速度")]
+    [Tooltip("カメラの向きに沿って移動する速度")]
     public float moveSpeed = 5f;
 
-    [Header("マウス感度の設定")]
-    [Tooltip("マウスで視点を回転させる速度を調整します")]
+    [Header("マウス感度")]
+    [Tooltip("マウス視点操作の感度")]
     public float mouseSensitivity = 3f;
 
-    // 縦方向の回転角度（カメラ用）
+    // カメラの上下回転角度
     private float rotationX = 0f;
 
-    // 横方向の回転角度（プレイヤー用）
+    // プレイヤーの左右回転角度
     private float rotationY = 0f;
 
-    // カメラ参照
+    // プレイヤー用カメラ
     private Camera playerCamera;
 
-    // 開始時の処理
+    // 開始時に一度だけ呼ばれる
     void Start()
     {
-        // ローカルプレイヤーでなければ何もしない
+        // ローカルプレイヤーでなければ処理しない
         if (!isLocalPlayer) return;
 
         // メインカメラを取得
@@ -34,10 +34,10 @@ public class CameraMove : NetworkBehaviour
         // カメラが存在するか確認
         if (playerCamera != null)
         {
-            // カメラをプレイヤーの子にする
+            // カメラをプレイヤーの子に設定
             playerCamera.transform.SetParent(transform);
 
-            // カメラの位置を設定
+            // カメラの位置を頭の高さに設定
             playerCamera.transform.localPosition = new Vector3(0f, 1.6f, 0f);
 
             // カメラの回転を初期化
@@ -57,56 +57,65 @@ public class CameraMove : NetworkBehaviour
         // ローカルプレイヤーでなければ処理しない
         if (!isLocalPlayer) return;
 
+        // 視点操作
+        Look();
+
         // 移動処理
         Move();
-
-        // 視点回転処理
-        Look();
     }
 
-    // プレイヤーの移動処理
-    void Move()
-    {
-        // 横移動入力を取得
-        float moveX = Input.GetAxis("Horizontal");
-
-        // 前後移動入力を取得
-        float moveZ = Input.GetAxis("Vertical");
-
-        // 移動方向を計算
-        Vector3 move =
-            transform.right * moveX +
-            transform.forward * moveZ;
-
-        // プレイヤーを移動させる
-        transform.position += move * moveSpeed * Time.deltaTime;
-    }
-
-    // 視点回転処理
+    // マウスで視点を操作する処理
     void Look()
     {
-        // マウスの横移動量を取得
+        // マウスの左右移動量を取得
         float mouseX = Input.GetAxis("Camera X") * mouseSensitivity;
 
-        // マウスの縦移動量を取得
+        // マウスの上下移動量を取得
         float mouseY = Input.GetAxis("Camera Y") * mouseSensitivity;
 
-        // 横回転を加算（プレイヤー）
+        // プレイヤーの左右回転を加算
         rotationY += mouseX;
 
-        // 縦回転を加算（カメラ）
+        // カメラの上下回転を加算
         rotationX -= mouseY;
 
-        // 縦回転の制限
-        rotationX = Mathf.Clamp(rotationX, -80f, 80f);
+        // 上下の回転制限
+        rotationX = Mathf.Clamp(rotationX, -85f, 85f);
 
-        // プレイヤーの横回転を適用
+        // プレイヤー本体を左右に回転
         transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
 
-        // カメラの縦回転を適用
+        // カメラを上下に回転
         if (playerCamera != null)
         {
             playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0f, 0f);
         }
+    }
+
+    // カメラの向いている方向へ移動する処理
+    void Move()
+    {
+        // 前後入力を取得（W / S）
+        float moveZ = Input.GetAxis("Vertical");
+
+        // 左右入力を取得（A / D）
+        float moveX = Input.GetAxis("Horizontal");
+
+        // カメラの向いている前方向（上下成分を含む）
+        Vector3 forward = playerCamera.transform.forward;
+
+        // カメラ基準の右方向
+        Vector3 right = playerCamera.transform.right;
+
+        // 移動方向を計算（上下方向も含まれる）
+        Vector3 moveDirection =
+            forward * moveZ +
+            right * moveX;
+
+        // 斜め移動時の速度を一定にする
+        moveDirection.Normalize();
+
+        // プレイヤーを移動させる
+        transform.position += moveDirection * moveSpeed * Time.deltaTime;
     }
 }
