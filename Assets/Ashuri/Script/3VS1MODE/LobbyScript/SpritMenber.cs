@@ -26,12 +26,22 @@ public class SpritMenber : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        if(_redPlayer || _whitePlayer)
+        {
+            Debug.LogError("画像が入っていません");
+        }
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        
+        // 上の処理：人数をチェックして同期文字列を更新するのはサーバーだけ
+        if (isServer)
+        {
+            // 上の処理：触れている人数を取得
+            int count = _targetCheck.GetTouchPlayerCount();
+
+            // 参加可能な人数を取得
+            maxMenber = NetworkManager.singleton.numPlayers - 1;
+        }
     }
 }
