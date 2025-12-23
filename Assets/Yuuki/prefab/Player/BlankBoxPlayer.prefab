@@ -311,7 +311,7 @@ MonoBehaviour:
   m_enemyType: 4
   mouseSensitivity: 3
   rotationSmooth: 10
-  m_respawnIcon: {fileID: 21300000, guid: d0d5ac316655cce499f0e4289f879d49, type: 3}
+  m_respawnIcon: {fileID: 21300000, guid: 3581fa6edcbddfd46b3acd0381e3e522, type: 3}
   padSensitivityMultiplier: 20
   padDeadZone: 0.02
   padInvertY: 1

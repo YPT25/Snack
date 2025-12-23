@@ -179,6 +179,8 @@ GameObject:
   - component: {fileID: 3007194824742831071}
   - component: {fileID: -4968568811902704172}
   - component: {fileID: 6930088318945493636}
+  - component: {fileID: -672703447325072246}
+  - component: {fileID: -2210424290129687386}
   m_Layer: 7
   m_Name: ColorPlayer_Hammer
   m_TagString: Player
@@ -484,6 +486,38 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   modeID: 0
+--- !u!114 &-672703447325072246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f5bbf5ab50cdff45b0bae2c799c3482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _firstGameObject: {fileID: 8269363491708444832, guid: dc50908c290bfe743ba9bba8e6826a2d, type: 3}
+--- !u!114 &-2210424290129687386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676404720595789358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc5a2de6cb3581a43b68450db08ab791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  cameraObject: {fileID: 8204045488749284168, guid: 176dcd954aa337a4d8865d531b98288f, type: 3}
 --- !u!1 &1153856765182049181
 GameObject:
   m_ObjectHideFlags: 0
