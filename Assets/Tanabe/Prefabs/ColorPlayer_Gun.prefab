@@ -45879,6 +45879,8 @@ GameObject:
   - component: {fileID: 1361106765907010299}
   - component: {fileID: -4856608573071777273}
   - component: {fileID: 6802426744178194692}
+  - component: {fileID: 8904994102976441075}
+  - component: {fileID: 6898448243414622521}
   m_Layer: 7
   m_Name: ColorPlayer_Gun
   m_TagString: Player
@@ -46184,3 +46186,35 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   modeID: 0
+--- !u!114 &8904994102976441075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8759962040556672278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f5bbf5ab50cdff45b0bae2c799c3482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _firstGameObject: {fileID: 8269363491708444832, guid: dc50908c290bfe743ba9bba8e6826a2d, type: 3}
+--- !u!114 &6898448243414622521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8759962040556672278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc5a2de6cb3581a43b68450db08ab791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  cameraObject: {fileID: 8204045488749284168, guid: 176dcd954aa337a4d8865d531b98288f, type: 3}

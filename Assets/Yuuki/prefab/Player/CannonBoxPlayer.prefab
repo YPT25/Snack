@@ -219,7 +219,7 @@ MonoBehaviour:
   m_enemyType: 3
   mouseSensitivity: 3
   rotationSmooth: 10
-  m_respawnIcon: {fileID: 21300000, guid: 1d46f7e1e8fe9d34ab38818ac28bf9a4, type: 3}
+  m_respawnIcon: {fileID: 21300000, guid: 13ed4099f6058414a94f4fca772e707f, type: 3}
   padSensitivityMultiplier: 20
   padDeadZone: 0.02
   padInvertY: 1
@@ -228,10 +228,14 @@ MonoBehaviour:
   tpsCameraOffset: {x: 0, y: 2, z: -4}
   tpsFOV: 60
   fpsFOV: 75
-  firePoint: {fileID: 2061603932756944405}
   projectilePrefab: {fileID: 4539971892963465637, guid: 99e3d69abb80f1b498edb5bfd5589fd3, type: 3}
-  shootForce: 20
-  attackInterval: 0.6
+  muzzlePoint: {fileID: 0}
+  aimLine: {fileID: 0}
+  crossHair: {fileID: 0}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  projectileSpeed: 20
+  attackCooldown: 1
 --- !u!114 &371115018838538527
 MonoBehaviour:
   m_ObjectHideFlags: 0
