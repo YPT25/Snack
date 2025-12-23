@@ -315,7 +315,7 @@ public class Player_Tanabe : CharacterBase
             isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
         }
         // HPが0またはポーズ状態のとき、これ以上処理しない
-        if (GetHp() <= 0.0f || m_gameOption != null && m_gameOption.IsPause()) { return; }
+        if (GetHp() <= 0.0f || m_headObject == null || m_gameOption != null && m_gameOption.IsPause()) { return; }
         // カメラの方向の共有
         m_notLocalCameraForward = m_cameraTransform.forward;
         if (Input.GetKeyDown(KeyCode.P) && m_isDebugMode)
@@ -414,7 +414,7 @@ public class Player_Tanabe : CharacterBase
         // ローカルプレイヤー以外は処理しない
         if (!this.isLocalPlayer) { return; }
         // HPが0なら処理しない
-        if (GetHp() <= 0.0f) { return; }
+        if (GetHp() <= 0.0f || m_headObject == null) { return; }
         // ポーズ状態なら通す
         if (m_gameOption != null && m_gameOption.IsPause())
         {
