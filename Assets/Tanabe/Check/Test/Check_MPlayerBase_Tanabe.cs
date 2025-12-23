@@ -192,10 +192,10 @@ public class Check_MPlayerBase_Tanabe : EnemyBase
     [TargetRpc]
     private void TargetShowRespawnUI(NetworkConnection target)
     {
-        if (RespawnManager.Instance != null)
-            RespawnManager.Instance.ShowRespawnUI();
-        else
-            Debug.LogWarning("RespawnManager ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+        //if (RespawnManager.Instance != null)
+        //    RespawnManager.Instance.ShowRespawnUI();
+        //else
+        //    Debug.LogWarning("RespawnManager ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
     }
 
     [ClientRpc]
