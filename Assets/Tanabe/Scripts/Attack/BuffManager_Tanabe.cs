@@ -53,6 +53,8 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
         for (int i = 0; i < m_buffs.Count; i++)
         {
+            this.CmdSetBuffPosition(m_buffs[i].auraBuff, m_buffs[i].auraBuff.transform.position);
+
             if (!m_buffs[i].isUse) { continue; }
 
             // Œø‰ÊŽžŠÔ‚ÌƒJƒEƒ“ƒg
@@ -194,6 +196,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
         //_effect.transform.localPosition = new Vector3(0f, -1f, 0f);
         if(!this.isLocalPlayer) { return; }
 
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+        }
+
+        if (_effect.transform.parent == null)
+        {
+            _effect.transform.parent = m_playerData.transform;
+        }
+
         Buff buff = new Buff();
         buff.buffType = Buff.BuffType.HEAL_MULTIPLE;
 
@@ -238,6 +250,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
         if(!this.isLocalPlayer) { return; }
 
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+        }
+
+        if (_effect.transform.parent == null)
+        {
+            _effect.transform.parent = m_playerData.transform;
+        }
+
         Buff buff = new Buff();
         buff.buffType = Buff.BuffType.POWER_UP;
 
@@ -270,6 +292,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
         }
         if (_effect == null) { return; }
 
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+        }
+
+        if (_effect.transform.parent == null)
+        {
+            _effect.transform.parent = m_playerData.transform;
+        }
+
         //_effect.transform.parent = m_playerData.transform;
         //_effect.transform.localPosition = new Vector3(0f, -1f, 0f);
         if (!this.isLocalPlayer) { return; }
@@ -290,5 +322,32 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
         AddBuff(buff);
         m_playerData.SetMoveSpeed(m_playerData.GetDefaultMoveSpeed() + buff.value);
+    }
+
+    public void SetBuffPosition(GameObject _effect, Vector3 _pos)
+    {
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+        }
+
+        if(_effect.transform.parent == null)
+        {
+            _effect.transform.parent = m_playerData.transform;
+        }
+
+        _effect.transform.position = _pos;
+    }
+
+    [Command]
+    public void CmdSetBuffPosition(GameObject _effect, Vector3 _pos)
+    {
+        this.RpcSetBuffPosition(_effect, _pos);
+    }
+
+    [ClientRpc]
+    public void RpcSetBuffPosition(GameObject _effect, Vector3 _pos)
+    {
+        this.SetBuffPosition(_effect, _pos);
     }
 }

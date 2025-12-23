@@ -186,6 +186,7 @@ public class CharacterBase : NetworkBehaviour
     // HP‚Ìİ’è
     public virtual void SetHp(float _hp)
     {
+        if(m_hp <= 0) { return; }
         m_hp = Mathf.Min(Mathf.Max(0.0f, _hp), GetMaxHP());
     }
 
