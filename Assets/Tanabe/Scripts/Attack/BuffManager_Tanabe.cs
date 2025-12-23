@@ -55,13 +55,6 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
         for (int i = 0; i < m_buffs.Count; i++)
         {
-            Vector3 posAdjustment = new Vector3(0f, -1f, 0f);
-            if (m_buffs[i].value < 0f)
-            {
-                posAdjustment = new Vector3(0f, 1f, 0f);
-            }
-            this.CmdSetBuffPosition(m_buffs[i].auraBuff, playerPosition + posAdjustment);
-
             if (!m_buffs[i].isUse) { continue; }
 
             // 効果時間のカウント
@@ -75,7 +68,17 @@ public class BuffManager_Tanabe : NetworkBehaviour
             // 効果時間が切れたらバフを失う
             if (m_buffs[i].duration <= 0.0f)
             {
+                m_buffs[i].isUse = false;
                 BuffLost(m_buffs[i]);
+            }
+            else
+            {
+                Vector3 posAdjustment = new Vector3(0f, -1f, 0f);
+                if (m_buffs[i].value < 0f)
+                {
+                    posAdjustment = new Vector3(0f, 1f, 0f);
+                }
+                this.CmdSetBuffPosition(m_buffs[i].auraBuff, playerPosition + posAdjustment);
             }
         }
     }
@@ -199,9 +202,9 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
         //GameObject obj = Instantiate(m_effectGenerator.GetEffect_Healing());
         //NetworkServer.Spawn(obj);
-        //_effect.transform.parent = m_playerData.transform;
-        //_effect.transform.localPosition = new Vector3(0f, -1f, 0f);
-        if(!this.isLocalPlayer) { return; }
+        _effect.transform.parent = m_playerData.transform;
+        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        if (!this.isLocalPlayer) { return; }
 
         if (m_playerData == null)
         {
@@ -243,7 +246,12 @@ public class BuffManager_Tanabe : NetworkBehaviour
         }
         if (_effect == null) { return; }
 
-        //_effect.transform.parent = m_playerData.transform;
+        _effect.transform.parent = m_playerData.transform;
+        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        if (randNum == 1)
+        {
+            _effect.transform.localPosition = new Vector3(0f, 1f, 0f);
+        }
 
         //// 1～3の間でランダムな値を取得し、1なら通す
         //if (randNum == 1)
@@ -255,7 +263,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
         //    _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
         //}
 
-        if(!this.isLocalPlayer) { return; }
+        if (!this.isLocalPlayer) { return; }
 
         if (m_playerData == null)
         {
@@ -309,8 +317,8 @@ public class BuffManager_Tanabe : NetworkBehaviour
             _effect.transform.parent = m_playerData.transform;
         }
 
-        //_effect.transform.parent = m_playerData.transform;
-        //_effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        _effect.transform.parent = m_playerData.transform;
+        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
         if (!this.isLocalPlayer) { return; }
 
         Buff buff = new Buff();

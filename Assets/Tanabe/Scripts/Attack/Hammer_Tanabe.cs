@@ -190,6 +190,11 @@ public class Hammer_Tanabe : NetworkBehaviour
             case global::SetPart_Tanabe.PartType.LONGBARREL:
                 {
                     transform.localRotation = Quaternion.Lerp(m_defaultRotation2, m_attackRotation2, m_attackTimer);
+
+                    if (m_attackTimer >= 1.0f)
+                    {
+                        ExitAttack();
+                    }
                     break;
                 }
             case global::SetPart_Tanabe.PartType.SHARPBULLET:
@@ -236,6 +241,16 @@ public class Hammer_Tanabe : NetworkBehaviour
             case global::SetPart_Tanabe.PartType.LONGBARREL:
                 {
                     transform.localRotation = Quaternion.Lerp(m_attackRotation2, m_defaultRotation2, m_attackTimer - 1.0f);
+
+                    if (m_attackTimer >= 2.0f)
+                    {
+                        CmdSetAttackColliderEnabled(false);
+
+                        m_attackTimer = 0.0f;
+                        m_isAttack = false;
+                        m_isExitAttack = false;
+                        m_player.ChangeState(new IdleState(m_player));
+                    }
                     break;
                 }
             case global::SetPart_Tanabe.PartType.SHARPBULLET:

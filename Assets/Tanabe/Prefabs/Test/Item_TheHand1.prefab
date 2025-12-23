@@ -263,9 +263,9 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 192
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -287,7 +287,8 @@ GameObject:
   - component: {fileID: 7072487557364957996}
   - component: {fileID: 5411531306446331450}
   - component: {fileID: 7889362672332249517}
-  - component: {fileID: 247996793869308895}
+  - component: {fileID: 6303037877546611717}
+  - component: {fileID: 5474682831288790977}
   m_Layer: 6
   m_Name: Item_TheHand1
   m_TagString: Untagged
@@ -377,6 +378,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_itemType: 3
+  m_itemNameID: 0
   moveSpeed: 8
   rotateSpeed: 30
   m_point: 0
@@ -433,7 +435,7 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &247996793869308895
+--- !u!114 &6303037877546611717
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -442,7 +444,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8172510182796174572}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75d7fc752219a7b4fbb5801403cbeba2, type: 3}
+  m_Script: {fileID: 11500000, guid: eca3b8daaa661d24a9bd4fbf490a1365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncDirection: 0
@@ -451,4 +453,23 @@ MonoBehaviour:
   m_head: {fileID: 3196581703702979656}
   m_body: {fileID: 112726969087876597}
   m_foot: {fileID: 2542383860537621475}
-  m_attractPower: 40
+  m_attractPower: 80
+--- !u!114 &5474682831288790977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172510182796174572}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75d7fc752219a7b4fbb5801403cbeba2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  m_head: {fileID: 0}
+  m_body: {fileID: 0}
+  m_foot: {fileID: 0}
+  m_attractPower: 0
