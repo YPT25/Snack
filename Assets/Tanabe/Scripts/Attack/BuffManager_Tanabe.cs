@@ -333,6 +333,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
     public void SetBuffPosition(GameObject _effect, Vector3 _pos)
     {
+        if(_effect.transform.parent != null) { return; }
         if (m_playerData == null)
         {
             m_playerData = GetComponent<Player_Tanabe>();
