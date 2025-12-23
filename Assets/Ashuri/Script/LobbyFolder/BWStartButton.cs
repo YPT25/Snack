@@ -7,7 +7,7 @@ public class BWStartButton : MonoBehaviour
     // ƒvƒŒƒCƒ„[‚ªæ‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
     private bool isGetOn = false;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if(other.gameObject.CompareTag("Player"))
         {
