@@ -29,7 +29,7 @@ public class MPlayerBase : EnemyBase
     protected Camera cam;
 
     private bool isInitialized = false;
-    [SyncVar] private bool isDead = false;
+    private bool isDead = false;
     public bool iscanMove = true;
 
     // ===== FPS視点用 =====
@@ -64,7 +64,7 @@ public class MPlayerBase : EnemyBase
         yield return new WaitForSeconds(0.3f);
         isInitialized = true;
         Debug.Log($"[MPlayerBase] {name}: Initialize完了 (isLocalPlayer={isLocalPlayer})");
-
+        Debug.Log($"[Server] CmdRequestRespawn called. TETETET");
         // LegacyInputHelper のパッド設定を同期（エディタでここを変えられる）
         LegacyInputHelper.padSensitivityMultiplier = padSensitivityMultiplier;
         LegacyInputHelper.padDeadZone = padDeadZone;
@@ -240,10 +240,6 @@ public class MPlayerBase : EnemyBase
         if (isDead) return;
         isDead = true;
 
-        Debug.Log($"{name} が死亡。リスポーンUI表示へ");
-
-        RpcSetDeadState(true);
-
         TargetShowRespawnUI(connectionToClient);
     }
 
@@ -254,9 +250,9 @@ public class MPlayerBase : EnemyBase
         Cursor.visible = true;
 
         if (RespawnManager.Instance != null)
-            RespawnManager.Instance.ShowRespawnUI();
+            RespawnManager.Instance.Show(this);
         else
-            Debug.LogWarning("RespawnManager が見つかりません");
+            Debug.LogError("RespawnManager が Client に存在しません");
     }
 
     [ClientRpc]
@@ -264,6 +260,14 @@ public class MPlayerBase : EnemyBase
     {
         if (value && m_rb != null)
             m_rb.velocity = Vector3.zero;
+    }
+
+
+    [Command]
+    public void CmdRequestRespawn(EnemyType type)
+    {
+        Debug.Log($"[Server] CmdRequestRespawn called. type={type}");
+        RespawnSystem.ServerRespawn(connectionToClient, type);
     }
 
     protected virtual void OnAttackInput()
