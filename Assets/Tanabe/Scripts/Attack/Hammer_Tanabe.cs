@@ -96,6 +96,7 @@ public class Hammer_Tanabe : NetworkBehaviour
         // 攻撃始めの動き
         if (m_attackTimer <= 1.0f)
         {
+            float prevAttackTimer = m_attackTimer;
             if (m_isBattleMode)
             {
                 m_attackTimer += Time.deltaTime * 4.0f * 1.5f;
@@ -113,7 +114,7 @@ public class Hammer_Tanabe : NetworkBehaviour
             this.AttackMotion();
 
             // 攻撃判定を有効にするタイミング
-            if (m_attackTimer >= 0.3f && m_attackTimer - Time.deltaTime * 4.0f <= 0.3f)
+            if (m_attackTimer >= 0.0f && prevAttackTimer <= 0.1f)
             {
                 CmdSetAttackColliderEnabled(true);
             }
