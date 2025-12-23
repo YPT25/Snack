@@ -51,9 +51,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
     {
         if(!this.isLocalPlayer) { return; }
 
+        Vector3 playerPosition = m_playerData.transform.position;
+
         for (int i = 0; i < m_buffs.Count; i++)
         {
-            this.CmdSetBuffPosition(m_buffs[i].auraBuff, m_buffs[i].auraBuff.transform.position);
+            Vector3 posAdjustment = new Vector3(0f, -1f, 0f);
+            if (m_buffs[i].value < 0f)
+            {
+                posAdjustment = new Vector3(0f, 1f, 0f);
+            }
+            this.CmdSetBuffPosition(m_buffs[i].auraBuff, playerPosition + posAdjustment);
 
             if (!m_buffs[i].isUse) { continue; }
 
