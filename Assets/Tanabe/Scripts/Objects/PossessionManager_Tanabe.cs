@@ -224,6 +224,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
     [ClientRpc]
     private void RpcSetItemActive(GameObject _item, bool _flag)
     {
+        if(!_item) { return; }
         _item.SetActive(_flag);
     }
 
