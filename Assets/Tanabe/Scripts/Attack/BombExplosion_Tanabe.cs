@@ -175,6 +175,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
     [ClientRpc]
     private void RpcAddExplosionForce(GameObject _gameObject, float _force, Vector3 _position, float _radius, float _upwardsModifier, ForceMode _forceMode)
     {
+        if(!_gameObject) { return; }
         _gameObject.GetComponent<Rigidbody>().AddExplosionForce(_force, _position, _radius, _upwardsModifier, _forceMode);
     }
 

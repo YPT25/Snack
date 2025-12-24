@@ -364,6 +364,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
     [ClientRpc]
     public void RpcSetBuffPosition(GameObject _effect, Vector3 _pos)
     {
+        if(!_effect) { return; }
         this.SetBuffPosition(_effect, _pos);
     }
 }
