@@ -52,7 +52,7 @@ public class ItemStateMachine : NetworkBehaviour
 
     private Rigidbody m_rb = null;
     private Collider m_collider = null;
-    private bool m_isStart = false;
+    [SyncVar] private bool m_isStart = false;
     [SyncVar] private Transform playerTransform = null;
     [SyncVar] private Player_Tanabe m_playerData;
     [SyncVar] private ItemStateType m_stateType;
@@ -62,15 +62,21 @@ public class ItemStateMachine : NetworkBehaviour
     [Header("エフェクトのオブジェクト"), SerializeField] private GameObject m_effectObject;
 
     // 開始関数
-
-    public override void OnStartServer()
+    void Start()
     {
-        base.OnStartServer();
         m_rb = GetComponent<Rigidbody>();
         m_collider = GetComponent<Collider>();
         Debug.Log("Item_Start");
         // 初期のステートの設定
-        ChangeState(this, ItemStateType.DROP);
+        if(m_isStart)
+        {
+            ChangeState(this, m_stateType);
+        }
+        else
+        {
+            ChangeState(this, ItemStateType.DROP);
+        }
+        //ChangeState(this, ItemStateType.DROP);
 
         if (m_itemType == ItemType.THROW)
         {
@@ -95,72 +101,6 @@ public class ItemStateMachine : NetworkBehaviour
         }
         m_isStart = true;
     }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        m_rb = GetComponent<Rigidbody>();
-        m_collider = GetComponent<Collider>();
-        Debug.Log("Item_Start");
-        // 初期のステートの設定
-        ChangeState(this, ItemStateType.DROP);
-
-        if (m_itemType == ItemType.THROW)
-        {
-            // プレハブをGameObject型で取得
-            //GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Yellow");
-
-            m_effectObject = Instantiate(m_effectObject);
-            m_effectObject.transform.parent = this.transform;
-            m_effectObject.SetActive(false);
-            m_effectObject.transform.localPosition = new Vector3(0f, 1f, 0f);
-        }
-        else if (m_itemType == ItemType.TRAP_BOMB)
-        {
-            // プレハブをGameObject型で取得
-            //GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Purple");
-
-            m_effectObject = Instantiate(m_effectObject);
-            m_effectObject.transform.parent = this.transform;
-            m_effectObject.SetActive(false);
-            //m_effectObject.transform.localPosition = new Vector3(0f, 2f, 0f);
-            m_effectObject.transform.localPosition = new Vector3(0f, 0f, 0f);
-        }
-        m_isStart = true;
-
-    }
-
-    //void Start()
-    //{
-    //    m_rb = GetComponent<Rigidbody>();
-    //    m_collider = GetComponent<Collider>();
-    //    Debug.Log("Item_Start");
-    //    // 初期のステートの設定
-    //    ChangeState(this, ItemStateType.DROP);
-
-    //    if(m_itemType == ItemType.THROW)
-    //    {
-    //        // プレハブをGameObject型で取得
-    //        //GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Yellow");
-
-    //        m_effectObject = Instantiate(m_effectObject);
-    //        m_effectObject.transform.parent = this.transform;
-    //        m_effectObject.SetActive(false);
-    //        m_effectObject.transform.localPosition = new Vector3(0f, 1f, 0f);
-    //    }
-    //    else if(m_itemType == ItemType.TRAP_BOMB)
-    //    {
-    //        // プレハブをGameObject型で取得
-    //        //GameObject obj = (GameObject)Resources.Load("Explosion_2_Bomb_Purple");
-
-    //        m_effectObject = Instantiate(m_effectObject);
-    //        m_effectObject.transform.parent = this.transform;
-    //        m_effectObject.SetActive(false);
-    //        //m_effectObject.transform.localPosition = new Vector3(0f, 2f, 0f);
-    //        m_effectObject.transform.localPosition = new Vector3(0f, 0f, 0f);
-    //    }
-    //    m_isStart = true;
-    //}
 
     // 更新関数
     [ServerCallback]
