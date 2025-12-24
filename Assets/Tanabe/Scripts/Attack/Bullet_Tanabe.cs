@@ -112,6 +112,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         m_isPierce = true;
         m_power = _power;
         m_activeTime = 3f;
+        m_speed *= 2f;
         m_forward = _gunHead.forward;
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
         this.RandomScale();
