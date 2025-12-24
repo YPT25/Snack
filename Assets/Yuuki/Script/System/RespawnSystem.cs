@@ -15,6 +15,9 @@ public static class RespawnSystem
 
         foreach (var prefab in NetworkManager.singleton.spawnPrefabs)
         {
+            if (prefab.GetComponent<MPlayerBase>() == null)
+                continue;
+
             var enemy = prefab.GetComponent<EnemyBase>();
             if (enemy == null) continue;
 
@@ -23,10 +26,14 @@ public static class RespawnSystem
     }
 
     public static void ServerRespawn(
-        NetworkConnectionToClient conn,
-        EnemyType type)
+       NetworkConnectionToClient conn,
+       EnemyType type)
     {
-        if (conn == null) return;
+        if (!GetAliveEnemyTypes().Contains(type))
+        {
+            Debug.LogWarning($"Invalid respawn type: {type}");
+            return;
+        }
 
         if (!prefabTable.TryGetValue(type, out var prefab))
         {
@@ -40,4 +47,21 @@ public static class RespawnSystem
         var player = Object.Instantiate(prefab);
         NetworkServer.ReplacePlayerForConnection(conn, player);
     }
+
+    [Server]
+    public static HashSet<EnemyType> GetAliveEnemyTypes()
+    {
+        var set = new HashSet<EnemyType>();
+
+        foreach (var npc in Object.FindObjectsOfType<NPCBase>())
+        {
+            if (npc == null) continue;
+            if (npc.GetHp() <= 0) continue;
+
+            set.Add(npc.GetEnemyType());
+        }
+
+        return set;
+    }
+
 }

@@ -39,14 +39,19 @@ public class RespawnManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"RespawnManager.Instance = {RespawnManager.Instance}");
+        Debug.Log($"respawnUI activeSelf = {respawnUI.activeSelf}");
         respawnUI.SetActive(false);
     }
 
     /// <summary>
     /// Player から呼ばれる（Client）
     /// </summary>
-    public void Show(MPlayerBase player)
+    public void Show(MPlayerBase player, EnemyType[] allowedTypes)
     {
+
+        Debug.Log($"[RespawnUI] Show called types={allowedTypes.Length}");
+
         localPlayer = player;
         respawnUI.SetActive(true);
         isWaiting = true;
@@ -54,17 +59,18 @@ public class RespawnManager : MonoBehaviour
         foreach (Transform c in respawnUI.transform)
             Destroy(c.gameObject);
 
-        foreach (var prefab in playerPrefabs)
+        foreach (var type in allowedTypes)
         {
-            var enemy = prefab.GetComponent<EnemyBase>();
-            if (enemy == null) continue;
+            var prefab = playerPrefabs
+                .FirstOrDefault(p => p.GetComponent<EnemyBase>().GetEnemyType() == type);
+
+            if (prefab == null) continue;
 
             var btn = Instantiate(buttonPrefab, respawnUI.transform);
 
-            // アイコンは Prefab から取る
             var img = btn.GetComponent<Image>();
-            if (img != null && player.GetRespawnIcon() != null)
-                img.sprite = prefab.GetComponent<MPlayerBase>()?.GetRespawnIcon();
+            if (img != null)
+                img.sprite = prefab.GetComponent<MPlayerBase>().GetRespawnIcon();
 
             btn.onClick.AddListener(() =>
             {
@@ -72,8 +78,7 @@ public class RespawnManager : MonoBehaviour
                 isWaiting = false;
                 respawnUI.SetActive(false);
 
-                // ★ EnemyType を送る
-                localPlayer.CmdRequestRespawn(enemy.GetEnemyType());
+                localPlayer.CmdRequestRespawn(type);
             });
         }
     }

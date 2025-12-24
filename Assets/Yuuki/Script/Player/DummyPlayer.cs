@@ -1,18 +1,18 @@
 using Mirror;
+using System.Collections;
 using UnityEngine;
 
 public class DummyPlayer : MPlayerBase
 {
-    public override void Start()
+    [Server]
+    private IEnumerator Start()
     {
-        base.Start();
+        yield return new WaitUntil(() =>
+            RespawnSystem.GetAliveEnemyTypes().Count > 0
+        );
 
-        if (isServer)
-        {
-            // 起動直後に即死亡 → リスポーンUIへ
-            SetHp(0);
-            Die();
-        }
+        SetHp(0);
+        Die();
     }
 
     public override void Update() { }

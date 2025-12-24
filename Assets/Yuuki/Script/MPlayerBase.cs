@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System.Linq;
 
 /// <summary>
 /// プレイヤー共通クラス（Mirror対応）
@@ -237,22 +238,26 @@ public class MPlayerBase : EnemyBase
     [Server]
     public override void Die()
     {
+        Debug.Log("[Respawn] Die called on server");
         if (isDead) return;
         isDead = true;
 
-        TargetShowRespawnUI(connectionToClient);
+        var types = RespawnSystem.GetAliveEnemyTypes().ToArray();
+        TargetShowRespawnUI(connectionToClient, types);
     }
 
+
     [TargetRpc]
-    private void TargetShowRespawnUI(NetworkConnection target)
+    private void TargetShowRespawnUI(
+        NetworkConnection target,
+        EnemyType[] allowedTypes)
     {
+        Debug.Log($"[Respawn] TargetShowRespawnUI called. types={allowedTypes.Length}");
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        if (RespawnManager.Instance != null)
-            RespawnManager.Instance.Show(this);
-        else
-            Debug.LogError("RespawnManager が Client に存在しません");
+        RespawnManager.Instance.Show(this, allowedTypes);
     }
 
     [ClientRpc]
