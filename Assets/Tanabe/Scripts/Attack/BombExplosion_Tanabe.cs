@@ -112,7 +112,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
             CharacterBase characterBase = hit.gameObject.GetComponent<CharacterBase>();
             Player_Tanabe player = hit.gameObject.GetComponent<Player_Tanabe>();
 
-            if(characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE) { continue; }
+            if(characterBase != null && characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE) { continue; }
 
             // ”š”­‚É‚æ‚éƒ_ƒ[ƒW‚ğ—^‚¦‚é
             if (player != null && player.GetWeaponID() == Player_Tanabe.WeaponID.HAMMER)
