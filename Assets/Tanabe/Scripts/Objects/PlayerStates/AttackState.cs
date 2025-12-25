@@ -148,7 +148,14 @@ public class AttackState : IPlayerState_Tanabe
         // 移動ベクトルの算出
         Vector3 move = (transform.right * x + transform.forward * z).normalized;
 
+        // 攻撃中のため通常より移動速度を落とす
+        float speedAdjustment = 0.3f;
+        if(m_player.GetPartType() == global::SetPart_Tanabe.PartType.SHARPBULLET)
+        {
+            speedAdjustment = 0.5f;
+        }
+
         // 移動速度の算出
-        m_targetVelocity = move * m_player.GetMoveSpeed() * 0.3f;
+        m_targetVelocity = move * m_player.GetMoveSpeed() * speedAdjustment;
     }
 }

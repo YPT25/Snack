@@ -16,6 +16,7 @@ public class Bullet_Tanabe : NetworkBehaviour
     [SyncVar] private bool m_isPierce = false;
     [SyncVar] private bool m_isDestroy = false;
 
+    [SerializeField] private MeshRenderer m_meshRenderer;
     [SerializeField] private GameObject m_hitEffectPrefab;
 
     // Start is called before the first frame update
@@ -87,7 +88,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
         this.RandomScale();
         Debug.Log("Shot");
-        this.GetComponent<MeshRenderer>().material.color = Color.gray;
+        m_meshRenderer.material.color = Color.gray;
         this.RpcSetBulletColor(Color.gray);
     }
 
@@ -102,7 +103,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
         this.RandomScale();
 
-        this.GetComponent<MeshRenderer>().material.color = Color.red;
+        m_meshRenderer.material.color = Color.red;
         this.RpcSetBulletColor(Color.red);
     }
 
@@ -115,16 +116,17 @@ public class Bullet_Tanabe : NetworkBehaviour
         m_speed *= 2f;
         m_forward = _gunHead.forward;
         this.transform.localPosition = _gunHead.transform.position + m_forward * 0.5f;
-        this.RandomScale();
+        this.transform.rotation = Quaternion.LookRotation(_gunHead.forward);
+        //this.RandomScale();
 
-        this.GetComponent<MeshRenderer>().material.color = Color.magenta;
+        m_meshRenderer.material.color = Color.magenta;
         this.RpcSetBulletColor(Color.magenta);
     }
 
     [ClientRpc]
     public void RpcSetBulletColor(Color _color)
     {
-        this.GetComponent<MeshRenderer>().material.color = _color;
+        m_meshRenderer.material.color = _color;
     }
 
     private void RandomScale()
