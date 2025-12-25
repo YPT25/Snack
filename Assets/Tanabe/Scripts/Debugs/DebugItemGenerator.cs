@@ -18,7 +18,7 @@ public class DebugItemGenerator : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        //if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null) { return; }
+        if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null) { return; }
 
         // ê∂ê¨ÇµÇΩÇ©ämîFÇ∑ÇÈ
         if (_isTrigger) return;

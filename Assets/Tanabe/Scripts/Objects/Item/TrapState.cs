@@ -37,7 +37,7 @@ public class TrapState : IItemState_Tanabe
         }
         else
         {
-            m_deleteTimer = 12.0f;
+            m_deleteTimer = 10.0f;
             //item.transform.localScale = new Vector3(baseScale.x, baseScale.y * 0.05f, baseScale.z);
             item.transform.localScale = new Vector3(baseScale.x, baseScale.y, baseScale.z);
         }
@@ -92,7 +92,7 @@ public class TrapState : IItemState_Tanabe
     {
         if (m_trapInterval > 0.0f)
         {
-            m_trapInterval -= Time.deltaTime;
+            m_trapInterval -= Time.deltaTime * 3f;
             if (m_trapInterval <= 0.0f)
             {
                 //item.GetRigidbody().mass = 999f;
@@ -101,14 +101,15 @@ public class TrapState : IItemState_Tanabe
         }
 
         Vector3 scale = item.transform.localScale;
-        scale += Vector3.one * 1.3f * Time.deltaTime;
+        scale += Vector3.one * 1.9f * Time.deltaTime;
         item.transform.localScale = scale;
+        float prevDeleteTimer = m_deleteTimer;
         m_deleteTimer -= Time.deltaTime;
         if (m_deleteTimer <= 0)
         {
             item.DestroysGameObject();
         }
-        else if(m_deleteTimer <= 2.0f && m_deleteTimer + Time.deltaTime >= 2.0f && !item.GetRigidbody().isKinematic)
+        else if(m_deleteTimer <= 2.0f && prevDeleteTimer >= 2.0f && !item.GetRigidbody().isKinematic)
         {
             this.Explode();
         }

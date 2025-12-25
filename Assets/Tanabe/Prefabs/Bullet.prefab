@@ -153,6 +153,7 @@ MonoBehaviour:
   syncInterval: 0
   m_speed: 40
   m_activeTime: 1
+  m_meshRenderer: {fileID: 1322972255478944997}
   m_hitEffectPrefab: {fileID: 5164427123520838691, guid: 2056c92a19c353f4a9199a43eff408d9, type: 3}
 --- !u!114 &5053736093468031877
 MonoBehaviour:

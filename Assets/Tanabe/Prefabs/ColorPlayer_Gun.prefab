@@ -5202,6 +5202,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_bulletPrefab: {fileID: 7293739424478429504, guid: 2e477be186203c848a07d9f029be660c, type: 3}
+  m_sharpBulletPrefab: {fileID: 3050781961282403809, guid: 7185e7cd88290de49816f0370bffb259, type: 3}
   m_gunHead: {fileID: 5783984088484630716}
   m_isHitMesh: {fileID: 1200752164458331719}
   m_gunReticle: {fileID: 2749011610701441786}
@@ -46049,10 +46050,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  m_powerUp: {fileID: 9144610133944984775, guid: f5aafc82db2a25c47b803fb9a5ad0cab, type: 3}
-  m_powerDown: {fileID: 7154603565467571434, guid: 0a5ae631cf6dcbc44bd3fb42455f5d39, type: 3}
-  m_speedUp: {fileID: 3858509352917403527, guid: 1e7c0ddffc5404a4a80da2b8dc206e21, type: 3}
-  m_healing: {fileID: 860997648616201480, guid: fdf83e30fd531dd4999317e95a96652d, type: 3}
 --- !u!114 &8447808551873358020
 MonoBehaviour:
   m_ObjectHideFlags: 0
