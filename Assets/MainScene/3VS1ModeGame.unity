@@ -173,8 +173,28 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  m_spawnPoints: []
-  m_enemySettings: []
+  m_spawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_enemySettings:
+  - enemyPrefab: {fileID: 0}
+    maxCount: 0
+    respawnDelay: 0
+    activeEnemies: []
+  - enemyPrefab: {fileID: 0}
+    maxCount: 0
+    respawnDelay: 0
+    activeEnemies: []
+  - enemyPrefab: {fileID: 0}
+    maxCount: 0
+    respawnDelay: 0
+    activeEnemies: []
+  - enemyPrefab: {fileID: 0}
+    maxCount: 0
+    respawnDelay: 0
+    activeEnemies: []
   m_initialSpawnInterval: 0.5
 --- !u!4 &18208431
 Transform:
@@ -231,10 +251,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: sceneId
-      value: 3888247185
-      objectReference: {fileID: 0}
     - target: {fileID: 4909210024293206556, guid: 0f27ad26bae13c748866a8b447410430, type: 3}
       propertyPath: m_Pivot.x
       value: 0
