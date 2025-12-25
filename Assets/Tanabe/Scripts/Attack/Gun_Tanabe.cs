@@ -8,6 +8,7 @@ public class Gun_Tanabe : NetworkBehaviour
 {
     private Player_Tanabe m_player;
     [SerializeField] private GameObject m_bulletPrefab;
+    [SerializeField] private GameObject m_sharpBulletPrefab;
     [SerializeField] private GameObject m_gunHead;
     [SerializeField] private MeshRenderer m_isHitMesh;
     [SerializeField] private GunReticle_Tanabe m_gunReticle;
@@ -202,7 +203,7 @@ public class Gun_Tanabe : NetworkBehaviour
     [Command]
     private void CmdSharpShot()
     {
-        GameObject obj = Instantiate(m_bulletPrefab);
+        GameObject obj = Instantiate(m_sharpBulletPrefab);
         obj.GetComponent<Bullet_Tanabe>().SharpShot(m_player.GetPower(), m_gunHead.transform);
         NetworkServer.Spawn(obj);
 
