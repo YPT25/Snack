@@ -12069,7 +12069,7 @@ MonoBehaviour:
   - {fileID: 1600658805}
   _redPlayer: {fileID: 21300000, guid: dff155b58b8ea284da33c35e8fcf3282, type: 3}
   _whitePlayer: {fileID: 21300000, guid: f0bc01da350cfe848814a383e59bd6c6, type: 3}
-  _targetCheck: {fileID: 0}
+  _targetCheck: {fileID: 143901335}
 --- !u!4 &1338213842
 Transform:
   m_ObjectHideFlags: 0

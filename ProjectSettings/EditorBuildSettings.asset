@@ -26,7 +26,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Tanabe/Scenes/TanabeScene.unity
     guid: 4a00efdebdc72dd4b9fe50b8d8f0ea90
-  - enabled: 1
+  - enabled: 0
     path: Assets/Yuuki/Mokurin.unity
     guid: c58eae9cad815114682451fa1af56c36
   - enabled: 1
