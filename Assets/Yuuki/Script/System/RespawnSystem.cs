@@ -1,4 +1,4 @@
-using Mirror;
+﻿using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,11 +25,14 @@ public static class RespawnSystem
         }
     }
 
-    public static void ServerRespawn(
-       NetworkConnectionToClient conn,
-       EnemyType type)
+    public static void ServerRespawn(NetworkConnectionToClient conn, EnemyType type)
     {
-        if (!GetAliveEnemyTypes().Contains(type))
+        var current = conn.identity?.GetComponent<MPlayerBase>();
+
+        bool isFirst = (current != null && current.GetEnemyType() == EnemyType.TYPE_NULL);
+
+        // ⭐ 初回だけ Alive 判定をスキップ
+        if (!isFirst && !GetAliveEnemyTypes().Contains(type))
         {
             Debug.LogWarning($"Invalid respawn type: {type}");
             return;
@@ -62,6 +65,11 @@ public static class RespawnSystem
         }
 
         return set;
+    }
+
+    public static EnemyType[] GetAllPlayerTypes()
+    {
+        return new List<EnemyType>(prefabTable.Keys).ToArray();
     }
 
 }

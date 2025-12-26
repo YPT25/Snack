@@ -44,6 +44,9 @@ public class MPlayerBase : EnemyBase
     // FPS時に自分の体を消すため
     private MeshRenderer[] myRenderers;
 
+    //初回リスポーン時の確認用フラグ
+    public bool isFirstRespawn = false;
+
     public override void Start()
     {
         base.Start();
@@ -242,7 +245,22 @@ public class MPlayerBase : EnemyBase
         if (isDead) return;
         isDead = true;
 
-        var types = RespawnSystem.GetAliveEnemyTypes().ToArray();
+        EnemyType[] types;
+
+        // DummyPlayerは「初回リスポーン」
+        if (GetEnemyType() == EnemyType.TYPE_NULL)
+        {
+            isFirstRespawn = true;
+            types = RespawnSystem.GetAllPlayerTypes();
+            Debug.Log("[Respawn] First respawn → show ALL player types");
+        }
+        else
+        {
+            // 2回目以降 → 生存NPCのみ
+            types = RespawnSystem.GetAliveEnemyTypes().ToArray();
+            Debug.Log($"[Respawn] Normal respawn → alive types={types.Length}");
+        }
+
         TargetShowRespawnUI(connectionToClient, types);
     }
 
@@ -288,6 +306,8 @@ public class MPlayerBase : EnemyBase
             Cursor.lockState = CursorLockMode.None;
         }
     }
+
+    public bool GetIsFirstRespawn() => isFirstRespawn;
     public Sprite GetRespawnIcon() => m_respawnIcon;
     //視点の状態を渡す
     public bool GetIsFPS() => isFPS;
