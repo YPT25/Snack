@@ -54,6 +54,7 @@ public static class RespawnSystem
     [Server]
     public static HashSet<EnemyType> GetAliveEnemyTypes()
     {
+
         var set = new HashSet<EnemyType>();
 
         foreach (var npc in Object.FindObjectsOfType<NPCBase>())
@@ -63,12 +64,18 @@ public static class RespawnSystem
 
             set.Add(npc.GetEnemyType());
         }
-
+        Debug.Log($"[RespawnSystem] AliveEnemyTypes count={set.Count}");
+        foreach (var t in set)
+            Debug.Log($"  - alive={t}");
         return set;
     }
 
     public static EnemyType[] GetAllPlayerTypes()
     {
+        Debug.Log($"[RespawnSystem] GetAllPlayerTypes() prefabTable={prefabTable?.Count ?? -1}");
+
+        foreach (var kv in prefabTable)
+            Debug.Log($"  - prefab={kv.Key} -> {kv.Value?.name}");
         return new List<EnemyType>(prefabTable.Keys).ToArray();
     }
 

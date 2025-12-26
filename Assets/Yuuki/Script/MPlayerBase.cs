@@ -79,6 +79,11 @@ public class MPlayerBase : EnemyBase
     {
         base.Update();
 
+        if (GetHp() <= 0 && isServer)
+        {
+            Die();
+        }
+
         if (!isLocalPlayer || !isInitialized || isDead)
             return;
 
@@ -101,10 +106,7 @@ public class MPlayerBase : EnemyBase
         {
             SetHp(0);
         }
-        if (GetHp() <= 0 && isServer)
-        {
-            Die();
-        }
+
         if (Input.GetKeyDown(KeyCode.R)) { base.Damage(10); }
 
         if (!GetIsMove())
@@ -236,14 +238,22 @@ public class MPlayerBase : EnemyBase
             return;
         }
     }
+    [ClientRpc]
+    void RpcDebugDieCalled()
+    {
+        Debug.Log("[Respawn] Die() executed on SERVER (confirmed by client)");
+    }
 
     // ===== 死亡処理 =====
     [Server]
     public override void Die()
     {
-        Debug.Log("[Respawn] Die called on server");
+        Debug.Log($"[Respawn] Die() CALLED  isServer={isServer}  isClient={isClient}");
+        Debug.Log($"[Respawn] Die() enemyType={GetEnemyType()}");
         if (isDead) return;
         isDead = true;
+
+        RpcDebugDieCalled();
 
         EnemyType[] types;
 
@@ -266,11 +276,13 @@ public class MPlayerBase : EnemyBase
 
 
     [TargetRpc]
-    private void TargetShowRespawnUI(
+    public void TargetShowRespawnUI(
         NetworkConnection target,
         EnemyType[] allowedTypes)
     {
-        Debug.Log($"[Respawn] TargetShowRespawnUI called. types={allowedTypes.Length}");
+        Debug.Log($"[Respawn] TargetRPC received types={allowedTypes?.Length}");
+        foreach (var t in allowedTypes)
+            Debug.Log($"  - recv type={t}");
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

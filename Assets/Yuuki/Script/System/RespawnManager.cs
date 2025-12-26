@@ -51,9 +51,11 @@ public class RespawnManager : MonoBehaviour
     {
 
         Debug.Log($"[RespawnUI] Show called types={allowedTypes.Length}");
+        Debug.Log($"[RespawnUI] Show called player={player.name} types={allowedTypes.Length}");
 
         localPlayer = player;
         respawnUI.SetActive(true);
+
         isWaiting = true;
 
         foreach (Transform c in respawnUI.transform)
@@ -61,6 +63,7 @@ public class RespawnManager : MonoBehaviour
 
         foreach (var type in allowedTypes)
         {
+            Debug.Log($"[RespawnUI] add button type={type}");
             var prefab = playerPrefabs
                 .FirstOrDefault(p => p.GetComponent<EnemyBase>().GetEnemyType() == type);
 
@@ -81,17 +84,5 @@ public class RespawnManager : MonoBehaviour
                 localPlayer.CmdRequestRespawn(type);
             });
         }
-    }
-
-    private void OnSelect(int index)
-    {
-        if (!isWaiting || localPlayer == null)
-            return;
-
-        isWaiting = false;
-        respawnUI.SetActive(false);
-
-        // š Player Œo—R‚Å Command ‚ğŒÄ‚Ô
-        //localPlayer.CmdRequestRespawn(index);
     }
 }
