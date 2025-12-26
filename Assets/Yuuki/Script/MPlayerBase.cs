@@ -298,15 +298,6 @@ public class MPlayerBase : EnemyBase
         Debug.Log($"{name} Attack Input");
     }
 
-    private void CursorController()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-    }
-
     public bool GetIsFirstRespawn() => isFirstRespawn;
     public Sprite GetRespawnIcon() => m_respawnIcon;
     //視点の状態を渡す
