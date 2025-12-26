@@ -98441,7 +98441,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1408277862
 Transform:
   m_ObjectHideFlags: 0
@@ -286783,9 +286783,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25f95f86057de00459e244f94295b4c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   m_powerUp: {fileID: 9144610133944984775, guid: f5aafc82db2a25c47b803fb9a5ad0cab, type: 3}
   m_powerDown: {fileID: 7154603565467571434, guid: 0a5ae631cf6dcbc44bd3fb42455f5d39, type: 3}
   m_speedUp: {fileID: 3858509352917403527, guid: 1e7c0ddffc5404a4a80da2b8dc206e21, type: 3}

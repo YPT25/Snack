@@ -49,7 +49,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!this.isLocalPlayer) { return; }
+        if (m_effectGenerator == null)
+        {
+            m_effectGenerator = GameObject.Find("BuffEffectGenerator").GetComponent<BuffEffectGenerator_Tanabe>();
+            if (m_effectGenerator == null)
+            {
+                return;
+            }
+        }
+
+        if (!this.isLocalPlayer) { return; }
 
         Vector3 playerPosition = m_playerData.transform.position;
 
@@ -134,6 +143,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
     [Command]
     public void CmdAddBuff(Buff.BuffType _buffType)
     {
+        if (m_effectGenerator == null)
+        {
+            m_effectGenerator = GameObject.Find("BuffEffectGenerator").GetComponent<BuffEffectGenerator_Tanabe>();
+            if (m_effectGenerator == null)
+            {
+                return;
+            }
+        }
+
+
         switch (_buffType)
         {
             case Buff.BuffType.HEAL_MULTIPLE:
