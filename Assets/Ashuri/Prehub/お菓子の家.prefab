@@ -22057,7 +22057,7 @@ GameObject:
   - component: {fileID: 6008062715883816930}
   m_Layer: 3
   m_Name: "\u304A\u83D3\u5B50\u306E\u5BB6"
-  m_TagString: Untagged
+  m_TagString: Pierce
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
