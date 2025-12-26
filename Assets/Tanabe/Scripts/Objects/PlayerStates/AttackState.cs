@@ -153,6 +153,20 @@ public class AttackState : IPlayerState_Tanabe
         if(m_player.GetPartType() == global::SetPart_Tanabe.PartType.SHARPBULLET)
         {
             speedAdjustment = 0.5f;
+
+            // Shiftキーを押している間ダッシュ状態にする
+            if (Input.GetButton("Dash"))
+            {
+                if (!m_player.GetIsStaminan())
+                {
+                    m_player.SetStamina(m_player.GetStamina() - Time.deltaTime);
+                }
+                // スタミナが0fより多ければダッシュ状態にする
+                if (m_player.GetStamina() > 0.0f)
+                {
+                    speedAdjustment = 1.0f;
+                }
+            }
         }
 
         // 移動速度の算出

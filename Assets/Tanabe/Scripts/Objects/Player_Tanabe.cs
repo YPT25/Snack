@@ -65,6 +65,8 @@ public class Player_Tanabe : CharacterBase
     private bool isGrounded;
     // 移動判定フラグ
     private bool m_isMoving = false;
+    // スタミナ無限フラグ
+    private bool m_isStaminan = false;
     // デフォルト状態かの判定フラグ
     private bool m_isDefaultState = true;
     // ハンマーのチャージ中か
@@ -330,11 +332,14 @@ public class Player_Tanabe : CharacterBase
         m_currentState?.Update();
 
         // 移動していない状態ならスタミナを回復する
-        if (!m_isMoving)
+        if (!m_isMoving || m_isStaminan)
         {
             if(m_weaponID == WeaponID.HAMMER)
             {
-                base.SetStamina(GetStamina() + Time.deltaTime * 2f);
+                if(!Input.GetButton("Dash") || m_isStaminan)
+                {
+                    base.SetStamina(GetStamina() + Time.deltaTime * 2f);
+                }
             }
             else
             {
@@ -662,6 +667,12 @@ public class Player_Tanabe : CharacterBase
         return isGrounded;
     }
 
+    // スタミナ無限フラグの取得の取得
+    public bool GetIsStaminan()
+    {
+        return m_isStaminan;
+    }
+
     // 移動速度の取得
     public override float GetMoveSpeed()
     {
@@ -798,6 +809,12 @@ public class Player_Tanabe : CharacterBase
     public void SetIsMoving(bool _flag)
     {
         m_isMoving = _flag;
+    }
+
+    // スタミナ無限フラグの設定
+    public void SetIsStaminan(bool _flag)
+    {
+        m_isStaminan = _flag;
     }
 
     // デフォルト状態かの判定フラグの設定

@@ -16,6 +16,7 @@ public class BuffManager_Tanabe : NetworkBehaviour
             HEAL_MULTIPLE,
             POWER_UP,
             SPEED_UP,
+            STAMINAN,
         }
 
         public BuffType buffType;
@@ -90,6 +91,16 @@ public class BuffManager_Tanabe : NetworkBehaviour
                 this.CmdSetBuffPosition(m_buffs[i].auraBuff, playerPosition + posAdjustment);
             }
         }
+
+        for (int i = 0; i < m_buffs.Count; i++)
+        {
+            if (!m_buffs[i].isUse) { continue; }
+            if (m_buffs[i].buffType == BuffType.STAMINAN)
+            {
+                m_playerData.SetIsStaminan(true);
+                break;
+            }
+        }
     }
 
     // バフを失う処理
@@ -112,6 +123,11 @@ public class BuffManager_Tanabe : NetworkBehaviour
             case Buff.BuffType.SPEED_UP:
                 {
                     m_playerData.SetMoveSpeed(m_playerData.GetDefaultMoveSpeed() - _buff.value);
+                    break;
+                }
+            case Buff.BuffType.STAMINAN:
+                {
+                    m_playerData.SetIsStaminan(false);
                     break;
                 }
             default:
@@ -193,6 +209,15 @@ public class BuffManager_Tanabe : NetworkBehaviour
                     //obj.transform.parent = m_playerData.transform;
                     //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
                     RpcSpeedUp(obj);
+                    break;
+                }
+            case Buff.BuffType.STAMINAN:
+                {
+                    GameObject obj = Instantiate(m_effectGenerator.GetEffect_Staminan(), m_playerData.transform.position + new Vector3(0f, -1f, 0f), m_effectGenerator.GetEffect_Staminan().transform.rotation, m_playerData.transform);
+                    NetworkServer.Spawn(obj);
+                    //obj.transform.parent = m_playerData.transform;
+                    //obj.transform.localPosition = new Vector3(0f, -1f, 0f);
+                    RpcStaminan(obj);
                     break;
                 }
             default:
@@ -356,6 +381,49 @@ public class BuffManager_Tanabe : NetworkBehaviour
 
         AddBuff(buff);
         m_playerData.SetMoveSpeed(m_playerData.GetDefaultMoveSpeed() + buff.value);
+    }
+
+    // スタミナ無限
+    [ClientRpc]
+    public void RpcStaminan(GameObject _effect)
+    {
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+            if (m_playerData == null) { return; }
+        }
+        if (_effect == null) { return; }
+
+        if (m_playerData == null)
+        {
+            m_playerData = GetComponent<Player_Tanabe>();
+        }
+
+        if (_effect.transform.parent == null)
+        {
+            _effect.transform.parent = m_playerData.transform;
+        }
+
+        _effect.transform.parent = m_playerData.transform;
+        _effect.transform.localPosition = new Vector3(0f, -1f, 0f);
+        if (!this.isLocalPlayer) { return; }
+
+        Buff buff = new Buff();
+        buff.buffType = Buff.BuffType.STAMINAN;
+
+        buff.isUse = true;
+        //buff.value = m_playerData.GetInitialParameter().moveSpeed * 0.4f;
+        buff.duration = 3.0f;
+
+        // プレハブをGameObject型で取得
+        //GameObject obj = (GameObject)Resources.Load("AuraBuff_SpeedUp");
+        buff.auraBuff = _effect;
+
+        //buff.auraBuff.transform.parent = m_playerData.transform;
+        //buff.auraBuff.transform.localPosition = new Vector3(0f, -1f, 0f);
+
+        AddBuff(buff);
+        m_playerData.SetIsStaminan(true);
     }
 
     public void SetBuffPosition(GameObject _effect, Vector3 _pos)

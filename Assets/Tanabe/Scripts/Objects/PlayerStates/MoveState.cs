@@ -45,11 +45,18 @@ public class MoveState : IPlayerState_Tanabe
 
         float dashSpeed = 1.0f;
         // Shiftキーを押している間ダッシュ状態にする
-        if(Input.GetButton("Dash")/*Input.GetKey(KeyCode.LeftShift)*/)
+        if(Input.GetButton("Dash"))
         {
-            m_player.SetStamina(m_player.GetStamina() - Time.deltaTime);
+            if(!m_player.GetIsStaminan())
+            {
+                m_player.SetStamina(m_player.GetStamina() - Time.deltaTime);
+            }
+            else
+            {
+                m_player.SetStamina(m_player.GetStamina() + Time.deltaTime * 0.5f);
+            }
             // スタミナが0fより多ければダッシュ状態にする
-            if(m_player.GetStamina() > 0.0f)
+            if (m_player.GetStamina() > 0.0f)
             {
                 dashSpeed = 2.0f;
             }
