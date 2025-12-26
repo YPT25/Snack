@@ -49,7 +49,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         if(m_isDestroy) { return; }
         if (other.gameObject.GetComponent<Bullet_Tanabe>() != null) { return; }
 
-        if (!m_isPierce || other.gameObject.layer == 3)
+        if (!m_isPierce || other.gameObject.layer == 3 && other.gameObject.tag == "Pierce")
         {
             Destroy(this.gameObject);
             m_isDestroy = true;

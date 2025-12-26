@@ -740,7 +740,7 @@ public class Player_Tanabe : CharacterBase
             }
             else if (prevPartType == global::SetPart_Tanabe.PartType.SHARPBULLET)
             {
-                SetPower(GetPower() - 10f);
+                SetPower(GetPower() + 15f);
             }
 
             // 新たなセットパーツを装備する
@@ -754,7 +754,7 @@ public class Player_Tanabe : CharacterBase
                 }
                 else if (_setPart.GetPartType() == global::SetPart_Tanabe.PartType.SHARPBULLET)
                 {
-                    SetPower(GetPower() + 10f);
+                    SetPower(GetPower() - 15f);
                 }
             }
             // セットパーツを外す
