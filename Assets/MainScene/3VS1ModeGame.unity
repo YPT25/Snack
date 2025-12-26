@@ -174,26 +174,26 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_spawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 513791767}
+  - {fileID: 811056493}
+  - {fileID: 1147957785}
+  - {fileID: 1897089667}
   m_enemySettings:
-  - enemyPrefab: {fileID: 0}
-    maxCount: 0
-    respawnDelay: 0
+  - enemyPrefab: {fileID: 2910117256335892721, guid: ea97a11ec2dfa784fba2cc34b083b37e, type: 3}
+    maxCount: 5
+    respawnDelay: 3
     activeEnemies: []
-  - enemyPrefab: {fileID: 0}
-    maxCount: 0
-    respawnDelay: 0
+  - enemyPrefab: {fileID: 6456614125583922063, guid: e40639acb0300e84b88602499214bc67, type: 3}
+    maxCount: 5
+    respawnDelay: 3
     activeEnemies: []
-  - enemyPrefab: {fileID: 0}
-    maxCount: 0
-    respawnDelay: 0
+  - enemyPrefab: {fileID: 7791981793982540393, guid: adafa387c3bf885438c1e504f4de60e3, type: 3}
+    maxCount: 5
+    respawnDelay: 3
     activeEnemies: []
-  - enemyPrefab: {fileID: 0}
-    maxCount: 0
-    respawnDelay: 0
+  - enemyPrefab: {fileID: 2148735108058455076, guid: 40d9169a398148d4b8a144ff43507a4e, type: 3}
+    maxCount: 5
+    respawnDelay: 3
     activeEnemies: []
   m_initialSpawnInterval: 0.5
 --- !u!4 &18208431
