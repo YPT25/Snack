@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3461284029247494861}
   m_Layer: 3
   m_Name: pancake
-  m_TagString: Untagged
+  m_TagString: Pierce
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
