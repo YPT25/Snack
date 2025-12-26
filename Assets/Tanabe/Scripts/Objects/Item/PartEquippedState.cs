@@ -22,6 +22,18 @@ public class PartEquippedState : IItemState_Tanabe
         item.SetUseGravity(false);
         item.SetIsKinematic(true);
 
+        if(item.GetPlayerTransform() == null)
+        {
+            item.SetPlayerData(item.GetPlayerData());
+            item.RpcSetPlayerData(item.GetPlayerData());
+            if(item.GetPlayerTransform() == null)
+            {
+                // ƒhƒƒbƒvó‘Ô‚É‘JˆÚ‚·‚é
+                item.ChangeState(item, ItemStateMachine.ItemStateType.DROP);
+                return;
+            }
+        }
+
         Vector3 euler = item.GetPlayerTransform().rotation.eulerAngles;
         euler.y += 180f;
         item.transform.rotation = Quaternion.Euler(euler);
