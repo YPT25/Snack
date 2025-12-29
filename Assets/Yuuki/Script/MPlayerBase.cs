@@ -44,11 +44,23 @@ public class MPlayerBase : EnemyBase
     // FPS時に自分の体を消すため
     private MeshRenderer[] myRenderers;
 
-    //初回リスポーン時の確認用フラグ
-    public bool isFirstRespawn = false;
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+        Debug.Log($"[Player] OnStartLocalPlayer name={name}");
+    }
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+        Debug.Log($"[Player] OnStartAuthority name={name}");
+    }
 
     public override void Start()
     {
+
+        Debug.Log($"[Player] Start name={name} isLocal={isLocalPlayer} isClient={isClient} isServer={isServer}");
+
         base.Start();
         m_rb = GetComponent<Rigidbody>();
 
@@ -60,6 +72,12 @@ public class MPlayerBase : EnemyBase
         {
             cam = Camera.main;
             StartCoroutine(InitializeAfterDelay());
+        }
+        if (isLocalPlayer)
+        {
+            Debug.Log(
+                $"[LOCAL STATE] dead={isDead} canMove={iscanMove} rbNull={m_rb == null} camNull={cam == null}"
+            );
         }
     }
 
@@ -78,11 +96,6 @@ public class MPlayerBase : EnemyBase
     public override void Update()
     {
         base.Update();
-
-        if (GetHp() <= 0 && isServer)
-        {
-            Die();
-        }
 
         if (!isLocalPlayer || !isInitialized || isDead)
             return;
@@ -106,7 +119,10 @@ public class MPlayerBase : EnemyBase
         {
             SetHp(0);
         }
-
+        if (GetHp() <= 0 && isServer)
+        {
+            Die();
+        }
         if (Input.GetKeyDown(KeyCode.R)) { base.Damage(10); }
 
         if (!GetIsMove())
@@ -238,51 +254,26 @@ public class MPlayerBase : EnemyBase
             return;
         }
     }
-    [ClientRpc]
-    void RpcDebugDieCalled()
-    {
-        Debug.Log("[Respawn] Die() executed on SERVER (confirmed by client)");
-    }
 
     // ===== 死亡処理 =====
     [Server]
     public override void Die()
     {
-        Debug.Log($"[Respawn] Die() CALLED  isServer={isServer}  isClient={isClient}");
-        Debug.Log($"[Respawn] Die() enemyType={GetEnemyType()}");
+        Debug.Log("[Respawn] Die called on server");
         if (isDead) return;
         isDead = true;
 
-        RpcDebugDieCalled();
-
-        EnemyType[] types;
-
-        // DummyPlayerは「初回リスポーン」
-        if (GetEnemyType() == EnemyType.TYPE_NULL)
-        {
-            isFirstRespawn = true;
-            types = RespawnSystem.GetAllPlayerTypes();
-            Debug.Log("[Respawn] First respawn → show ALL player types");
-        }
-        else
-        {
-            // 2回目以降 → 生存NPCのみ
-            types = RespawnSystem.GetAliveEnemyTypes().ToArray();
-            Debug.Log($"[Respawn] Normal respawn → alive types={types.Length}");
-        }
-
+        var types = RespawnSystem.GetAliveEnemyTypes().ToArray();
         TargetShowRespawnUI(connectionToClient, types);
     }
 
 
     [TargetRpc]
-    public void TargetShowRespawnUI(
+    private void TargetShowRespawnUI(
         NetworkConnection target,
         EnemyType[] allowedTypes)
     {
-        Debug.Log($"[Respawn] TargetRPC received types={allowedTypes?.Length}");
-        foreach (var t in allowedTypes)
-            Debug.Log($"  - recv type={t}");
+        Debug.Log($"[Respawn] TargetShowRespawnUI called. types={allowedTypes.Length}");
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -302,6 +293,10 @@ public class MPlayerBase : EnemyBase
     public void CmdRequestRespawn(EnemyType type)
     {
         Debug.Log($"[Server] CmdRequestRespawn called. type={type}");
+        Debug.Log($"[Respawn] CmdRequestRespawn type={type} " +
+          $"hasConn={connectionToClient != null} " +
+          $"hasIdentity={connectionToClient?.identity != null}");
+
         RespawnSystem.ServerRespawn(connectionToClient, type);
     }
 
@@ -310,7 +305,14 @@ public class MPlayerBase : EnemyBase
         Debug.Log($"{name} Attack Input");
     }
 
-    public bool GetIsFirstRespawn() => isFirstRespawn;
+    private void CursorController()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
     public Sprite GetRespawnIcon() => m_respawnIcon;
     //視点の状態を渡す
     public bool GetIsFPS() => isFPS;

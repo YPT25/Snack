@@ -8,53 +8,72 @@ public static class RespawnSystem
 {
     private static Dictionary<EnemyType, GameObject> prefabTable;
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void Init()
+    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    //private static void Init()
+    //{
+    //    prefabTable = new Dictionary<EnemyType, GameObject>();
+
+    //    foreach (var prefab in NetworkManager.singleton.spawnPrefabs)
+    //    {
+    //        if (prefab.GetComponent<MPlayerBase>() == null)
+    //            continue;
+
+    //        var enemy = prefab.GetComponent<EnemyBase>();
+    //        if (enemy == null) continue;
+
+    //        prefabTable[enemy.GetEnemyType()] = prefab;
+    //    }
+    //}
+
+    public static void EnsureInitialized()
     {
+        if (prefabTable != null && prefabTable.Count > 0)
+            return;
+
         prefabTable = new Dictionary<EnemyType, GameObject>();
+
+        Debug.Log("[RespawnSystem] EnsureInitialized() running");
 
         foreach (var prefab in NetworkManager.singleton.spawnPrefabs)
         {
-            if (prefab.GetComponent<MPlayerBase>() == null)
-                continue;
-
             var enemy = prefab.GetComponent<EnemyBase>();
             if (enemy == null) continue;
 
             prefabTable[enemy.GetEnemyType()] = prefab;
+            Debug.Log($"  + Register {enemy.GetEnemyType()}");
         }
     }
 
-    public static void ServerRespawn(NetworkConnectionToClient conn, EnemyType type)
+    public static void ServerRespawn(
+       NetworkConnectionToClient conn,
+       EnemyType type)
     {
-        var current = conn.identity?.GetComponent<MPlayerBase>();
-
-        bool isFirst = (current != null && current.GetEnemyType() == EnemyType.TYPE_NULL);
-
-        // ⭐ 初回だけ Alive 判定をスキップ
-        if (!isFirst && !GetAliveEnemyTypes().Contains(type))
-        {
-            Debug.LogWarning($"Invalid respawn type: {type}");
-            return;
-        }
+        Debug.Log($"[RespawnSystem] ServerRespawn type={type} conn={conn}");
+        EnsureInitialized();
 
         if (!prefabTable.TryGetValue(type, out var prefab))
         {
-            Debug.LogError($"Respawn prefab not found for {type}");
+            Debug.LogError($"[RespawnSystem] Prefab NOT FOUND for {type}");
             return;
         }
+
+        Debug.Log($"[RespawnSystem] Instantiate {prefab.name}");
 
         if (conn.identity != null)
             NetworkServer.Destroy(conn.identity.gameObject);
 
         var player = Object.Instantiate(prefab);
+
+        Debug.Log("[RespawnSystem] ReplacePlayer BEFORE");
+
         NetworkServer.ReplacePlayerForConnection(conn, player);
+
+        Debug.Log("[RespawnSystem] ReplacePlayer AFTER");
     }
 
     [Server]
     public static HashSet<EnemyType> GetAliveEnemyTypes()
     {
-
         var set = new HashSet<EnemyType>();
 
         foreach (var npc in Object.FindObjectsOfType<NPCBase>())
@@ -64,19 +83,8 @@ public static class RespawnSystem
 
             set.Add(npc.GetEnemyType());
         }
-        Debug.Log($"[RespawnSystem] AliveEnemyTypes count={set.Count}");
-        foreach (var t in set)
-            Debug.Log($"  - alive={t}");
+
         return set;
-    }
-
-    public static EnemyType[] GetAllPlayerTypes()
-    {
-        Debug.Log($"[RespawnSystem] GetAllPlayerTypes() prefabTable={prefabTable?.Count ?? -1}");
-
-        foreach (var kv in prefabTable)
-            Debug.Log($"  - prefab={kv.Key} -> {kv.Value?.name}");
-        return new List<EnemyType>(prefabTable.Keys).ToArray();
     }
 
 }
