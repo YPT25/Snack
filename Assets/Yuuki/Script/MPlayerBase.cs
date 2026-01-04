@@ -32,6 +32,7 @@ public class MPlayerBase : EnemyBase
     private bool isInitialized = false;
     private bool isDead = false;
     public bool iscanMove = true;
+    private bool isFarstDead = false;
 
     // ===== FPS視点用 =====
     [Header("FPS視点設定")]
@@ -259,11 +260,25 @@ public class MPlayerBase : EnemyBase
     [Server]
     public override void Die()
     {
-        Debug.Log("[Respawn] Die called on server");
         if (isDead) return;
         isDead = true;
 
-        var types = RespawnSystem.GetAliveEnemyTypes().ToArray();
+        EnemyType[] types;
+
+        // 初回（DummyPlayer）
+        bool isFirst = (GetEnemyType() == EnemyType.TYPE_NULL);
+
+        if (isFirst)
+        {
+            types = RespawnSystem.GetAllPlayerTypes();
+            Debug.Log("[Respawn] First respawn → ALL player types");
+        }
+        else
+        {
+            types = RespawnSystem.GetAliveEnemyTypes().ToArray();
+            Debug.Log($"[Respawn] Normal respawn → alive={types.Length}");
+        }
+
         TargetShowRespawnUI(connectionToClient, types);
     }
 

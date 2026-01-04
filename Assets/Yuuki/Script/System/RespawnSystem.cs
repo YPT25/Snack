@@ -71,6 +71,12 @@ public static class RespawnSystem
         Debug.Log("[RespawnSystem] ReplacePlayer AFTER");
     }
 
+    public static EnemyType[] GetAllPlayerTypes()
+    {
+        EnsureInitialized();
+        return new List<EnemyType>(prefabTable.Keys).ToArray();
+    }
+
     [Server]
     public static HashSet<EnemyType> GetAliveEnemyTypes()
     {
