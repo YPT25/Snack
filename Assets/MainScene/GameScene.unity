@@ -1900,6 +1900,7 @@ MonoBehaviour:
   initialGameTime: 120
   preGameCountdownTime: 3
   gameStarted: 0
+  _Pinata: {fileID: 0}
 --- !u!4 &375496455
 Transform:
   m_ObjectHideFlags: 0
@@ -7315,9 +7316,21 @@ PrefabInstance:
       propertyPath: _drink_speed
       value: 
       objectReference: {fileID: 21300000, guid: 08aa9ad51ed64f140a384d140a3924bc, type: 3}
+    - target: {fileID: 3760913866121670197, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: _drink_stamina
+      value: 
+      objectReference: {fileID: 21300000, guid: 9c1dc5854fd06bd46ba121c01ed6fe15, type: 3}
     - target: {fileID: 3912949090525576141, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
       propertyPath: m_RenderMode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4514866276629247762, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 370
+      objectReference: {fileID: 0}
+    - target: {fileID: 4514866276629247762, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 370
       objectReference: {fileID: 0}
     - target: {fileID: 4523109495341358916, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
       propertyPath: m_RenderMode
@@ -7327,6 +7340,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: ThreePlayerUI
       objectReference: {fileID: 0}
+    - target: {fileID: 5214115073377054910, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: sprite1
+      value: 
+      objectReference: {fileID: 21300000, guid: ab468aa3fd8330b4b849c5e2f538ba20, type: 3}
+    - target: {fileID: 5214115073377054910, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: sprite2
+      value: 
+      objectReference: {fileID: 21300000, guid: 09ab719b1d088494c9d9ad83776bf902, type: 3}
+    - target: {fileID: 5214115073377054910, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: sprite3
+      value: 
+      objectReference: {fileID: 21300000, guid: 6fdac3b5e9d8329438a2fc321b190fc8, type: 3}
+    - target: {fileID: 5214115073377054910, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: spriteGo
+      value: 
+      objectReference: {fileID: 21300000, guid: d4d1944289fdd20489791d9ecd69e33e, type: 3}
     - target: {fileID: 5607094214130338123, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
       propertyPath: m_LocalPosition.x
       value: -23.103254
@@ -7371,6 +7400,14 @@ PrefabInstance:
       propertyPath: m_RenderMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6013782152895322906, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 40fa1c49cf44aea4e806c3a5beaf74c4, type: 3}
+    - target: {fileID: 7257352867380394136, guid: dbc8c04756a0d5d4fbd3dacf70b4dbbd, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4123e33cf1466ca4a9dd84b794e3c860, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

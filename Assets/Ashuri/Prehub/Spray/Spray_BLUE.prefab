@@ -393,6 +393,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _materialIndex: 1
+  m_SprayObject: {fileID: 6977527106746098794, guid: 53d9fa88028d7bc4d97b97b579cdb2d3, type: 3}
 --- !u!1 &8860848548196533563
 GameObject:
   m_ObjectHideFlags: 0
