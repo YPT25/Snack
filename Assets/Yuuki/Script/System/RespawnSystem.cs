@@ -62,13 +62,12 @@ public static class RespawnSystem
         if (conn.identity != null)
             NetworkServer.Destroy(conn.identity.gameObject);
 
-        var player = Object.Instantiate(prefab);
+        var playerObj = Object.Instantiate(prefab);
+        NetworkServer.ReplacePlayerForConnection(conn, playerObj);
 
-        Debug.Log("[RespawnSystem] ReplacePlayer BEFORE");
+        var player = playerObj.GetComponent<MPlayerBase>();
+        player.ServerResetForRespawn();
 
-        NetworkServer.ReplacePlayerForConnection(conn, player);
-
-        Debug.Log("[RespawnSystem] ReplacePlayer AFTER");
     }
 
     public static EnemyType[] GetAllPlayerTypes()

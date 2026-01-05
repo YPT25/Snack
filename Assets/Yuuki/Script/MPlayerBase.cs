@@ -30,7 +30,11 @@ public class MPlayerBase : EnemyBase
     protected Camera cam;
 
     private bool isInitialized = false;
-    private bool isDead = false;
+    [SyncVar(hook = nameof(OnDeadStateChanged))] private bool isDead = false;
+    // クライアント専用（同期しない）
+    private bool localDead = false;
+    [SyncVar] private bool canControl = true;
+
     public bool iscanMove = true;
     private bool isFarstDead = false;
 
@@ -98,8 +102,11 @@ public class MPlayerBase : EnemyBase
     {
         base.Update();
 
+
         if (!isLocalPlayer || !isInitialized || isDead)
             return;
+
+        if (localDead) return;
 
         HandleInput();
         HandleCamera();
@@ -118,12 +125,12 @@ public class MPlayerBase : EnemyBase
 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            SetHp(0);
+            CmdRequestKill();
         }
-        if (GetHp() <= 0 && isServer)
-        {
-            Die();
-        }
+        //if (GetHp() <= 0)
+        //{
+        //    Die();
+        //}
         if (Input.GetKeyDown(KeyCode.R)) { base.Damage(10); }
 
         if (!GetIsMove())
@@ -136,6 +143,7 @@ public class MPlayerBase : EnemyBase
     {
         if (!isLocalPlayer || !isInitialized || isDead)
             return;
+        if (localDead) return;
 
         Move();
     }
@@ -256,6 +264,56 @@ public class MPlayerBase : EnemyBase
         }
     }
 
+    //ダメージ
+    public override void Damage(float _damage)
+    {
+        base.Damage(_damage);
+
+        if (!isServer) return;
+
+        if (GetHp() <= 0)
+        {
+            TargetSetLocalDead(connectionToClient);
+            Die();
+        }
+    }
+
+    [Server]
+    public void ServerResetForRespawn()
+    {
+        // 正式な状態
+        isDead = false;
+        canControl = true;
+
+        // HP
+        SetHp(GetMaxHP());
+
+        // クライアント即時リセット
+        TargetResetLocalState(connectionToClient);
+    }
+    //クライアント用状態リセット
+    [TargetRpc]
+    private void TargetResetLocalState(NetworkConnection target)
+    {
+        localDead = false;
+
+        yaw = 0f;
+        pitch = 0f;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    //クライアント専用の死亡通知処理
+    [TargetRpc]
+    private void TargetSetLocalDead(NetworkConnection target)
+    {
+        localDead = true;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
     // ===== 死亡処理 =====
     [Server]
     public override void Die()
@@ -328,6 +386,28 @@ public class MPlayerBase : EnemyBase
             Cursor.lockState = CursorLockMode.None;
         }
     }
+
+    //クライアント用の死亡時停止処理
+    private void OnDeadStateChanged(bool oldValue, bool newValue)
+    {
+        if (!isLocalPlayer) return;
+
+        if (newValue)
+        {
+            localDead = true;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
+    //デバック用
+    [Command]
+    private void CmdRequestKill()
+    {
+        // サーバーで確実にHPを0にする
+        Damage(GetHp());
+    }
+
     public Sprite GetRespawnIcon() => m_respawnIcon;
     //視点の状態を渡す
     public bool GetIsFPS() => isFPS;
