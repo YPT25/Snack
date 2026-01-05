@@ -251,7 +251,7 @@ public class MPlayerBase : EnemyBase
 
             Vector3 moveDir = (camForward * m_inputDir.z + camRight * m_inputDir.x).normalized;
 
-            float speed = GetMoveSpeed()*GetDashMultiplier();
+            float speed = GetMoveSpeed();
             Vector3 velocity = moveDir * speed;
 
             m_rb.velocity = new Vector3(velocity.x, m_rb.velocity.y, velocity.z);
@@ -299,6 +299,12 @@ public class MPlayerBase : EnemyBase
 
         yaw = 0f;
         pitch = 0f;
+        // ★追加：死んだ時にenabled=falseしたのを戻す
+        enabled = true;
+
+        // ★追加：初期化が止まってた場合に備える（安全策）
+        if (!isInitialized) StartCoroutine(InitializeAfterDelay());
+
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -409,12 +415,6 @@ public class MPlayerBase : EnemyBase
     {
         // サーバーで確実にHPを0にする
         Damage(GetHp());
-    }
-
-    //スフィアの加速用
-    public virtual float GetDashMultiplier()
-    {
-        return 1f;
     }
 
     public Sprite GetRespawnIcon() => m_respawnIcon;

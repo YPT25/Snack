@@ -14,143 +14,207 @@ public class SphereBox_Player : MPlayerBase
     [Header("攻撃判定用コライダー（isTrigger推奨）")]
     [SerializeField] private Collider m_attackCollider;
 
-    [Header("突撃の持続時間（秒）")]
-    [SerializeField] private float m_rollDuration = 1.0f;
-
-    [Header("突撃の力")]
-    [SerializeField] private float m_rollForce = 15f;
-
     [Header("突撃モード設定")]
-    // 突撃時間
     [SerializeField] private float dashDuration = 1.0f;
-    // 移動速度アップ倍率
     [SerializeField] private float dashSpeedMultiplier = 2f;
-    // クールタイム
     [SerializeField] private float dashCooldown = 3.0f;
 
-    private bool m_isDashing = false;
-    private bool m_canDash = true;
-
-    private bool m_isAttacking = false;
-    // ノックバックの威力
+    [Header("ノックバックの威力")]
     [SerializeField] private float knockbackForce = 20f;
+
+    // ===== クライアント側（見た目・操作） =====
+    private bool m_isDashingLocal = false;
+    private bool m_localHitSent = false;
+    private float m_dashEndLocalTime = 0f;
+    private float m_savedSpeedLocal = 0f;
+
+    // ===== サーバー側（確定・検証） =====
+    [SyncVar] private bool m_isDashingServer = false;
+    [SyncVar] private bool m_canDashServer = true;
+    private double m_dashEndServerTime = 0;
+
+    // サーバー検証用（緩めでOK）
+    private const float HIT_DISTANCE_EPS = 1.8f; // 体当たり許容距離（環境で調整）
 
     public override void Start()
     {
         base.Start();
 
-        // 見た目変更（クライアント側のみ）
-        if (isClient)
-        {
-            var rend = GetComponent<Renderer>();
-            if (rend != null)
-                rend.material.color = Color.blue;
-        }
-
+        // 初期はOFF（ローカルダッシュ中だけONにする）
         if (m_attackCollider != null)
             m_attackCollider.enabled = false;
 
-        // 敵種別を設定
         if (isServer)
             SetEnemyType(EnemyType.TYPE_B);
     }
 
     /// <summary>
-    /// 攻撃入力時の処理（クライアント側で呼ばれ、サーバーに通知）
+    /// 攻撃入力（MPlayerBaseのCmdAttackInputから「サーバーで」呼ばれるが、
+    /// A方式では “突進の見た目” はクライアントでやりたいので、
+    /// ここではサーバー側の「ダッシュ開始許可・状態記録」だけ行う。
     /// </summary>
     protected override void OnAttackInput()
     {
-        if (!m_isAttacking)
-            CmdStartRollAttack();
+        // ここはサーバーで呼ばれる
+        if (!isServer) return;
+
+        if (!m_canDashServer || m_isDashingServer) return;
+
+        // ダッシュ開始を全体の正当性として記録
+        m_isDashingServer = true;
+        m_canDashServer = false;
+        m_dashEndServerTime = NetworkTime.time + dashDuration;
+
+        // ローカル側に「見た目のダッシュ開始」を通知
+        // TargetRpcで本人だけに送る（他人の見た目はClientToServer同期で自然に見える）
+        TargetStartDash(connectionToClient, dashDuration, dashSpeedMultiplier);
+
+        // ダッシュ終了・クールダウン
+        StartCoroutine(ServerDashEndRoutine());
     }
 
-    /// <summary>
-    /// 攻撃入力をサーバーに伝える
-    /// </summary>
-    [Command]
-    private void CmdStartRollAttack()
+    [Server]
+    private IEnumerator ServerDashEndRoutine()
     {
-        if (!m_isAttacking)
-            StartCoroutine(DashModeCoroutine());
+        // ダッシュ時間待ち
+        yield return new WaitForSeconds(dashDuration);
+
+        m_isDashingServer = false;
+
+        // クールダウン
+        yield return new WaitForSeconds(dashCooldown);
+
+        m_canDashServer = true;
     }
 
-    /// <summary>
-    /// 転がって突撃する攻撃のコルーチン
-    /// </summary>
-    private IEnumerator DashModeCoroutine()
+    [TargetRpc]
+    private void TargetStartDash(NetworkConnection target, float duration, float speedMul)
     {
-        m_isDashing = true;
-        m_canDash = false;
+        // 既にダッシュ中なら無視
+        if (m_isDashingLocal) return;
 
-        // 移動速度アップ
-        float originalSpeed = GetMoveSpeed();
-        SetMoveSpeed(originalSpeed * dashSpeedMultiplier);
+        m_isDashingLocal = true;
+        m_localHitSent = false;
 
-        // 攻撃判定ON
+        m_savedSpeedLocal = GetMoveSpeed();
+        SetMoveSpeed(m_savedSpeedLocal * speedMul);
+
+        m_dashEndLocalTime = Time.time + duration;
+
         if (m_attackCollider != null)
             m_attackCollider.enabled = true;
 
-        // 突撃モード持続
-        yield return new WaitForSeconds(dashDuration);
+        // 通常移動は止めないと「プルプル」になりやすいので、ダッシュ中は止める
+        // （これで “方向に一瞬行って戻される” が消える）
+        iscanMove = false;
+    }
 
-        // 元に戻す
-        SetMoveSpeed(originalSpeed);
+    private void Update()
+    {
+        // ローカルダッシュ終了処理（時間切れ）
+        if (isLocalPlayer && m_isDashingLocal && Time.time >= m_dashEndLocalTime)
+        {
+            EndDashLocal();
+        }
+
+        base.Update();
+    }
+
+    public override void FixedUpdate()
+    {
+        // ローカルダッシュ中だけ「前進突進」を上書き
+        if (isLocalPlayer && m_isDashingLocal && m_rb != null)
+        {
+            Vector3 forward = transform.forward;
+            forward.y = 0f;
+            forward.Normalize();
+
+            float speed = GetMoveSpeed();
+            Vector3 v = m_rb.velocity;
+            v.x = forward.x * speed;
+            v.z = forward.z * speed;
+            m_rb.velocity = v;
+
+            return; 
+        }
+
+        base.FixedUpdate();
+    }
+
+    private void EndDashLocal()
+    {
+        m_isDashingLocal = false;
+
+        // 速度戻す
+        SetMoveSpeed(m_savedSpeedLocal);
+
         if (m_attackCollider != null)
             m_attackCollider.enabled = false;
 
-        m_isDashing = false;
+        // 通常移動復帰
+        iscanMove = true;
 
-        // クールタイム
-        yield return new WaitForSeconds(dashCooldown);
-        m_canDash = true;
+        // 水平成分だけ止めたい場合はここで止めてもOK
+        // if (m_rb != null) m_rb.velocity = new Vector3(0, m_rb.velocity.y, 0);
     }
 
-
-    /// <summary>
-    /// クライアント側にも攻撃フラグを同期
-    /// </summary>
-    [ClientRpc]
-    private void RpcSetAttackState(bool state)
-    {
-        m_isAttacking = state;
-        if (m_attackCollider != null)
-            m_attackCollider.enabled = state;
-    }
-
-    /// <summary>
-    /// 攻撃判定に相手が入った時の処理（サーバーでのみ有効）
-    /// </summary>
     private void OnTriggerEnter(Collider other)
     {
-        if (!m_isAttacking || !isServer) return;
+        // A方式：当たり検出は「ローカル」だけでOK（命中確定はサーバー）
+        if (!isLocalPlayer) return;
+        if (!m_isDashingLocal) return;
+        if (m_localHitSent) return;
 
-        CharacterBase target = other.GetComponent<CharacterBase>();
-        if (target != null && target != this)
+        // 自分自身は除外
+        if (other.attachedRigidbody == m_rb) return;
+
+        // ネットワーク対象だけ報告（サーバーで特定できるように）
+        NetworkIdentity ni = other.GetComponentInParent<NetworkIdentity>();
+        if (ni == null) return;
+        if (ni == netIdentity) return;
+
+        // 送信（多重送信防止）
+        m_localHitSent = true;
+        CmdReportDashHit(ni);
+    }
+
+    [Command]
+    private void CmdReportDashHit(NetworkIdentity targetNi)
+    {
+        if (targetNi == null) return;
+        if (!m_isDashingServer) return;                 // サーバー的にダッシュ中じゃなければ無効
+        if (NetworkTime.time > m_dashEndServerTime + 0.15) return; // 少しだけ猶予、基本は無効
+
+        // 距離検証（緩め）
+        float dist = Vector3.Distance(transform.position, targetNi.transform.position);
+        if (dist > HIT_DISTANCE_EPS) return;
+
+        // 対象取得
+        CharacterBase target = targetNi.GetComponent<CharacterBase>();
+        if (target == null) return;
+        if (target == this) return;
+
+        // ダメージ確定（サーバー）
+        Attack(target);
+
+        // ノックバック（サーバー）
+        Rigidbody rb = targetNi.GetComponentInParent<Rigidbody>();
+        if (rb != null)
         {
-            // ダメージ処理
-            Attack(target);
+            Vector3 dir = (targetNi.transform.position - transform.position);
+            dir.y = 0f;
+            if (dir.sqrMagnitude < 0.0001f) dir = transform.forward;
+            dir.Normalize();
 
-            // ノックバック
-            Rigidbody rb = other.attachedRigidbody;
-            if (rb != null)
-            {
-                // 吹っ飛ばす方向
-                Vector3 dir = (other.transform.position - transform.position).normalized;
-                dir.y = 1.3f;
-                dir.Normalize();
+            Vector3 knock = dir;
+            knock.y = 1.3f;
+            knock.Normalize();
 
-                // 速度リセット
-                rb.velocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
 
-                // 直接速度上書き
-                rb.velocity = dir * knockbackForce;
-
-                // AddForceの併用
-                rb.AddForce(dir * (knockbackForce * 0.5f), ForceMode.Impulse);
-            }
+            rb.velocity = knock * knockbackForce;
+            rb.AddForce(knock * (knockbackForce * 0.5f), ForceMode.Impulse);
         }
     }
 }
-
-

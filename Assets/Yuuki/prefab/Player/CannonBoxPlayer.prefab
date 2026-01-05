@@ -229,9 +229,9 @@ MonoBehaviour:
   tpsFOV: 60
   fpsFOV: 75
   projectilePrefab: {fileID: 4539971892963465637, guid: 99e3d69abb80f1b498edb5bfd5589fd3, type: 3}
-  muzzlePoint: {fileID: 0}
-  aimLine: {fileID: 0}
-  crossHair: {fileID: 0}
+  muzzlePoint: {fileID: 2061603932756944405}
+  aimLine: {fileID: 2862896567643714639}
+  crossHair: {fileID: 1513067217228217507}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   projectileSpeed: 20
