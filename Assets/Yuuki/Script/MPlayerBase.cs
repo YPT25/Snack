@@ -139,7 +139,7 @@ public class MPlayerBase : EnemyBase
         }
     }
 
-    protected virtual void FixedUpdate()
+    public virtual void FixedUpdate()
     {
         if (!isLocalPlayer || !isInitialized || isDead)
             return;
@@ -251,7 +251,7 @@ public class MPlayerBase : EnemyBase
 
             Vector3 moveDir = (camForward * m_inputDir.z + camRight * m_inputDir.x).normalized;
 
-            float speed = GetMoveSpeed();
+            float speed = GetMoveSpeed()*GetDashMultiplier();
             Vector3 velocity = moveDir * speed;
 
             m_rb.velocity = new Vector3(velocity.x, m_rb.velocity.y, velocity.z);
@@ -392,11 +392,14 @@ public class MPlayerBase : EnemyBase
     {
         if (!isLocalPlayer) return;
 
-        if (newValue)
+        if (newValue) // 死亡
         {
-            localDead = true;
+            // 入力・カメラ完全停止
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+
+            // 回転を止める
+            enabled = false; // ← 最強
         }
     }
 
@@ -406,6 +409,12 @@ public class MPlayerBase : EnemyBase
     {
         // サーバーで確実にHPを0にする
         Damage(GetHp());
+    }
+
+    //スフィアの加速用
+    public virtual float GetDashMultiplier()
+    {
+        return 1f;
     }
 
     public Sprite GetRespawnIcon() => m_respawnIcon;
