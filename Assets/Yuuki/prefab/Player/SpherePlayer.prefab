@@ -120,11 +120,9 @@ MonoBehaviour:
   tpsCameraOffset: {x: 0, y: 2, z: -4}
   tpsFOV: 60
   fpsFOV: 75
-  m_attackCollider: {fileID: 4356691595870940390}
-  m_rollDuration: 10
-  m_rollForce: 15
-  dashDuration: 1
-  dashSpeedMultiplier: 2
+  attackCollider: {fileID: 0}
+  dashDuration: 10
+  dashSpeedMultiplier: 10
   dashCooldown: 3
   knockbackForce: 200
 --- !u!114 &3642012660366611759
