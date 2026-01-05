@@ -32,8 +32,11 @@ public class CandyDisplayManager : MonoBehaviour
     [Tooltip("ドリンク(HP)")]
     [SerializeField] private Sprite _drink_hp;
 
-    [Tooltip("ドリンク(HP)")]
+    [Tooltip("ガム")]
     [SerializeField] private Sprite _gum;
+
+    [Tooltip("ドリンク(Stamoina)")]
+    [SerializeField] private Sprite _drink_stamina;
 
     [Tooltip("何もないときの透明画像")]
     [SerializeField] private Sprite _transparent;
@@ -166,10 +169,17 @@ public class CandyDisplayManager : MonoBehaviour
             return;
         }
 
-        // 投擲アイテム（ハンド）
+        // 投擲アイテム（ガム）
         if (type == ItemNameID.BUBBLEGUM)
         {
             target.sprite = _gum;
+            return;
+        }
+
+        // 缶バフ(スタミナ)
+        if(type == ItemNameID.DRINK_STAMINAN)
+        {
+            target.sprite = _drink_stamina;
             return;
         }
 

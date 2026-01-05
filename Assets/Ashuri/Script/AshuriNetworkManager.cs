@@ -66,6 +66,10 @@ public class AshuriNetworkManager : NetworkManager
 
         if (blockedSceneNames.Count == 0)
             Debug.LogWarning("途中参加禁止シーンのリストが空です。Inspectorで設定してください");
+
+
+        // プレハブの読み込み
+        RespawnSystem.EnsureInitialized();
     }
 
     // ====================================================
