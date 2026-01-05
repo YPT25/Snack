@@ -5202,7 +5202,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_bulletPrefab: {fileID: 7293739424478429504, guid: 2e477be186203c848a07d9f029be660c, type: 3}
-  m_sharpBulletPrefab: {fileID: 3050781961282403809, guid: 7185e7cd88290de49816f0370bffb259, type: 3}
+  m_sharpBulletPrefab: {fileID: 3611264004694672525, guid: 592465aeedb8c5140b981f4da66d41cc, type: 3}
   m_gunHead: {fileID: 5783984088484630716}
   m_isHitMesh: {fileID: 1200752164458331719}
   m_gunReticle: {fileID: 2749011610701441786}
