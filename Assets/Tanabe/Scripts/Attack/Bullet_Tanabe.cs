@@ -17,6 +17,7 @@ public class Bullet_Tanabe : NetworkBehaviour
     [SyncVar] private bool m_isDestroy = false;
 
     [SerializeField] private MeshRenderer m_meshRenderer;
+    private GameObject m_parentPlayer;
     [SerializeField] private GameObject m_hitEffectPrefab;
 
     // Start is called before the first frame update
@@ -47,7 +48,7 @@ public class Bullet_Tanabe : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if(m_isDestroy) { return; }
-        if (other.gameObject.GetComponent<Bullet_Tanabe>() != null) { return; }
+        if (other.gameObject.GetComponent<Bullet_Tanabe>() != null || other.gameObject == m_parentPlayer) { return; }
 
         if (!m_isPierce || other.gameObject.layer == 3 && other.gameObject.tag != "Pierce")
         {
@@ -89,6 +90,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.RandomScale();
         Debug.Log("Shot");
         m_meshRenderer.material.color = Color.gray;
+        m_parentPlayer = _gunHead.GetComponentInParent<Player_Tanabe>().gameObject;
         this.RpcSetBulletColor(Color.gray);
     }
 
@@ -104,6 +106,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         this.RandomScale();
 
         m_meshRenderer.material.color = Color.red;
+        m_parentPlayer = _gunHead.GetComponentInParent<Player_Tanabe>().gameObject;
         this.RpcSetBulletColor(Color.red);
     }
 
@@ -120,6 +123,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         //this.RandomScale();
 
         m_meshRenderer.material.color = Color.magenta;
+        m_parentPlayer = _gunHead.GetComponentInParent<Player_Tanabe>().gameObject;
         this.RpcSetBulletColor(Color.magenta);
     }
 

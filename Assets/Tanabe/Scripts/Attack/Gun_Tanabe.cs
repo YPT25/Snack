@@ -9,6 +9,7 @@ public class Gun_Tanabe : NetworkBehaviour
     private Player_Tanabe m_player;
     [SerializeField] private GameObject m_bulletPrefab;
     [SerializeField] private GameObject m_sharpBulletPrefab;
+    [SerializeField] private GameObject m_smokeEffectPrefab;
     [SerializeField] private GameObject m_gunHead;
     [SerializeField] private MeshRenderer m_isHitMesh;
     [SerializeField] private GunReticle_Tanabe m_gunReticle;
@@ -86,6 +87,11 @@ public class Gun_Tanabe : NetworkBehaviour
         {
             if (m_player.GetIsThrow() && m_player.GetRightHandsItem() != null)
             {
+                if (m_player.GetIsAiming() && m_player.GetRightHandsItem().GetItemNameID() == ItemStateMachine.ItemNameID.POPCORN)
+                {
+                    this.CmdSpawnShotEffect();
+                }
+
                 CmdChangeState_Item(m_player.GetRightHandsItem(), ItemStateMachine.ItemStateType.THROW);
                 m_player.SetRightHandsItem(null);
                 m_player.SetIsThrow(false);
@@ -174,6 +180,12 @@ public class Gun_Tanabe : NetworkBehaviour
         GameObject obj = Instantiate(m_bulletPrefab);
         obj.GetComponent<Bullet_Tanabe>().Shot(m_player.GetPower(), m_gunHead.transform);
         NetworkServer.Spawn(obj);
+        if (m_smokeEffectPrefab != null)
+        {
+            GameObject smokeEffect = Instantiate(m_smokeEffectPrefab, m_gunHead.transform.position + m_gunHead.transform.forward * 0.5f, Quaternion.identity);
+            NetworkServer.Spawn(smokeEffect);
+            this.RpcSetParentOfEffect(smokeEffect);
+        }
 
         obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
 
@@ -197,6 +209,13 @@ public class Gun_Tanabe : NetworkBehaviour
         }
         m_soundPlayer?.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
         m_soundPlayer?.SetSoundCount(10);
+
+        if (m_smokeEffectPrefab != null)
+        {
+            GameObject smokeEffect = Instantiate(m_smokeEffectPrefab, m_gunHead.transform.position + m_gunHead.transform.forward * 0.5f, Quaternion.identity);
+            NetworkServer.Spawn(smokeEffect);
+            this.RpcSetParentOfEffect(smokeEffect);
+        }
     }
 
     // êÎíe
@@ -210,6 +229,13 @@ public class Gun_Tanabe : NetworkBehaviour
         obj.GetComponent<Bullet_Tanabe>().RpcSetBulletColor(m_bulletColor[Random.Range(0, m_bulletColor.Length)]);
 
         m_soundPlayer?.RpcPlay3DSound(SoundPlayer_Tanabe.SoundNum.SHOT, m_player.transform.position);
+
+        if (m_smokeEffectPrefab != null)
+        {
+            GameObject smokeEffect = Instantiate(m_smokeEffectPrefab, m_gunHead.transform.position + m_gunHead.transform.forward * 0.5f, Quaternion.identity);
+            NetworkServer.Spawn(smokeEffect);
+            this.RpcSetParentOfEffect(smokeEffect);
+        }
     }
 
     private float GetRandomPoint()
@@ -221,6 +247,24 @@ public class Gun_Tanabe : NetworkBehaviour
     public Transform GetGunHead()
     {
         return m_gunHead.transform;
+    }
+
+    [Command]
+    public void CmdSpawnShotEffect()
+    {
+        if (m_smokeEffectPrefab != null)
+        {
+            GameObject smokeEffect = Instantiate(m_smokeEffectPrefab, m_gunHead.transform.position + m_gunHead.transform.forward * 0.5f, Quaternion.identity);
+            NetworkServer.Spawn(smokeEffect);
+            this.RpcSetParentOfEffect(smokeEffect);
+        }
+    }
+
+    [ClientRpc]
+    public void RpcSetParentOfEffect(GameObject _effect)
+    {
+        if(!_effect) { return; }
+        _effect.transform.parent = m_gunHead.transform;
     }
 
     // ÉAÉCÉeÉÄÇÃèÛë‘ëJà⁄
