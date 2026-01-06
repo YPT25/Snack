@@ -326,6 +326,8 @@ MonoBehaviour:
   damageInterval: 1
   damageAmount: 5
   attachOffset: {x: 0, y: 0.5, z: 0}
+  attackTrigger: {fileID: 3518469628562009830}
+  attachWindow: 0.35
 --- !u!114 &-2655463952413534563
 MonoBehaviour:
   m_ObjectHideFlags: 0

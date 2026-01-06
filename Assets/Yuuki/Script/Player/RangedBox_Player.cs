@@ -34,7 +34,8 @@ public class RangedBox_Player : MPlayerBase
     [Header("攻撃クールダウン(秒)")]
     [SerializeField] private float attackCooldown = 1.0f;
 
-    private bool canAttack = true;
+    private bool canAttackLocal = true;
+
     //デバック用切り替え
     private bool debugAimLine = false;
 
@@ -61,39 +62,69 @@ public class RangedBox_Player : MPlayerBase
     public override void Update()
     {
         base.Update();
+
         if (!isLocalPlayer) return;
 
         // FPS状態に合わせてUI管理
         UpdateCrossHair();
         UpdateAimLine();
 
-        // =================== デバッグ用 AimLine トグル ===================
+        // ====== 射撃入力：ローカルで照準計算 → Cmdでサーバーへ ======
+        if (LegacyInputHelper.GetAttackDown())
+        {
+            TryShootLocal();
+        }
+
+        // デバッグ AimLine トグル
         if (Input.GetKeyDown(KeyCode.P))
         {
             debugAimLine = !debugAimLine;
-
-            if (aimLine != null)
-                aimLine.enabled = debugAimLine;
-
+            if (aimLine != null) aimLine.enabled = debugAimLine;
             Debug.Log("AimLine Debug Mode: " + debugAimLine);
         }
     }
 
+    private void TryShootLocal()
+    {
+        if (!canAttackLocal) return;
+        if (projectilePrefab == null || muzzlePoint == null) return;
+
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        // FPS/TPS問わず、カメラ前方で照準
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, 200f) ? hit.point : ray.GetPoint(200f);
+
+        Vector3 dir = (targetPoint - muzzlePoint.position).normalized;
+
+        // ローカルのクールダウン
+        StartCoroutine(LocalCooldownRoutine());
+
+        // サーバーに発射を依頼（弾生成はサーバー）
+        CmdShoot(dir);
+    }
+
+    private IEnumerator LocalCooldownRoutine()
+    {
+        canAttackLocal = false;
+        yield return new WaitForSeconds(attackCooldown);
+        canAttackLocal = true;
+    }
+
+    // ====== UI ======
     private void UpdateCrossHair()
     {
         if (crossHair == null) return;
-        crossHair.SetActive(GetIsFPS());   // ← FPS時のみ ON
+        crossHair.SetActive(GetIsFPS());   // FPS時のみON
     }
 
-    // ============================
-    //   レティクル & バレットライン
-    // ============================
     private void UpdateAimLine()
     {
         if (aimLine == null || muzzlePoint == null) return;
-        if (!debugAimLine || aimLine == null) return;
+        if (!debugAimLine) return;
 
-        if (!GetIsFPS())  // ← FPS時のみ表示
+        if (!GetIsFPS())
         {
             aimLine.enabled = false;
             return;
@@ -102,13 +133,21 @@ public class RangedBox_Player : MPlayerBase
         aimLine.enabled = true;
         aimLine.SetPosition(0, muzzlePoint.position);
 
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        Camera cam = Camera.main;
+        if (cam == null)
+        {
+            aimLine.SetPosition(1, muzzlePoint.position + transform.forward * 10f);
+            aimLine.startColor = normalColor;
+            aimLine.endColor = normalColor;
+            return;
+        }
+
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
 
         if (Physics.Raycast(ray, out RaycastHit hit, 200f))
         {
             aimLine.SetPosition(1, hit.point);
 
-            // ★ 当たりが「敵キャラ」なら赤
             if (hit.collider.GetComponent<CharacterBase>() != null)
             {
                 aimLine.startColor = hitColor;
@@ -128,62 +167,38 @@ public class RangedBox_Player : MPlayerBase
         }
     }
 
-    // ============================
-    //   射撃処理
-    // ============================
-    protected override void OnAttackInput()
-    {
-        if (!canAttack) return;
-
-        // FPS/TPS問わず正確に照準方向
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        Vector3 targetPoint;
-
-        if (Physics.Raycast(ray, out RaycastHit hit, 200f))
-            targetPoint = hit.point;
-        else
-            targetPoint = ray.GetPoint(200f);
-
-        Vector3 dir = (targetPoint - muzzlePoint.position).normalized;
-
-        CmdShoot(dir);
-    }
-
+    // ====== サーバー：弾生成 ======
     [Command]
     private void CmdShoot(Vector3 dir)
     {
-        if (!canAttack || projectilePrefab == null)
-            return;
+        if (projectilePrefab == null || muzzlePoint == null) return;
 
-        StartCoroutine(ShootRoutine(dir));
+        // （任意）簡易チート対策：dirが変な値なら拒否
+        if (dir.sqrMagnitude < 0.9f || dir.sqrMagnitude > 1.1f) return;
+
+        StartCoroutine(ServerShootRoutine(dir));
     }
 
-    private IEnumerator ShootRoutine(Vector3 dir)
+    [Server]
+    private IEnumerator ServerShootRoutine(Vector3 dir)
     {
-        canAttack = false;
-        RpcSetAttackCooldown(false);
-
         GameObject proj = Instantiate(projectilePrefab, muzzlePoint.position, muzzlePoint.rotation);
+
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         Projectile projectile = proj.GetComponent<Projectile>();
 
         if (projectile != null)
-            projectile.Initialize(this, GetPower());
+            projectile.Initialize(this, GetPower()); // ← Projectal.csの定義に合わせる :contentReference[oaicite:4]{index=4}
 
         if (rb != null)
             rb.velocity = dir * projectileSpeed;
 
         NetworkServer.Spawn(proj);
 
-        yield return new WaitForSeconds(attackCooldown);
-
-        canAttack = true;
-        RpcSetAttackCooldown(true);
+        // サーバー側でも最低限の連射抑制をしたいなら、ここで待ってもOK
+        yield return null;
     }
 
-    [ClientRpc]
-    private void RpcSetAttackCooldown(bool _canAttack)
-    {
-        canAttack = _canAttack;
-    }
+    // ★重要：MPlayerBase経由の攻撃は使わない（サーバーでCamera.mainを触らない）
+    protected override void OnAttackInput() { }
 }
