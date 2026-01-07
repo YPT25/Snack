@@ -241,6 +241,31 @@ public class MPlayerBase : EnemyBase
         cam.transform.LookAt(transform.position + Vector3.up * 1.5f);
     }
 
+    // カメラがステージにぶつかっていたら位置を調整する
+    private Vector3 PositionAdjustment(Vector3 targetPos, Vector3 desiredPos)
+    {
+        Vector3 direction = desiredPos - targetPos;
+        float minDistance = direction.magnitude;
+
+        RaycastHit[] hits = Physics.RaycastAll(
+            targetPos,
+            direction.normalized,
+            minDistance
+        );
+
+        float closest = minDistance;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i].collider.gameObject.layer != 3) continue;
+
+            if (hits[i].distance < closest)
+                closest = hits[i].distance;
+        }
+
+        return targetPos + direction.normalized * closest;
+    }
+
     protected virtual void Move()
     {
         if (m_rb == null || cam == null) return;
