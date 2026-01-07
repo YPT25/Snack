@@ -186,4 +186,22 @@ public class CandyDisplayManager : MonoBehaviour
         // 何もない時は透明
         target.sprite = _transparent;
     }
+
+    /// <summary>
+    /// ローカルプレイヤーの取得
+    /// </summary>
+    /// <param name="_localPlayer"></param>
+    public void SetLocalPlayer(Player_Tanabe _localPlayerTanabe)
+    {
+        _localPlayer = _localPlayerTanabe;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_possession"></param>
+    public void SetPossession(PossessionManager_Tanabe _possessionTanabe)
+    {
+        _possession = _possessionTanabe;
+    }
 }
