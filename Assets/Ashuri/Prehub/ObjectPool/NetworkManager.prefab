@@ -113,8 +113,12 @@ MonoBehaviour:
   timeInterpolationGui: 0
   playerPrefab1: {fileID: 59553442280881770, guid: 3d7b0578a08fe8443b02f11936765441, type: 3}
   playerPrefab2: {fileID: 6831450580034169496, guid: 87013ce5ac1429c49bc1079f9f5e7882, type: 3}
-  gameInProgress: 0
+  playerFirst: {fileID: 0}
   blockedSceneNames: []
+  loadingVideoPlayer: {fileID: 0}
+  gameInProgress: 0
+  videoFinished: 0
+  connectionFinished: 0
 --- !u!114 &-4135778061197019778
 MonoBehaviour:
   m_ObjectHideFlags: 0
