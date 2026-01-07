@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using static Player_Tanabe;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// ローカルプレイヤーの武器に応じて UI を切り替えるクラス
@@ -66,7 +67,7 @@ public class WeaponDisplayManager : MonoBehaviour
     }
 
     // 武器 UI を更新する処理
-    private void UpdateWeaponUI(WeaponID id)
+    public void UpdateWeaponUI(WeaponID id)
     {
         // 銃表示
         if (id == WeaponID.GUN)
@@ -75,5 +76,14 @@ public class WeaponDisplayManager : MonoBehaviour
         // ハンマー表示
         if (id == WeaponID.HAMMER)
             _weaponImage.sprite = _hammerSprite;
+    }
+
+    /// <summary>
+    /// ローカルプレイヤーの取得
+    /// </summary>
+    /// <param name="_localPlayer"></param>
+    public void SetLocalPlayer(Player_Tanabe _localPlayerTanabe)
+    {
+        _localPlayer = _localPlayerTanabe;
     }
 }

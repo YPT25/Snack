@@ -179,4 +179,13 @@ public class HPUIManager : MonoBehaviour
             _lastLoggedTargetHP = _targetHP;
         }
     }
+
+    /// <summary>
+    /// ローカルプレイヤーの取得
+    /// </summary>
+    /// <param name="_localPlayer"></param>
+    public void SetLocalPlayer(Player_Tanabe _localPlayerTanabe)
+    {
+        _localPlayer = _localPlayerTanabe;
+    }
 }
