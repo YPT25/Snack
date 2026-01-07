@@ -120,6 +120,11 @@ MonoBehaviour:
   tpsCameraOffset: {x: 0, y: 2, z: -4}
   tpsFOV: 60
   fpsFOV: 75
+  cameraCollisionBuffer: 0.05
+  cameraCollisionRadius: 0.25
+  cameraSmooth: 15
+  fadeStartDistance: 1.2
+  fadeEndDistance: 0.6
   m_attackCollider: {fileID: 4356691595870940390}
   dashDuration: 10
   dashSpeedMultiplier: 10
@@ -254,7 +259,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -9130586711530211351, guid: 70aca5fc01fc5054abb3d1fa36e3340e, type: 3}
+  - {fileID: 2100000, guid: 31687cf239592274f90d278299ce21a4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -228,6 +228,11 @@ MonoBehaviour:
   tpsCameraOffset: {x: 0, y: 2, z: -4}
   tpsFOV: 60
   fpsFOV: 75
+  cameraCollisionBuffer: 0.05
+  cameraCollisionRadius: 0.25
+  cameraSmooth: 15
+  fadeStartDistance: 1.2
+  fadeEndDistance: 0.6
   projectilePrefab: {fileID: 4539971892963465637, guid: 99e3d69abb80f1b498edb5bfd5589fd3, type: 3}
   muzzlePoint: {fileID: 2061603932756944405}
   aimLine: {fileID: 2862896567643714639}
@@ -602,7 +607,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -9130586711530211351, guid: 8c58ca02daac7bc40be825fce64a351f, type: 3}
+  - {fileID: 2100000, guid: 937b76d22b4673440838a067661ead5e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

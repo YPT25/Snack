@@ -177,7 +177,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 26e07f33b64eec746b245e619c11a00f, type: 2}
+  - {fileID: 2100000, guid: 1e51dfb978afd4d44baf93c344a02341, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -320,6 +320,11 @@ MonoBehaviour:
   tpsCameraOffset: {x: 0, y: 2, z: -4}
   tpsFOV: 60
   fpsFOV: 75
+  cameraCollisionBuffer: 0.05
+  cameraCollisionRadius: 0.25
+  cameraSmooth: 15
+  fadeStartDistance: 1.2
+  fadeEndDistance: 0.6
   jumpForce: 10
   forwardForce: 3
   debuffDuration: 3
@@ -328,6 +333,11 @@ MonoBehaviour:
   attachOffset: {x: 0, y: 0.5, z: 0}
   attackTrigger: {fileID: 3518469628562009830}
   attachWindow: 0.35
+  groundCheckDistance: 0.6
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  fastFallForce: 12
 --- !u!114 &-2655463952413534563
 MonoBehaviour:
   m_ObjectHideFlags: 0

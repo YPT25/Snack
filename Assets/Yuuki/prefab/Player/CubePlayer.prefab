@@ -120,10 +120,14 @@ MonoBehaviour:
   tpsCameraOffset: {x: 0, y: 2, z: -4}
   tpsFOV: 60
   fpsFOV: 75
+  cameraCollisionBuffer: 0.05
+  cameraCollisionRadius: 0.25
+  cameraSmooth: 15
+  fadeStartDistance: 1.2
+  fadeEndDistance: 0.6
   modelRoot: {fileID: 4249264665814639420}
-  m_attackCollider: {fileID: 973018885316354060}
-  m_hitCollider: {fileID: 7191452874794164652}
-  m_attackDuration: 0.5
+  attackCollider: {fileID: 0}
+  attackDuration: 0.4
   attackPivot: {fileID: 3785700590445734431}
 --- !u!114 &6173056339328657612
 MonoBehaviour:
@@ -286,7 +290,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -9130586711530211351, guid: 5e4e041eb8886ba4daec2eb4f7f295b0, type: 3}
+  - {fileID: 2100000, guid: 782cab22ebbbe2d488db3817cf1573a6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
