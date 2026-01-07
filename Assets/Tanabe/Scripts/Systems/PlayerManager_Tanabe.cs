@@ -4,15 +4,27 @@ using UnityEngine;
 
 public class PlayerManager_Tanabe : MonoBehaviour
 {
+    public class PlayerUIs
+    {
+        public CandyDisplayManager  ui_1;
+        public WeaponDisplayManager ui_2;
+        public SetItem_Ashuri       ui_3;
+        public HPUIManager          ui_4;
+        public StaminaBar_Ashuri    ui_5;
+    }
+
     private Player_Tanabe m_localPlayer;
     private List<Player_Tanabe> m_players = new List<Player_Tanabe>();
     private TPSCameraController_Tanabe m_cameraController;
     private int m_index = 0;
 
+    private GameObject m_playerUI;
+    private PlayerUIs m_uiData;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -23,22 +35,32 @@ public class PlayerManager_Tanabe : MonoBehaviour
         {
             if (!Input.GetButtonDown("Jump")) { return; }
 
-            if(m_index >= m_players.Count - 1)
+            if(m_index >= m_players.Count/* - 1*/)
             {
                 m_index = 0;
             }
             else
             {
-                for (int i = m_index + 1; i < m_players.Count; i++)
-                {
-                    if (m_players[i].GetHp() > 0.0f)
-                    {
-                        m_index = i;
-                        break;
-                    }
-                }
+                m_index++;
+                //for (int i = m_index + 1; i < m_players.Count; i++)
+                //{
+                //    if (m_players[i].GetHp() > 0.0f)
+                //    {
+                //        m_index = i;
+                //        break;
+                //    }
+                //}
             }
-            m_cameraController.SetTarget(m_players[m_index].transform);
+            //m_cameraController.SetTarget(m_players[m_index].transform);
+
+            if (m_index >= m_players.Count)
+            {
+                m_cameraController.SetTarget(m_localPlayer.transform);
+            }
+            else
+            {
+                m_cameraController.SetTarget(m_players[m_index].transform);
+            }
         }
     }
 
@@ -55,5 +77,42 @@ public class PlayerManager_Tanabe : MonoBehaviour
     public void SetCameraController(TPSCameraController_Tanabe _cameraController)
     {
         m_cameraController = _cameraController;
+    }
+
+    // プレイヤーのUIオブジェクトとその中身を探す
+    private bool FindPlayerUI()
+    {
+        m_playerUI = GameObject.Find("ThreePlayerUI");
+        if(m_playerUI == null)
+        {
+            return false;
+        }
+
+        m_uiData.ui_1 = m_playerUI.GetComponentInChildren<CandyDisplayManager>();
+        m_uiData.ui_2 = m_playerUI.GetComponentInChildren<WeaponDisplayManager>();
+        m_uiData.ui_3 = m_playerUI.GetComponentInChildren<SetItem_Ashuri>();
+        m_uiData.ui_4 = m_playerUI.GetComponentInChildren<HPUIManager>();
+        m_uiData.ui_5 = m_playerUI.GetComponentInChildren<StaminaBar_Ashuri>();
+
+        return true;
+    }
+
+    // UIが参照するプレイヤーを更新する
+    private void UpdateUI(Player_Tanabe _playerData)
+    {
+        // UIオブジェクトが見つからなかったら更新しない
+        if(!m_playerUI && !this.FindPlayerUI())
+        {
+            return;
+        }
+
+        // 参照するプレイヤーの更新
+        /*
+        m_uiData.ui_1.SetPlayer(_playerData);
+        m_uiData.ui_2.SetPlayer(_playerData);
+        m_uiData.ui_3.SetPlayer(_playerData);
+        m_uiData.ui_4.SetPlayer(_playerData);
+        m_uiData.ui_5.SetPlayer(_playerData);
+        */
     }
 }

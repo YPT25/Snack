@@ -5,6 +5,8 @@ using DG.Tweening;  //DOTween‚ðŽg‚¤‚½‚ß‚ÉŒÄ‚Ño‚µ‚½
 
 public class TitleAnimation: MonoBehaviour
 {
+    private bool m_isAppeal = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -13,9 +15,23 @@ public class TitleAnimation: MonoBehaviour
             .SetEase(Ease.InOutBack)
             .OnKill(() =>
             {
+                m_isAppeal = true;
+                this.transform.position = new Vector3(2.4f, 8.0f, -14.7f);
                 this.Appeal();
             }
             );
+    }
+
+    void Update()
+    {
+        if(Input.GetButtonDown("Jump") && !m_isAppeal)
+        {
+            DOTween.CompleteAll();
+            GameObject titleManager = GameObject.Find("TitleManager");
+
+            //titleManager?.GetComponent<TitlePlayVideo>().StartVideo();
+            titleManager?.GetComponent<TitlePlayVideo>().StartInput();
+        }
     }
 
     public void Appeal()
