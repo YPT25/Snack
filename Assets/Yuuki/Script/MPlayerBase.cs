@@ -213,7 +213,12 @@ public class MPlayerBase : EnemyBase
 
         yaw += mouseX;
         pitch -= mouseY;
-        pitch = Mathf.Clamp(pitch, -80f, 85f);
+
+        // TPSだけ上方向を抑える（裏返り防止）
+        float minPitch = isFPS ? -80f : -35f;
+        float maxPitch = isFPS ? 85f : 55f;
+
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         // ===== プレイヤー水平回転 =====
         Quaternion targetRot = Quaternion.Euler(0, yaw, 0);
