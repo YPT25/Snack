@@ -43,7 +43,7 @@ public class TitlePlayVideo : MonoBehaviour
     }
 
     // クリックするまでの待機時間
-    void StartInput()
+    public void StartInput()
     {
         isScene = true;
         OnImageAlpha();
@@ -51,7 +51,7 @@ public class TitlePlayVideo : MonoBehaviour
     }
 
     //
-    void StartVideo()
+    public void StartVideo()
     {
         Debug.Log(time + "秒起ちました");
         isVideoPlaying = true;
@@ -170,7 +170,7 @@ public class TitlePlayVideo : MonoBehaviour
             //マウスクリックとPADの〇×□▲に対応するのが反応したとき
             if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button0) ||
                 Input.GetKeyDown(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Joystick1Button2) ||
-                Input.GetKeyDown(KeyCode.Joystick1Button3))
+                Input.GetKeyDown(KeyCode.Joystick1Button3) || Input.GetButtonDown("Jump"))
             {
 
                 SceneManager.LoadScene(SceneName);
