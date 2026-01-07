@@ -411,6 +411,7 @@ public class Player_Tanabe : CharacterBase
 
         //スコアの変動の表示
         this.AddPoint();
+        this.GetScore();
     }
 
     // 更新関数
@@ -522,6 +523,17 @@ public class Player_Tanabe : CharacterBase
         if (sweetScore != null)
         {
             sweetScore.AddScore(m_sweetScore);
+        }
+    }
+
+    // スコアを取得させる
+    public void GetScore()
+    {
+        // マネージャ等にポイントを渡す
+        TeamScoreScript teamScoreScript = FindObjectOfType<TeamScoreScript>();
+        if (teamScoreScript != null)
+        {
+            teamScoreScript.AddScore(m_sweetScore);
         }
     }
 

@@ -129,7 +129,7 @@ public class StaminaBar_Ashuri : MonoBehaviour
                 if (!Mathf.Approximately(newStamina, _targetStamina))
                 {
                     // ターゲットStamina が変わったらログを出す（変化があれば）
-                    Debug.Log($"[StaminaUIManager] ターゲットStaminaが変化しました old:{_targetStamina} -> new:{newStamina}");
+                    //Debug.Log($"[StaminaUIManager] ターゲットStaminaが変化しました old:{_targetStamina} -> new:{newStamina}");
                     _targetStamina = newStamina;
                 }
             }
@@ -170,7 +170,7 @@ public class StaminaBar_Ashuri : MonoBehaviour
         // デバッグ：ターゲットStamina が変わったときだけログ（spam を避ける）
         if (!Mathf.Approximately(_lastLoggedTargetStamina, _targetStamina))
         {
-            Debug.Log($"[StaminaUIManager] UI反映: normalized={normalized:F3} current:{_currentStamina:F2} target:{_targetStamina:F2} max:{_maxStamina:F2}");
+            //Debug.Log($"[StaminaUIManager] UI反映: normalized={normalized:F3} current:{_currentStamina:F2} target:{_targetStamina:F2} max:{_maxStamina:F2}");
             _lastLoggedTargetStamina = _targetStamina;
         }
     }

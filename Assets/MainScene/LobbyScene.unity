@@ -16263,7 +16263,7 @@ PrefabInstance:
     - target: {fileID: 1588823231147438968, guid: d8cbf8d544f7f624c88b652c90f16a9a, type: 3}
       propertyPath: _touchMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: ca8bfeaf73963fc468060050cbffed7d, type: 2}
+      objectReference: {fileID: 2100000, guid: 04026e4d86dd4b4419e16f0104b27c9c, type: 2}
     - target: {fileID: 5561589474407430013, guid: d8cbf8d544f7f624c88b652c90f16a9a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -95.907684

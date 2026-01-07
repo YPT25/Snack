@@ -75,7 +75,7 @@ public class HPUIManager : MonoBehaviour
             _localPlayer = go.GetComponent<CharacterBase>();
             if (_localPlayer != null)
             {
-                Debug.Log("[HPUIManager] NetworkClient.connection.identity からローカルプレイヤーを検出しました: " + go.name);
+                //Debug.Log("[HPUIManager] NetworkClient.connection.identity からローカルプレイヤーを検出しました: " + go.name);
             }
         }
 
@@ -97,7 +97,7 @@ public class HPUIManager : MonoBehaviour
                 }
                 if (_localPlayer == null) yield return null;
             }
-            Debug.Log("[HPUIManager] FindObjectsOfType でローカルプレイヤーを検出しました: " + _localPlayer.name);
+            //Debug.Log("[HPUIManager] FindObjectsOfType でローカルプレイヤーを検出しました: " + _localPlayer.name);
         }
 
         // ローカルプレイヤーが得られたら初期値をセット
@@ -107,7 +107,7 @@ public class HPUIManager : MonoBehaviour
             _currentHP = _localPlayer.GetHp();
             _targetHP = _currentHP;
             _lastLoggedTargetHP = _targetHP - 1f; // 強制ログ
-            Debug.Log($"[HPUIManager] 初期HPセット max:{_maxHP} cur:{_currentHP}");
+            //Debug.Log($"[HPUIManager] 初期HPセット max:{_maxHP} cur:{_currentHP}");
         }
         else
         {
