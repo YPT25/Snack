@@ -41,13 +41,25 @@ public class MPlayerBase : EnemyBase
     // ===== FPS視点用 =====
     [Header("FPS視点設定")]
     [SerializeField] private Transform fpsCameraPoint;
-    [SerializeField] private Vector3 tpsCameraOffset = new Vector3(0, 2f, -4f);
+    [SerializeField] private Vector3 tpsCameraOffset = new Vector3(0, 2f, -5f);
 
     [SerializeField] private float tpsFOV = 60f;
     [SerializeField] private float fpsFOV = 75f;
     private bool isFPS = false;
     // FPS時に自分の体を消すため
     private MeshRenderer[] myRenderers;
+
+    [Header("TPSカメラ衝突回避")]
+    [SerializeField] private float cameraCollisionBuffer = 0.05f;
+    [SerializeField] private float cameraCollisionRadius = 0.25f;
+    [SerializeField] private float cameraSmooth = 15f;
+
+    [Header("TPS自キャラ透過")]
+    [SerializeField] private float fadeStartDistance = 1.2f; // これより近づいたら透過
+    [SerializeField] private float fadeEndDistance = 0.6f;   // 完全に消える距離
+
+    private float currentCamDistance;
+
 
     public override void OnStartLocalPlayer()
     {
@@ -76,6 +88,7 @@ public class MPlayerBase : EnemyBase
         if (isLocalPlayer)
         {
             cam = Camera.main;
+            currentCamDistance = tpsCameraOffset.magnitude;
             StartCoroutine(InitializeAfterDelay());
         }
         if (isLocalPlayer)
@@ -204,29 +217,36 @@ public class MPlayerBase : EnemyBase
     {
         if (cam == null) return;
 
-        // LegacyInputHelper 側で padDeadZone / padSensitivity 等を反映している
+        // ===== 入力取得 =====
         Vector2 lookAxis = LegacyInputHelper.GetLookAxis();
-
-        // ここでマウスSensitivity を適用（padで戻された値は既に padMultiplier がかかっている）
         float mouseX = lookAxis.x * mouseSensitivity;
         float mouseY = lookAxis.y * mouseSensitivity;
 
         yaw += mouseX;
         pitch -= mouseY;
 
-        // TPSだけ上方向を抑える（裏返り防止）
-        float minPitch = isFPS ? -80f : -35f;
+        // ===== FPS / TPS で別クランプ=====
+        float minPitch = isFPS ? -80f : -85f;
         float maxPitch = isFPS ? 85f : 55f;
-
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
-        // ===== プレイヤー水平回転 =====
+        // ===== プレイヤー回転（水平のみ）=====
         Quaternion targetRot = Quaternion.Euler(0, yaw, 0);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSmooth);
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            targetRot,
+            Time.deltaTime * rotationSmooth
+        );
 
-        // ===== FPS視点 =====
+        // =========================================================
+        // FPS
+        // =========================================================
         if (isFPS)
         {
+            // FPS時は自分の体を非表示（従来通り）
+            foreach (var r in myRenderers)
+                r.enabled = false;
+
             if (fpsCameraPoint != null)
             {
                 cam.transform.position = fpsCameraPoint.position;
@@ -235,10 +255,55 @@ public class MPlayerBase : EnemyBase
             return;
         }
 
-        // ===== TPS視点 =====
-        Vector3 offset = Quaternion.Euler(pitch, yaw, 0) * tpsCameraOffset;
-        cam.transform.position = transform.position + offset;
-        cam.transform.LookAt(transform.position + Vector3.up * 1.5f);
+        // TPS時は「非表示にしない」（透過はチームのシェーダ担当へ）
+        foreach (var r in myRenderers)
+            r.enabled = true;
+
+        // =========================================================
+        // TPS（壁めり込み防止：Tanabe方式流用）
+        // =========================================================
+
+        // 見る中心（頭あたり）
+        Vector3 pivot = transform.position + Vector3.up * 1.5f;
+        Quaternion camRot = Quaternion.Euler(pitch, yaw, 0);
+
+        // 理想のカメラ位置
+        Vector3 desiredPos = pivot + camRot * tpsCameraOffset;
+
+        Vector3 dir = desiredPos - pivot;
+        float desiredDist = dir.magnitude;
+        if (desiredDist < 0.001f) desiredDist = 0.001f;
+        dir.Normalize();
+
+        // 壁があれば距離を詰める
+        float hitDist = desiredDist;
+
+        RaycastHit[] hits = Physics.RaycastAll(pivot, dir, desiredDist);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            // ステージレイヤー（同一プロジェクト前提）
+            if (hits[i].collider.gameObject.layer != 3) continue;
+
+            if (hits[i].distance < hitDist)
+                hitDist = hits[i].distance;
+        }
+
+        // 壁にめり込まないよう少し手前へ
+        float buffer = 0.05f;
+        hitDist = Mathf.Max(0.1f, hitDist - buffer);
+
+        // スムーズに距離を追従（戻りも自然）
+        // ※HandleCameraはUpdateで回っているので Time.deltaTime でOK
+        if (currentCamDistance <= 0.001f)
+            currentCamDistance = desiredDist;
+
+        float smooth = 15f;
+        currentCamDistance = Mathf.Lerp(currentCamDistance, hitDist, Time.deltaTime * smooth);
+
+        Vector3 finalPos = pivot + dir * currentCamDistance;
+
+        cam.transform.position = finalPos;
+        cam.transform.LookAt(pivot);
     }
 
     // カメラがステージにぶつかっていたら位置を調整する
