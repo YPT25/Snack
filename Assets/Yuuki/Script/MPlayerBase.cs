@@ -210,6 +210,7 @@ public class MPlayerBase : EnemyBase
         OnAttackInput();
     }
 
+
     /// <summary>
     /// カメラとプレイヤーの回転処理
     /// </summary>
@@ -225,8 +226,8 @@ public class MPlayerBase : EnemyBase
         yaw += mouseX;
         pitch -= mouseY;
 
-        // ===== FPS / TPS で別クランプ=====
-        float minPitch = isFPS ? -80f : -85f;
+        // ===== FPS / TPS で別クランプ（あなたのA案を維持）=====
+        float minPitch = isFPS ? -80f : -35f;
         float maxPitch = isFPS ? 85f : 55f;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
@@ -255,55 +256,59 @@ public class MPlayerBase : EnemyBase
             return;
         }
 
-        // TPS時は「非表示にしない」（透過はチームのシェーダ担当へ）
+        // TPS時は「非表示にしない」（透過は別シェーダ担当へ）
         foreach (var r in myRenderers)
             r.enabled = true;
 
         // =========================================================
-        // TPS（壁めり込み防止：Tanabe方式流用）
+        // TPS（Tanabeと同形：RaycastAll + layer==3 + _up補正）
         // =========================================================
 
-        // 見る中心（頭あたり）
-        Vector3 pivot = transform.position + Vector3.up * 1.5f;
+        // Tanabeの「target.position」を基準にする
+        Vector3 targetPos = transform.position;
+
+        // Tanabeの「rotation * offset」で理想位置を作る
         Quaternion camRot = Quaternion.Euler(pitch, yaw, 0);
+        Vector3 desiredPos = targetPos + camRot * tpsCameraOffset;
 
-        // 理想のカメラ位置
-        Vector3 desiredPos = pivot + camRot * tpsCameraOffset;
+        // target→desired の方向と距離
+        Vector3 direction = desiredPos - targetPos;
+        float maxDistance = direction.magnitude;
+        if (maxDistance < 0.001f) maxDistance = 0.001f;
 
-        Vector3 dir = desiredPos - pivot;
-        float desiredDist = dir.magnitude;
-        if (desiredDist < 0.001f) desiredDist = 0.001f;
-        dir.Normalize();
+        Vector3 dirN = direction / maxDistance;
 
-        // 壁があれば距離を詰める
-        float hitDist = desiredDist;
+        // まず理想位置へ
+        cam.transform.position = desiredPos;
 
-        RaycastHit[] hits = Physics.RaycastAll(pivot, dir, desiredDist);
+        // RaycastAll（Tanabeと同じ：targetからdesiredへ）
+        RaycastHit[] hits = Physics.RaycastAll(targetPos, dirN, maxDistance);
+
+        float minDistance = maxDistance;
         for (int i = 0; i < hits.Length; i++)
         {
             // ステージレイヤー（同一プロジェクト前提）
             if (hits[i].collider.gameObject.layer != 3) continue;
 
-            if (hits[i].distance < hitDist)
-                hitDist = hits[i].distance;
+            if (hits[i].distance < minDistance)
+                minDistance = hits[i].distance;
         }
 
-        // 壁にめり込まないよう少し手前へ
-        float buffer = 0.05f;
-        hitDist = Mathf.Max(0.1f, hitDist - buffer);
+        // ヒットしたなら、その距離に寄せる（Tanabeは buffer なし）
+        if (minDistance < maxDistance)
+        {
+            Vector3 adjustedPos = targetPos + dirN * minDistance;
+            cam.transform.position = adjustedPos;
 
-        // スムーズに距離を追従（戻りも自然）
-        // ※HandleCameraはUpdateで回っているので Time.deltaTime でOK
-        if (currentCamDistance <= 0.001f)
-            currentCamDistance = desiredDist;
-
-        float smooth = 15f;
-        currentCamDistance = Mathf.Lerp(currentCamDistance, hitDist, Time.deltaTime * smooth);
-
-        Vector3 finalPos = pivot + dir * currentCamDistance;
-
-        cam.transform.position = finalPos;
-        cam.transform.LookAt(pivot);
+            // Tanabeの _up 補正：近いほど見る中心が下がる
+            float up = minDistance / maxDistance;
+            cam.transform.LookAt(targetPos + Vector3.up * 1.5f * up);
+        }
+        else
+        {
+            // 壁が無い時は通常のLookAt
+            cam.transform.LookAt(targetPos + Vector3.up * 1.5f);
+        }
     }
 
     // カメラがステージにぶつかっていたら位置を調整する
