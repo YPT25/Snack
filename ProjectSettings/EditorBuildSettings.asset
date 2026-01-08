@@ -23,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/MainScene/3VS1ModeGame.unity
     guid: 5ba0f7bf06955ac4db8b00791ab0b0f1
+  - enabled: 1
+    path: Assets/Tanabe/Scenes/TextTestScene.unity
+    guid: b29af0bd48e004842a0c596ca9c9d589
   - enabled: 0
     path: Assets/Tanabe/Scenes/TanabeScene.unity
     guid: 4a00efdebdc72dd4b9fe50b8d8f0ea90
