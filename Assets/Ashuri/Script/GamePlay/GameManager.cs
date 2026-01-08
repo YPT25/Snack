@@ -44,12 +44,9 @@ public class GameManager : NetworkBehaviour
     public float CurrentTime => remainingGameTime;
 
     // ===============================
-    // ピニャータの情報を取得する
+    // 外部から残り時間を取得するプロパティ
     // ===============================
-    [Header("ピニャータのオブジェクト")]
-    [Tooltip("生成するピニャータのプレハブを取得する")]
-    [SerializeField] private GameObject _Pinata;
-
+    public float CurrentGameTime => initialGameTime -remainingGameTime;
 
     // ===============================
     // サーバー開始時の処理
