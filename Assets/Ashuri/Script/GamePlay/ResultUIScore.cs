@@ -8,127 +8,161 @@ using UnityEngine.UI;             // Unityの基本クラス使用
 
 /// <summary>
 /// ゲーム終了後のスコアUIを管理するクラス
-/// GameManagerから呼び出されてUIを表示し、ゲームを停止させる
+/// GameManagerから呼び出されてUIを表示し、一定時間後にロビーへ戻す
 /// </summary>
 public class ResultUIScore : NetworkBehaviour
 {
-    // シングルトンとして自身を登録
+    // ===============================
+    // シングルトンインスタンス
+    // ===============================
     public static ResultUIScore Instance { get; private set; }
 
     // ===============================
-    // 生成するオブジェクトのリスト
+    // 王冠プレハブリスト
     // ===============================
     [Header("王冠プレハブ")]
     [SerializeField] private List<GameObject> crownPrefab = new List<GameObject>();
 
     // ===============================
-    // お菓子を管理しているオブジェクト
+    // お菓子管理オブジェクト
     // ===============================
     [Header("お菓子を管理しているオブジェクト")]
     [SerializeField] private GameObject _sweetContainer;
 
+    // ===============================
+    // ロビーへ戻るまでの時間
+    // ===============================
+    [Tooltip("ロビーに戻るまでの時間（秒）")]
+    [SerializeField] private float _countResult = 10f;
 
-    // クライアント開始時に初期設定を行う
+    // ===============================
+    // 結果処理が開始されたか
+    // ===============================
+    private bool _isResultStarted = false;
+
+    // ===============================
+    // ロビー遷移を実行したか
+    // ===============================
+    private bool _isReturnedLobby = false;
+
+    // ===============================
+    // クライアント開始時処理
+    // ===============================
     public override void OnStartClient()
     {
         base.OnStartClient();
 
-        // インスタンス登録
-        if (Instance == null) Instance = this;
+        // シングルトン登録
+        if (Instance == null)
+            Instance = this;
     }
 
-
-    // 毎フレーム、サーバーのみボタン判定を行う
+    // ===============================
+    // 毎フレーム処理（サーバーのみ）
+    // ===============================
     private void Update()
     {
+        // サーバー以外では処理しない
         if (!isServer) return;
 
-        // Nキーでロビーに戻れるようにする（サーバー用）
-        if (Input.GetKeyDown(KeyCode.N))
+        // 結果表示が始まっていなければ処理しない
+        if (!_isResultStarted) return;
+
+        // すでにロビーへ戻っていたら処理しない
+        if (_isReturnedLobby) return;
+
+        // 時間を減らす
+        _countResult -= Time.deltaTime;
+
+        // 時間が0以下になったらロビーへ戻る
+        if (_countResult <= 0f)
         {
+            // 二重実行防止
+            _isReturnedLobby = true;
+
+            // ロビーへ戻る処理を実行
             OnClickReturnLobby();
         }
     }
 
-
-    // スコア表示をすべてのクライアントに送る
+    // ===============================
+    // スコア表示を全クライアントへ送信
+    // ===============================
     [ClientRpc]
     public void RpcShowScore(float finalScore)
     {
-        //お菓子を削除
+        // お菓子オブジェクトを非表示
         _sweetContainer.SetActive(false);
-        // スコアを表示する処理
+
+        // スコアUI表示
         ShowScore(finalScore);
     }
 
-
-    // スコア UI を生成して表示する
+    // ===============================
+    // スコアUI表示処理
+    // ===============================
     public void ShowScore(float finalScore)
     {
-        // デバッグログを表示する
-        Debug.Log("Game Over! Showing Crowns Instead of Score (Client)");
+        // 結果処理開始フラグを立てる（サーバー）
+        if (isServer)
+            _isResultStarted = true;
 
-        // 全プレイヤー情報を取得する
+        // デバッグログ
+        Debug.Log("Game Over! Showing Result UI");
+
+        // 全プレイヤー取得
         Player_Tanabe[] players = FindObjectsOfType<Player_Tanabe>();
 
         // スコア順に並び替え（降順）
         System.Array.Sort(players, (a, b) => b.m_sweetScore.CompareTo(a.m_sweetScore));
-        // ランキング順にクラウン（BWCrownManager付き）を割り当てる処理
+
+        // 順位ごとに王冠を付与
         for (int i = 0; i < players.Length; i++)
         {
-            // 対象プレイヤーを取得する
+            // 対象プレイヤー取得
             Player_Tanabe p = players[i];
 
-            // ランキングの並びに対応するクラウンオブジェクトがあるか確認
+            // 対応する王冠が存在するか確認
             if (i < crownPrefab.Count && crownPrefab[i] != null)
             {
-                // crownPrefab には BWCrownManager を持つオブジェクトが入っている前提
-                GameObject crownObj = crownPrefab[i];
+                // 王冠生成
+                GameObject crownInstance = Instantiate(crownPrefab[i]);
 
-                // プレハブをシーンに生成（位置は適当、後で BWCrownManager が動かす）
-                GameObject crownInstance = Instantiate(crownObj);
-
-                // BWCrownManager を取得
+                // 王冠制御スクリプト取得
                 BWCrownManager crownManager = crownInstance.GetComponent<BWCrownManager>();
 
+                // プレイヤーに追従設定
                 if (crownManager != null)
                 {
-                    // プレイヤーの Transform を登録
                     crownManager.SetPlayerPosition(p.transform);
-
-                    Debug.Log($"Player{p.playerNumber} に {i + 1} 位クラウンを割り当てました。");
-                }
-                else
-                {
-                    Debug.LogWarning("BWCrownManager が crownPrefab に付いていません");
                 }
             }
         }
-
-
-        // ゲームを一時停止する
-        //Time.timeScale = 0f;
     }
 
-
-    // ロビーに戻す処理（サーバーのみ）
+    // ===============================
+    // ロビーへ戻る処理（サーバー専用）
+    // ===============================
     private void OnClickReturnLobby()
     {
+        // サーバー以外では処理しない
         if (!isServer) return;
 
-        // 時間を通常に戻す
+        // 時間停止解除
         Time.timeScale = 1f;
 
-        // サーバー側でロビーシーンへ遷移
+        // ロビーシーンへ遷移
         NetworkManager.singleton.ServerChangeScene("LobbyScene");
     }
 
-    // クライアント終了時にインスタンスを削除
+    // ===============================
+    // クライアント終了時処理
+    // ===============================
     public override void OnStopClient()
     {
         base.OnStopClient();
 
-        // 自身がインスタンスなら解除
+        // インスタンス解除
         if (Instance == this)
             Instance = null;
     }

@@ -42,34 +42,43 @@ public class PinataIvent : NetworkBehaviour
     [SerializeField] private GameManager gameManager;
 
     // ===============================
-    // イベントImage
+    // イベント表示用Image（単体）
     // ===============================
 
-    [Header("ピニャータのイベントCanvas")]
-    [Tooltip("ピニャータの出現する際に表示するImage")]
-    [SerializeField] private Image _pinataImage;
+    [Header("ピニャータのイベントImage")]
+    [Tooltip("画面に表示するImage（1つだけ）")]
+    [SerializeField] private Image _eventImage;
+
+    // ===============================
+    // 表示するSpriteリスト
+    // ===============================
+
+    [Header("表示するSprite")]
+    [Tooltip("順番に表示するSprite")]
+    [SerializeField] private List<Sprite> _eventSprites = new List<Sprite>();
 
     // ===============================
     // Image演出設定
     // ===============================
 
     [Header("Image演出設定")]
-    [Tooltip("Imageが画面外にある位置")]
+    [Tooltip("画面外（上）の位置")]
     [SerializeField] private Vector2 _imageHidePos = new Vector2(0, 800);
 
-    [Tooltip("Imageが表示される位置")]
+    [Tooltip("画面内の表示位置")]
     [SerializeField] private Vector2 _imageShowPos = new Vector2(0, 300);
 
-    [Tooltip("Imageの移動時間")]
+    [Tooltip("上下移動にかかる時間")]
     [SerializeField] private float _moveTime = 0.5f;
 
-    [Tooltip("表示しておく時間")]
-    [SerializeField] private float _stayTime = 2f;
+    [Tooltip("Sprite1枚あたりの表示時間")]
+    [SerializeField] private float _spriteChangeTime = 1.5f;
 
     // ===============================
     // イベント実行済み判定
     // ===============================
 
+    // 各イベント時間が実行済みかを管理する
     private List<bool> _isEventExecuted = new List<bool>();
 
     // ===============================
@@ -84,8 +93,11 @@ public class PinataIvent : NetworkBehaviour
             _isEventExecuted.Add(false);
         }
 
-        // Imageを最初は画面外に移動させる
-        _pinataImage.rectTransform.anchoredPosition = _imageHidePos;
+        // Imageを非表示にする
+        _eventImage.gameObject.SetActive(false);
+
+        // Imageの位置を画面外に設定する
+        _eventImage.rectTransform.anchoredPosition = _imageHidePos;
     }
 
     // ===============================
@@ -94,13 +106,13 @@ public class PinataIvent : NetworkBehaviour
 
     void Update()
     {
-        // サーバー以外では処理しない
+        // サーバー以外では処理を行わない
         if (!isServer)
         {
             return;
         }
 
-        // GameManagerが無い場合は処理しない
+        // GameManagerが取得できていない場合は処理しない
         if (gameManager == null)
         {
             return;
@@ -112,14 +124,14 @@ public class PinataIvent : NetworkBehaviour
         // イベント時間を順番にチェックする
         for (int i = 0; i < _iventTime.Count; i++)
         {
-            // 未実行かつ指定時間を超えたら実行する
+            // 未実行かつ指定時間に到達していたら実行する
             if (!_isEventExecuted[i] && currentTime >= _iventTime[i])
             {
                 // ピニャータを生成する
                 SpawnPinata();
 
-                // Image演出を全クライアントに通知する
-                RpcPlayPinataImage();
+                // Image演出を全クライアントで再生する
+                RpcPlayEventImage();
 
                 // 実行済みにする
                 _isEventExecuted[i] = true;
@@ -128,28 +140,28 @@ public class PinataIvent : NetworkBehaviour
     }
 
     // ===============================
-    // ピニャータ生成処理（被らない）
+    // ピニャータ生成処理（位置は被らない）
     // ===============================
 
     [Server]
     private void SpawnPinata()
     {
-        // 生成候補のポジションをコピーする
+        // 使用可能な生成位置をコピーする
         List<Transform> availablePositions = new List<Transform>(_iventPosition);
 
-        // 実際に生成できる数を決める
+        // 実際に生成する数を決める
         int spawnCount = Mathf.Min(_pinataNum, availablePositions.Count);
 
-        // 指定数分ピニャータを生成する
+        // 指定数分生成する
         for (int i = 0; i < spawnCount; i++)
         {
-            // ランダムでインデックスを選ぶ
+            // ランダムで生成位置を選ぶ
             int index = Random.Range(0, availablePositions.Count);
 
             // 使用する生成位置を取得する
             Transform spawnPoint = availablePositions[index];
 
-            // 使用済みなのでリストから削除する
+            // 使用済みの位置を削除する
             availablePositions.RemoveAt(index);
 
             // ピニャータを生成する
@@ -165,26 +177,39 @@ public class PinataIvent : NetworkBehaviour
     // ===============================
 
     [ClientRpc]
-    private void RpcPlayPinataImage()
+    private void RpcPlayEventImage()
     {
         // Image演出のコルーチンを開始する
-        StartCoroutine(PinataImageAnimation());
+        StartCoroutine(EventImageSequence());
     }
 
     // ===============================
-    // Imageの上下アニメーション
+    // Image演出シーケンス
     // ===============================
 
-    private IEnumerator PinataImageAnimation()
+    private IEnumerator EventImageSequence()
     {
+        // Imageを表示状態にする
+        _eventImage.gameObject.SetActive(true);
+
         // 上から下へ移動させる
         yield return StartCoroutine(MoveImage(_imageHidePos, _imageShowPos));
 
-        // 表示状態で待機する
-        yield return new WaitForSeconds(_stayTime);
+        // Spriteを順番に切り替える
+        for (int i = 0; i < _eventSprites.Count; i++)
+        {
+            // 表示するSpriteを設定する
+            _eventImage.sprite = _eventSprites[i];
+
+            // 表示時間分待機する
+            yield return new WaitForSeconds(_spriteChangeTime);
+        }
 
         // 下から上へ戻す
         yield return StartCoroutine(MoveImage(_imageShowPos, _imageHidePos));
+
+        // Imageを非表示にする
+        _eventImage.gameObject.SetActive(false);
     }
 
     // ===============================
@@ -196,14 +221,14 @@ public class PinataIvent : NetworkBehaviour
         // 経過時間を初期化する
         float elapsed = 0f;
 
-        // 指定時間まで繰り返す
+        // 指定時間まで補間移動する
         while (elapsed < _moveTime)
         {
             // 経過時間を加算する
             elapsed += Time.deltaTime;
 
-            // Imageの位置を補間して移動させる
-            _pinataImage.rectTransform.anchoredPosition =
+            // Imageの位置を補間する
+            _eventImage.rectTransform.anchoredPosition =
                 Vector2.Lerp(startPos, endPos, elapsed / _moveTime);
 
             // 次のフレームまで待機する
@@ -211,6 +236,6 @@ public class PinataIvent : NetworkBehaviour
         }
 
         // 最終位置を確定させる
-        _pinataImage.rectTransform.anchoredPosition = endPos;
+        _eventImage.rectTransform.anchoredPosition = endPos;
     }
 }

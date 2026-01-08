@@ -3397,6 +3397,7 @@ MonoBehaviour:
   - {fileID: 2369273889415052377, guid: 12becbb99c57b1546a8de458b0c7040b, type: 3}
   - {fileID: 3874902769062529673, guid: e519e59a97ff51e47b0921b297e5112c, type: 3}
   _sweetContainer: {fileID: 572097244}
+  _countResult: 10
 --- !u!114 &375496458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3427,11 +3428,15 @@ MonoBehaviour:
   - {fileID: 578177426}
   - {fileID: 487158113}
   gameManager: {fileID: 375496454}
-  _pinataImage: {fileID: 1793648797}
-  _imageHidePos: {x: 0, y: 300}
-  _imageShowPos: {x: 0, y: 120}
-  _moveTime: 0.5
-  _stayTime: 3
+  _eventImage: {fileID: 1793648797}
+  _eventSprites:
+  - {fileID: 21300000, guid: 53d3ff18ba7bfd84a887bdfefc95cd5f, type: 3}
+  - {fileID: 21300000, guid: 4e51b1353c82d47448f744e388453c19, type: 3}
+  - {fileID: 21300000, guid: 88f4c831819d21145a94c7370414ad72, type: 3}
+  _imageHidePos: {x: 0, y: 400}
+  _imageShowPos: {x: 0, y: 190}
+  _moveTime: 1
+  _spriteChangeTime: 2
 --- !u!1001 &392509877
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10360,8 +10365,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 300}
-  m_SizeDelta: {x: 530, y: 100}
+  m_AnchoredPosition: {x: 0, y: 400}
+  m_SizeDelta: {x: 250, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1793648797
 MonoBehaviour:
@@ -10383,7 +10388,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 686bd001d00fee8408b192466cdf8b8f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 53d3ff18ba7bfd84a887bdfefc95cd5f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13368,7 +13373,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _setItemImage: {fileID: 2943460700400050057}
-  _setItem: {fileID: 21300000, guid: 529649ab4dbcebe4f9f27eebaa8155fb, type: 3}
+  _setItem1: {fileID: 21300000, guid: 529649ab4dbcebe4f9f27eebaa8155fb, type: 3}
+  _setItem2: {fileID: 21300000, guid: da28f24182f3b4f4ca1c5fd7af3b85e3, type: 3}
   _transparent: {fileID: 21300000, guid: 4123e33cf1466ca4a9dd84b794e3c860, type: 3}
 --- !u!224 &2684544532323461425
 RectTransform:
