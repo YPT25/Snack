@@ -103,7 +103,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.022365512, y: 0.019999994, z: 0.019999994}
+  m_Size: {x: 0.03, y: 0.019999994, z: 0.019999994}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3704966655182725322
 GameObject:
@@ -256,6 +256,7 @@ MonoBehaviour:
   walkSpeedMultiplier: 0.5
   modelRoot: {fileID: 9172718188186435390}
   pivotOffset: {x: 0, y: 0, z: 0}
+  fallAngle: 90
   m_attackCollider: {fileID: 1954990433288771796}
   m_hitCollider: {fileID: 2388444203855389622}
   attackDuration: 0.5

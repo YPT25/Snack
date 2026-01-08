@@ -180,7 +180,7 @@ public class Debuff_Player : MPlayerBase
         if (ni == null) return;
         if (ni == netIdentity) return;
 
-        CharacterBase target = ni.GetComponent<CharacterBase>();
+        CharacterBase target = ni.GetComponentInParent<CharacterBase>();
         if (target == null) return;
         if (target == this) return;
 

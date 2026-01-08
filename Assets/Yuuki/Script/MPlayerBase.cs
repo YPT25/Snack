@@ -144,7 +144,7 @@ public class MPlayerBase : EnemyBase
         //{
         //    Die();
         //}
-        if (Input.GetKeyDown(KeyCode.R)) { Damage(10); }
+        if (Input.GetKeyDown(KeyCode.R)) { CmddebugDamage(10); }
 
         if (!GetIsMove())
         {
@@ -362,6 +362,13 @@ public class MPlayerBase : EnemyBase
                 m_rb.velocity = Vector3.zero; // ピタッと止める
             return;
         }
+    }
+
+    [Command]
+    private void CmddebugDamage(float dmg)
+    {
+        // サーバーで確実に減らす
+        Damage(dmg);
     }
 
     //ダメージ
