@@ -24,7 +24,8 @@ public class TitleAnimation: MonoBehaviour
 
     void Update()
     {
-        if(Input.GetButtonDown("Jump") && !m_isAppeal)
+        if (Input.GetButtonDown("Jump") && !m_isAppeal ||
+            Input.GetMouseButtonDown(0) && !m_isAppeal)
         {
             DOTween.CompleteAll();
             GameObject titleManager = GameObject.Find("TitleManager");
