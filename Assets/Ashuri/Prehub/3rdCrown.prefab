@@ -174,4 +174,4 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _speedCrown: 2
+  _speedCrown: 4

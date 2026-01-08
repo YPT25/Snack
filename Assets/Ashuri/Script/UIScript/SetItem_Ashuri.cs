@@ -11,8 +11,11 @@ public class SetItem_Ashuri : MonoBehaviour
     [SerializeField] private Image _setItemImage;
 
     [Header("セットアイテムの画像")]
-    [Tooltip("セットアイテム画像")]
-    [SerializeField] private Sprite _setItem;
+    [Tooltip("セットアイテム画像(マーベル)")]
+    [SerializeField] private Sprite _setItem1;
+
+    [Tooltip("セットアイテム画像(たけのこ)")]
+    [SerializeField] private Sprite _setItem2;
 
     [Tooltip("何もないときの透明画像")]
     [SerializeField] private Sprite _transparent;
@@ -98,17 +101,17 @@ public class SetItem_Ashuri : MonoBehaviour
     // アイテムの種類に応じて Sprite を更新する共通処理
     private void SetSprite(Image target, PartType type)
     {
-        // 罠アイテム（綿菓子）
+        // マーベル
         if (type == PartType.LONGBARREL)
         {
-            target.sprite = _setItem;
+            target.sprite = _setItem1;
             return;
         }
 
-        // 投擲アイテム（ポップコーン）
+        // タケノコ
         if (type == PartType.SHARPBULLET)
         {
-            //target.sprite = _setItem;
+            target.sprite = _setItem2;
             return;
         }
 

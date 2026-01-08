@@ -153,7 +153,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _speedCrown: 2
+  _speedCrown: 4
 --- !u!65 &5158178454327631514
 BoxCollider:
   m_ObjectHideFlags: 0

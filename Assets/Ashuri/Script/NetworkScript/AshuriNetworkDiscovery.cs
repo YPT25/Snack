@@ -187,6 +187,6 @@ public class AshuriNetworkDiscovery : MonoBehaviour
     // ====================================================
     private void OnCreditClicked()
     {
-        SceneManager.LoadScene(cregitSceneText);
+
     }
 }
