@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EndrollFadeIn_Tanabe : MonoBehaviour
@@ -23,6 +24,10 @@ public class EndrollFadeIn_Tanabe : MonoBehaviour
                 color.a += m_fadeSpeed * Time.deltaTime;
                 color.a = Mathf.Min(Mathf.Max(color.a, 0f), 1f);
                 m_fadeInImage[i].color = color;
+            }
+            if (m_fadeInImage[0].color.a <= 0f)
+            {
+                SceneManager.LoadScene("ConnectionScene");
             }
         }
         else if (Input.GetMouseButtonDown(0) || Input.GetButtonDown("Jump"))
