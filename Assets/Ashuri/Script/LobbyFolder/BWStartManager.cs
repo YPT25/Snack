@@ -30,6 +30,12 @@ public class BWStartManager : NetworkBehaviour
             // 現在接続しているプレイヤー人数を取得
             int playerNum = NetworkManager.singleton.numPlayers;
 
+            // もし人数が5人目のボタンの必要性をなくす
+            if(playerNum > 4)
+            {
+                playerNum = 4;
+            }
+
             // 今ボタンに乗っている人数を取得
             int onButtonCount = GetOnButtonCount();
 
