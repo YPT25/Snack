@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TPSCameraController_Tanabe : MonoBehaviour
 {
-    private Player_Tanabe m_player;
+    private CharacterBase m_player;
     [SerializeField] private Transform target;         // プレイヤー
     [SerializeField] private Vector3 aimingAdjustment = new Vector3(3f, 0f, 0f);
     [SerializeField] private Vector3 offset = new Vector3(0, 3, -6);
@@ -22,7 +22,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
 
     void Start()
     {
-        m_player = GetComponentInParent<Player_Tanabe>();
+        m_player = GetComponentInParent<CharacterBase>();
         if(m_player == null || !m_player.isLocalPlayer) { return; }
         target = m_player.transform;
         Transform camera = GameObject.FindWithTag("MainCamera").transform;
@@ -48,16 +48,6 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         //    Cursor.lockState = (CursorLockMode)(Math.Abs((int)Cursor.lockState - 1));
         //}
 
-        if(m_gameOption != null && m_gameOption.IsPause())
-        {
-            // カメラの回転適用
-            Quaternion _rotation = Quaternion.Euler(pitch, yaw, 0);
-            Vector3 desiredPosition = target.position + _rotation * offset;
-            transform.position = desiredPosition;
-            transform.LookAt(target.position + Vector3.up * 1.5f);  // プレイヤーの胸or頭あたり見るように
-            return;
-        }
-
         if (Cursor.lockState != CursorLockMode.Locked) { return; }
 
         float axisX = Input.GetAxis("Camera X");
@@ -82,41 +72,19 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         // カメラの回転適用
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
 
-        // プレイヤーがエイム状態のときのみ通す
-        if (m_player.GetIsAiming())
+        Vector3 desiredPosition = target.position + rotation * offset;
+        transform.position = desiredPosition;
+        Vector3 hitDistance = Vector3.one;
+        float up = 1f;
+        // カメラがステージオブジェクトにぶつかっているか調べる
+        if (this.PositionAdjustment(desiredPosition, out hitDistance, out up))
         {
-            Vector3 desiredPosition = target.position + rotation * offset * 0.5f;
-            //desiredPosition += aimingAdjustment;
-            transform.position = desiredPosition;
-            Vector3 hitDistance = Vector3.one;
-            float up = 1f;
-            //// カメラがステージオブジェクトにぶつかっているか調べる
-            //if(this.PositionAdjustment(desiredPosition, out hitDistance, out up))
-            //{
-            //    transform.position = target.position + hitDistance * 0.5f;
-            //    desiredPosition = transform.position;
-            //}
-            Vector3 direction = target.position - desiredPosition;
-            Vector3 aaa = target.position + direction * 1.0f + (rotation * aimingAdjustment);
-            transform.LookAt(aaa);
+            transform.position = target.position + hitDistance;
+            transform.LookAt(target.position + Vector3.up * 1.5f * up);  // プレイヤーの胸or頭あたり見るように
         }
         else
         {
-            Vector3 desiredPosition = target.position + rotation * offset;
-            transform.position = desiredPosition;
-            Vector3 hitDistance = Vector3.one;
-            float up = 1f;
-            // カメラがステージオブジェクトにぶつかっているか調べる
-            if (this.PositionAdjustment(desiredPosition, out hitDistance, out up))
-            {
-                transform.position = target.position + hitDistance;
-                transform.LookAt(target.position + Vector3.up * 1.5f * up);  // プレイヤーの胸or頭あたり見るように
-            }
-            else
-            {
-                transform.LookAt(target.position + Vector3.up * 1.5f);  // プレイヤーの胸or頭あたり見るように
-            }
-            //transform.LookAt(target.position + Vector3.up * 1.5f);  // プレイヤーの胸or頭あたり見るように
+            transform.LookAt(target.position + Vector3.up * 1.5f);  // プレイヤーの胸or頭あたり見るように
         }
     }
 
@@ -124,25 +92,10 @@ public class TPSCameraController_Tanabe : MonoBehaviour
     private void ViewUpdate(float _axisX, float _axisY, float _sensitivityPower = 1f)
     {
         // マウス入力取得
-        if (m_player.GetIsAiming() && Input.GetAxisRaw("Aiming Pad") != 0.0f)
-        {
-            yaw += _axisX * mouseSensitivity * 0.5f * _sensitivityPower;
-            pitch -= _axisY * mouseSensitivity * 0.5f * _sensitivityPower;
-        }
-        else
-        {
-            yaw += _axisX * mouseSensitivity * _sensitivityPower;
-            pitch -= _axisY * mouseSensitivity * _sensitivityPower;
-        }
+        yaw += _axisX * mouseSensitivity * _sensitivityPower;
+        pitch -= _axisY * mouseSensitivity * _sensitivityPower;
 
-        if (m_player.GetIsAiming())
-        {
-            pitch = Mathf.Clamp(pitch, aimingMinY, aimingMaxY);
-        }
-        else
-        {
-            pitch = Mathf.Clamp(pitch, minY, maxY);
-        }
+        pitch = Mathf.Clamp(pitch, minY, maxY);
     }
 
     // カメラがステージにぶつかっていたら位置を調整する
