@@ -802,7 +802,7 @@ MonoBehaviour:
   - {fileID: 1696688073}
   - {fileID: 1728798767}
   m_playerPrefabs:
-  - {fileID: 676404720595789358, guid: 530fb43d2f6ddef4e80baa5d13f8e947, type: 3}
+  - {fileID: 1798214820168749291, guid: d66e4b19eba36d343b3a3bb4e1bd9173, type: 3}
   - {fileID: 8759962040556672278, guid: 3137c5444483dfd4dba656b036660eae, type: 3}
   m_debugUI:
   - {fileID: 2105991814}
@@ -904,6 +904,7 @@ MonoBehaviour:
   - {fileID: 3970781454396566587, guid: 4b6fd784c4d098149929e6282b8be3e8, type: 3}
   - {fileID: 3611264004694672525, guid: 592465aeedb8c5140b981f4da66d41cc, type: 3}
   - {fileID: 4278129151019754959, guid: 7e00672577e6d30418610ce006b85a14, type: 3}
+  - {fileID: 1798214820168749291, guid: d66e4b19eba36d343b3a3bb4e1bd9173, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -153303,7 +153304,7 @@ GameObject:
   - component: {fileID: 2035922366}
   - component: {fileID: 2035922365}
   - component: {fileID: 2035922364}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Target_Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
