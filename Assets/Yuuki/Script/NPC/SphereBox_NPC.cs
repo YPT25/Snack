@@ -38,25 +38,52 @@ public class SphereBox_NPC : NPCBase
         if (m_isAttacking) yield break;
         m_isAttacking = true;
 
-        float dashTime = dashDuration;
+        // ★突撃中：Agentを止めて位置補正の喧嘩を止める
+        bool hadAgent = (agent != null && agent.isOnNavMesh);
+        if (hadAgent)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.updatePosition = false;
+            agent.updateRotation = false;
+        }
+
+        // 攻撃判定ON
+        if (m_attackCollider) m_attackCollider.enabled = true;
 
         float dashSpeed = baseSpeed * dashSpeedMultiplier;
 
-        // ON
-        if (m_attackCollider)
-            m_attackCollider.enabled = true;
-
-        float t = 0;
-        while (t < dashTime)
+        float t = 0f;
+        while (t < dashDuration)
         {
-            t += Time.deltaTime;
-            transform.position += transform.forward * dashSpeed * Time.deltaTime;
-            yield return null;
+            // RigidbodyがあるならFixedでMovePosition（衝突に強い）
+            if (m_rb != null)
+            {
+                Vector3 next = m_rb.position + transform.forward * dashSpeed * Time.fixedDeltaTime;
+                m_rb.MovePosition(next);
+                yield return new WaitForFixedUpdate();
+                t += Time.fixedDeltaTime;
+            }
+            else
+            {
+                // 最低限：Rigidbodyが無い場合は従来通り
+                t += Time.deltaTime;
+                transform.position += transform.forward * dashSpeed * Time.deltaTime;
+                yield return null;
+            }
         }
 
-        // OFF
-        if (m_attackCollider)
-            m_attackCollider.enabled = false;
+        // 攻撃判定OFF
+        if (m_attackCollider) m_attackCollider.enabled = false;
+
+        // 突撃後：Agentを復帰＆位置を同期
+        if (hadAgent)
+        {
+            agent.nextPosition = transform.position; // ワープ差分を消す
+            agent.updatePosition = true;
+            agent.updateRotation = true;
+            agent.isStopped = false;
+        }
 
         m_isAttacking = false;
     }
