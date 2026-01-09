@@ -265,6 +265,7 @@ GameObject:
   - component: {fileID: 9061821540825710250}
   - component: {fileID: 8747650411758782471}
   - component: {fileID: 4140034365445906872}
+  - component: {fileID: 1633067897916738525}
   m_Layer: 0
   m_Name: CannonBoxPlayer
   m_TagString: Untagged
@@ -441,3 +442,20 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1633067897916738525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6456614125583922063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 533bc0b746f24164aa5a66334ac1134c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  m_itemPrefabs: []
+  m_dropItemCount: 0
