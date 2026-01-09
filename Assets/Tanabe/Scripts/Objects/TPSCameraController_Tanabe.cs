@@ -22,7 +22,7 @@ public class TPSCameraController_Tanabe : MonoBehaviour
 
     void Start()
     {
-        m_player = GetComponentInParent<CharacterBase>();
+        m_player = GetComponentInParent<Player_Tanabe>();
         if(m_player == null || !m_player.isLocalPlayer) { return; }
         target = m_player.transform;
         Transform camera = GameObject.FindWithTag("MainCamera").transform;
@@ -47,6 +47,16 @@ public class TPSCameraController_Tanabe : MonoBehaviour
         //{
         //    Cursor.lockState = (CursorLockMode)(Math.Abs((int)Cursor.lockState - 1));
         //}
+
+        if(m_gameOption != null && m_gameOption.IsPause())
+        {
+            // �J�����̉�]�K�p
+            Quaternion _rotation = Quaternion.Euler(pitch, yaw, 0);
+            Vector3 desiredPosition = target.position + _rotation * offset;
+            transform.position = desiredPosition;
+            transform.LookAt(target.position + Vector3.up * 1.5f);  // �v���C���[�̋�or�������茩��悤��
+            return;
+        }
 
         if (Cursor.lockState != CursorLockMode.Locked) { return; }
 
