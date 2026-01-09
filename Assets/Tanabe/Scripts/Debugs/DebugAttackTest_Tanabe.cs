@@ -14,6 +14,7 @@ public class DebugAttackTest_Tanabe : NetworkBehaviour
     {
         if (m_parentCharacter == null || other.isTrigger ||
             other.GetComponent<Player_Tanabe>() != null && m_parentCharacter.GetComponent<Player_Tanabe>() != null &&
+            m_parentCharacter.GetComponent<Player_Tanabe>().IsTeamBattle() &&
             other.GetComponent<Player_Tanabe>().GetTeamNumber() == m_parentCharacter.GetComponent<Player_Tanabe>().GetTeamNumber())
         {
             return;
