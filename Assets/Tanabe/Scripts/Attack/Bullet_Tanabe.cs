@@ -50,6 +50,7 @@ public class Bullet_Tanabe : NetworkBehaviour
         if(m_isDestroy) { return; }
 
         if (other.gameObject.GetComponent<Bullet_Tanabe>() != null || other.gameObject == m_parentPlayer ||
+            m_parentPlayer.GetComponent<Player_Tanabe>().IsTeamBattle() &&
             other.GetComponent<Player_Tanabe>() != null && other.GetComponent<Player_Tanabe>().GetTeamNumber() == m_parentPlayer.GetComponent<Player_Tanabe>().GetTeamNumber())
         {
             return;

@@ -114,6 +114,7 @@ public class BombExplosion_Tanabe : NetworkBehaviour
 
             // 当たったオブジェクトがプレイヤーかつHEROタイプ、またはチーム番号が同じであればこれ以上処理しない
             if (characterBase != null && characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE ||
+                _parentPlayer.GetComponent<Player_Tanabe>().IsTeamBattle() &&
                 player != null && player.GetTeamNumber() == _parentPlayer.GetComponent<Player_Tanabe>().GetTeamNumber())
             {
                 continue;

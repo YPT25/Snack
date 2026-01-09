@@ -104,6 +104,7 @@ public class Player_Tanabe : CharacterBase
     [Tooltip("プレイヤーの名前")] private string m_playerName;
     [Tooltip("プレイヤーの名前UIの色")] private Color m_nameColor;
     [Tooltip("チーム戦用 味方・敵を判別する番号")] private int m_teamNumber;
+    private bool m_isTeamBattle = false;
 
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
@@ -111,6 +112,10 @@ public class Player_Tanabe : CharacterBase
     public override void OnStartServer()
     {
         base.OnStartServer();
+        if (GameObject.Find("TeamBattleMode") != null)
+        {
+            m_isTeamBattle = true;
+        }
 
         // Rigidbodyをアタッチする
         m_rb = GetComponent<Rigidbody>();
@@ -139,6 +144,10 @@ public class Player_Tanabe : CharacterBase
         {
             // キャラクタータイプの設定
             base.SetCharacterType(CharacterType.ENEMY_TYPE);
+        }
+        if(GameObject.Find("TeamBattleMode") != null)
+        {
+            m_isTeamBattle = true;
         }
         base.OnStartClient();
         // サーバーに自分の名前を登録する
@@ -600,6 +609,12 @@ public class Player_Tanabe : CharacterBase
 
 
     // ＜ゲッター関数＞ーーーーーーーーーーーーーーーーーーーー
+
+    // チームバトルか
+    public bool IsTeamBattle()
+    {
+        return m_isTeamBattle;
+    }
 
     // 武器IDの取得
     public WeaponID GetWeaponID()
