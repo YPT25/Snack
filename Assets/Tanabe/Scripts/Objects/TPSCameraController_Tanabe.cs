@@ -50,11 +50,11 @@ public class TPSCameraController_Tanabe : MonoBehaviour
 
         if(m_gameOption != null && m_gameOption.IsPause())
         {
-            // ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Ì‰ï¿½]ï¿½Kï¿½p
+            // E½JE½E½E½E½E½Ì‰ï¿½]E½KE½p
             Quaternion _rotation = Quaternion.Euler(pitch, yaw, 0);
-            Vector3 desiredPosition = target.position + _rotation * offset;
-            transform.position = desiredPosition;
-            transform.LookAt(target.position + Vector3.up * 1.5f);  // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ì‹ï¿½orï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½èŒ©ï¿½ï¿½æ‚¤ï¿½ï¿½
+            Vector3 desiredPosition1 = target.position + _rotation * offset;
+            transform.position = desiredPosition1;
+            transform.LookAt(target.position + Vector3.up * 1.5f);  // E½vE½E½E½CE½E½E½[E½Ì‹ï¿½orE½E½E½E½E½E½E½èŒ©E½E½æ‚¤E½E½
             return;
         }
 
