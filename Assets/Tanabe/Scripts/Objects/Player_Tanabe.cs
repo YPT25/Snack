@@ -100,6 +100,9 @@ public class Player_Tanabe : CharacterBase
     private DamagePerformance m_damagePerformance;
 
 
+    private NameDisplay_Tanabe m_nameDisplay;
+    [Tooltip("プレイヤーの名前")] private string m_playerName;
+    [Tooltip("プレイヤーの名前UIの色")] private Color m_nameColor;
     [Tooltip("チーム戦用 味方・敵を判別する番号")] private int m_teamNumber;
 
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
@@ -124,6 +127,8 @@ public class Player_Tanabe : CharacterBase
         // 目オブジェクトの見た目設定
         m_eyesObject[0]?.SetActive(true);
         m_eyesObject[1]?.SetActive(false);
+
+        m_nameDisplay = this.GetComponentInChildren<NameDisplay_Tanabe>();
     }
 
     public override void OnStartClient()
@@ -140,6 +145,8 @@ public class Player_Tanabe : CharacterBase
         CmdReportNameToServer(PlayerNameHolder.PlayerName);
         // Rigidbodyをアタッチする
         m_rb = GetComponent<Rigidbody>();
+
+        m_nameDisplay = this.GetComponentInChildren<NameDisplay_Tanabe>();
 
         // アイテムマネージャをアタッチする
         m_possessionManager = GetComponent<PossessionManager_Tanabe>();
@@ -886,6 +893,44 @@ public class Player_Tanabe : CharacterBase
     public void SetPlayerName(string name)
     {
         playerName = name;
+    }
+
+    // プレイヤーの名前とその色設定
+    public void SetPlayerNameAndColor(string _playerName, Color _nameColor)
+    {
+        m_playerName = _playerName;
+        m_nameColor = _nameColor;
+
+        if(!m_nameDisplay) { return; }
+
+        m_nameDisplay.SetPlayerName(_playerName);
+        m_nameDisplay.SetNameColor(_nameColor);
+    }
+
+    // プレイヤーの名前とその色設定
+    [Command]
+    public void CmdSetPlayerNameAndColor(string _playerName, Color _nameColor)
+    {
+        m_playerName = _playerName;
+        m_nameColor = _nameColor;
+
+        if(!m_nameDisplay) { return; }
+
+        m_nameDisplay.SetPlayerName(_playerName);
+        m_nameDisplay.SetNameColor(_nameColor);
+    }
+
+    // プレイヤーの名前とその色設定
+    [ClientRpc]
+    public void RpcSetPlayerNameAndColor(string _playerName, Color _nameColor)
+    {
+        m_playerName = _playerName;
+        m_nameColor = _nameColor;
+
+        if(!m_nameDisplay) { return; }
+
+        m_nameDisplay.SetPlayerName(_playerName);
+        m_nameDisplay.SetNameColor(_nameColor);
     }
 
     // チーム戦用 味方・敵を判別する番号の設定
