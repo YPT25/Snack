@@ -100,6 +100,8 @@ public class Player_Tanabe : CharacterBase
     private DamagePerformance m_damagePerformance;
 
 
+    [Tooltip("チーム戦用 味方・敵を判別する番号")] private int m_teamNumber;
+
     // ＜関数＞ーーーーーーーーーーーーーーーーーーーーーーーー
 
     // 開始関数
@@ -742,6 +744,12 @@ public class Player_Tanabe : CharacterBase
         return m_gameOption.IsPause();
     }
 
+    // チーム戦用 味方・敵を判別する番号の取得
+    public int GetTeamNumber()
+    {
+        return m_teamNumber;
+    }
+
 
     // ＜セッター関数＞ーーーーーーーーーーーーーーーーーーーー
 
@@ -878,5 +886,25 @@ public class Player_Tanabe : CharacterBase
     public void SetPlayerName(string name)
     {
         playerName = name;
+    }
+
+    // チーム戦用 味方・敵を判別する番号の設定
+    public void SetTeamNumber(int _number)
+    {
+        m_teamNumber = _number;
+    }
+
+    // チーム戦用 味方・敵を判別する番号の設定
+    [Command]
+    public void CmdSetTeamNumber(int _number)
+    {
+        m_teamNumber = _number;
+    }
+
+    // チーム戦用 味方・敵を判別する番号の設定
+    [ClientRpc]
+    public void RpcSetTeamNumber(int _number)
+    {
+        m_teamNumber = _number;
     }
 }

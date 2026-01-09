@@ -63,7 +63,11 @@ public class ShockWave_Tanabe : NetworkBehaviour
         CharacterBase characterBase = other.gameObject.GetComponent<CharacterBase>();
         if (other.GetComponent<NetworkIdentity>() == null || other.isTrigger || characterBase == null || characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE) { return; }
 
-        if(other.gameObject == m_parentPlayer) { return; }
+        if (other.gameObject == m_parentPlayer ||
+            other.GetComponent<Player_Tanabe>() != null && other.GetComponent<Player_Tanabe>().GetTeamNumber() == m_parentPlayer.GetComponent<Player_Tanabe>().GetTeamNumber())
+        {
+            return;
+        }
 
         if (characterBase.GetCharacterType() != CharacterBase.CharacterType.HERO_TYPE)
         {

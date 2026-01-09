@@ -112,7 +112,12 @@ public class BombExplosion_Tanabe : NetworkBehaviour
             CharacterBase characterBase = hit.gameObject.GetComponent<CharacterBase>();
             Player_Tanabe player = hit.gameObject.GetComponent<Player_Tanabe>();
 
-            if(characterBase != null && characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE) { continue; }
+            // 当たったオブジェクトがプレイヤーかつHEROタイプ、またはチーム番号が同じであればこれ以上処理しない
+            if (characterBase != null && characterBase.GetCharacterType() == CharacterBase.CharacterType.HERO_TYPE ||
+                player != null && player.GetTeamNumber() == _parentPlayer.GetComponent<Player_Tanabe>().GetTeamNumber())
+            {
+                continue;
+            }
 
             // 爆発によるダメージを与える
             if (player != null && player.GetWeaponID() == Player_Tanabe.WeaponID.HAMMER)

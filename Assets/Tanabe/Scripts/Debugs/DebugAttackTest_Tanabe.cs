@@ -12,7 +12,12 @@ public class DebugAttackTest_Tanabe : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (m_parentCharacter == null || other.isTrigger) { return; }
+        if (m_parentCharacter == null || other.isTrigger ||
+            other.GetComponent<Player_Tanabe>() != null && m_parentCharacter.GetComponent<Player_Tanabe>() != null &&
+            other.GetComponent<Player_Tanabe>().GetTeamNumber() == m_parentCharacter.GetComponent<Player_Tanabe>().GetTeamNumber())
+        {
+            return;
+        }
 
         if (m_hitEffectPrefab != null)
         {

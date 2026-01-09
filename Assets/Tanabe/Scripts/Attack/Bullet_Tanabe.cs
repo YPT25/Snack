@@ -48,7 +48,12 @@ public class Bullet_Tanabe : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if(m_isDestroy) { return; }
-        if (other.gameObject.GetComponent<Bullet_Tanabe>() != null || other.gameObject == m_parentPlayer) { return; }
+
+        if (other.gameObject.GetComponent<Bullet_Tanabe>() != null || other.gameObject == m_parentPlayer ||
+            other.GetComponent<Player_Tanabe>() != null && other.GetComponent<Player_Tanabe>().GetTeamNumber() == m_parentPlayer.GetComponent<Player_Tanabe>().GetTeamNumber())
+        {
+            return;
+        }
 
         if (!m_isPierce || other.gameObject.layer == 3 && other.gameObject.tag != "Pierce")
         {
