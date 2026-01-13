@@ -51,6 +51,12 @@ public class StatePlayer_Ashuri : NetworkBehaviour
         = new Dictionary<NetworkConnectionToClient, Color>();
 
     // ----------------------------------------------------
+    // 2VS2の場合のチームIDを保存する辞書
+    // ----------------------------------------------------
+    [Tooltip("3VS1の場合のプレイヤーIDを保存する辞書")]
+    private Dictionary<NetworkConnectionToClient, int> teamID
+        = new Dictionary<NetworkConnectionToClient, int>();
+    // ----------------------------------------------------
     // このオブジェクトをシーンを跨いでも残す処理
     // ----------------------------------------------------
     private void Awake()
@@ -301,6 +307,39 @@ public class StatePlayer_Ashuri : NetworkBehaviour
 
         // 1つ上：なければ白
         return Color.white;
+    }
+
+    // ----------------------------------------------------
+    // プレイヤーのチームコードを保存する処理
+    // ----------------------------------------------------
+    [Server]
+    public void SavePlayerTeam(NetworkConnectionToClient conn, int team)
+    {
+        // 1つ上：接続が無効なら保存しない
+        if (conn == null || !conn.isReady)
+            return;
+
+        // 1つ上：カラーコードを保存
+        teamID[conn] = team;
+
+        // 1つ上：デバッグログ
+        Debug.Log($"[StatePlayer] プレイヤー {conn.connectionId} のカラーを保存しました");
+    }
+    // ----------------------------------------------------
+    // 保存されているチームコードを取得
+    // ----------------------------------------------------
+    public int GetSavedPlayerTeam(NetworkConnectionToClient conn)
+    {
+        // 1つ上：接続が無効なら白
+        if (conn == null)
+            return 2;
+
+        // 1つ上：保存されていれば返す
+        if (teamID.TryGetValue(conn, out int team))
+            return team;
+
+        // 1つ上：なければ白
+        return 2;
     }
 
 }

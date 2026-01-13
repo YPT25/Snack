@@ -962,6 +962,7 @@ public class Player_Tanabe : CharacterBase
         // State に保存（★ここが重要）
         StatePlayer_Ashuri.Instance.SavePlayerName(conn, playerName);
         StatePlayer_Ashuri.Instance.SavePlayerColor(conn, nameColor);
+        StatePlayer_Ashuri.Instance.SavePlayerTeam(conn, teamNumber);
     }
 
     // ===============================
@@ -989,13 +990,11 @@ public class Player_Tanabe : CharacterBase
         m_playerName = playerName;
         m_nameColor = nameColor;
 
-        Debug.LogError(playerName);
-        Debug.LogError(nameColor);
-
         if (!m_nameDisplay) { return; }
 
         m_nameDisplay.SetPlayerName(playerName);
         m_nameDisplay.SetNameColor(nameColor);
+        this.SetTeamNumber(teamNumber);
     }
 
     // サーバー側
@@ -1006,8 +1005,9 @@ public class Player_Tanabe : CharacterBase
 
         string name = StatePlayer_Ashuri.Instance.GetSavedPlayerName(conn);
         Color color = StatePlayer_Ashuri.Instance.GetSavedPlayerColor(conn);
+        int team = StatePlayer_Ashuri.Instance.GetSavedPlayerTeam(conn);
 
-        RpcApplyNameAndColor(name, color, m_teamNumber);
+        RpcApplyNameAndColor(name, color, team);
     }
     //Stateに名前と色の保存
     [Command]

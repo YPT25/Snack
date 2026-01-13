@@ -7419,7 +7419,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  initialGameTime: 1
+  initialGameTime: 120
   preGameCountdownTime: 3
   gameStarted: 0
 --- !u!4 &1528918338
