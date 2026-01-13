@@ -127,8 +127,8 @@ MonoBehaviour:
   fadeEndDistance: 0.6
   m_attackCollider: {fileID: 4356691595870940390}
   dashDuration: 2
-  dashSpeedMultiplier: 2
-  dashCooldown: 3
+  dashSpeedMultiplier: 4
+  dashCooldown: 2
   knockbackForce: 200
 --- !u!114 &3642012660366611759
 MonoBehaviour:
