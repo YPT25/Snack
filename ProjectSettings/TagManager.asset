@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Eye
   - Pierce
+  - Name
   layers:
   - Default
   - TransparentFX

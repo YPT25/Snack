@@ -33,7 +33,8 @@ public class PlayerColorChanger : NetworkBehaviour
 
             if (r.CompareTag("Eye"))
                 continue;
-
+            if (r.CompareTag("Name"))
+                continue;
             _parts.Add(r);
         }
     }
