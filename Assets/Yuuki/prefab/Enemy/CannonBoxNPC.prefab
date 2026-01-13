@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 4140034365445906872}
   - component: {fileID: 1633067897916738525}
   m_Layer: 0
-  m_Name: CannonBoxPlayer
+  m_Name: CannonBoxNPC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
