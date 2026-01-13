@@ -63,7 +63,7 @@ public class ParticipantsFirstScript : NetworkBehaviour
             int count = _targetCheck.GetTouchPlayerCount();
 
             // 参加可能な人数を取得
-            maxMenber = 1;
+            maxMenber = 2;
 
             // ゲーム開始条件（1人揃ったら）
             _gameStart = (count == maxMenber);

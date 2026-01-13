@@ -63,7 +63,7 @@ public class ParticipantsThirdScript : NetworkBehaviour
             int count = _targetCheck.GetTouchPlayerCount();
 
             // 参加可能な人数を取得
-            maxMenber = NetworkManager.singleton.numPlayers - 1;
+            maxMenber = 2;
 
             // ゲーム開始条件（残り全員が揃ったら）
             _gameStart = (count == maxMenber);
