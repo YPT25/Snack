@@ -178,6 +178,17 @@ public class ResultUIScore : NetworkBehaviour
         if (isServer)
             _isResultStarted = true;
 
+        // Player_Tanabe を取得
+        Player_Tanabe[] holder = FindObjectsOfType<Player_Tanabe>();
+        if (holder == null) return;
+        // 順位ごとに王冠を付与
+        for (int i = 0; i < holder.Length; i++)
+        {
+            holder[i].ServerSetTeamAndName("", Color.white, 2);
+            Debug.LogError("リセット");
+        }
+        
+
         // 全プレイヤー取得
         Player_Tanabe[] players = FindObjectsOfType<Player_Tanabe>();
 
