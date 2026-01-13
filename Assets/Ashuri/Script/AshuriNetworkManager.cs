@@ -23,9 +23,6 @@ public class AshuriNetworkManager : NetworkManager
     [Tooltip("プレイヤー2のPrefab")]
     public GameObject playerPrefab2;
 
-    [Tooltip("3VS1の1人側のPrefab")]
-    public GameObject playerFirst;
-
     // ------------------------------
     // 途中参加禁止シーン設定
     // ------------------------------
@@ -180,12 +177,8 @@ public class AshuriNetworkManager : NetworkManager
 
         int modeIndex = stateManager.GetModeId(conn);
 
-        if(modeIndex == 1)
-        {   
-            selectedPrefab = playerFirst;
-        }
         // 保存されたモデルがある場合だけ切り替える
-        else if (stateManager != null && stateManager.HasSavedModel(conn))
+        if (stateManager != null && stateManager.HasSavedModel(conn))
         {
             // 保存されているモデル番号を取得
             int modelIndex = stateManager.GetSavedModel(conn);

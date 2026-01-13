@@ -1,4 +1,5 @@
 using Mirror;
+using Mirror.BouncyCastle.Asn1.X509;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,28 +51,37 @@ public class testPlayerMenberCheck : NetworkBehaviour
     }
 
 
-    // プレイヤーが入った時の処理（サーバーのみ）
+    // ===============================
+    // プレイヤーが入った時（サーバーのみ）
+    // ===============================
     private void OnTriggerEnter(Collider other)
     {
         // サーバー以外は処理しない
         if (!isServer) return;
 
-        // Player タグかどうかチェック
+        // Player タグ確認
         if (!other.CompareTag("Player")) return;
 
-        // 触れている人数を増やす
+        // 人数管理
         _touchPlayerCount++;
-
-        // マテリアルを touch 状態へ
         _materialState = "touch";
 
-        // PlayerModelSwitcher を取得
-        if (!other.TryGetComponent(out PlayerModelSwitcher holder)) return;
+        // Player_Tanabe を取得
+        Player_Tanabe holder = other.GetComponent<Player_Tanabe>();
+        if (holder == null) return;
 
-        // モードIDをサーバーで直接設定
-        holder.SetModeId(_assignId);
+        // チームごとの設定
+        if (_assignId == 0)
+        {
+            holder.ServerSetTeamAndName("Team1", Color.red, 0);
+            Debug.LogError("設定された");
+        }
+        else
+        {
+            holder.ServerSetTeamAndName("Team2", Color.blue, 1);
+            Debug.LogError("設定された");
+        }
     }
-
 
 
     // プレイヤーが離れた時の処理（サーバーのみ）

@@ -85,7 +85,7 @@ public class VS_GameManager : NetworkBehaviour
         gameStarted = false;
 
         // 開始トリガーもOFF
-        _isGameStart = false;
+        _isGameStart = true;
 
         // ゲーム全体の進行管理を開始
         StartCoroutine(ServerGameFlow());

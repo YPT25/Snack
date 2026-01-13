@@ -8,7 +8,6 @@ using UnityEngine.UI;             // Unityの基本クラス使用
 
 /// <summary>
 /// ゲーム終了後のスコアUIを管理するクラス
-/// GameManagerから呼び出されてUIを表示し、一定時間後にロビーへ戻す
 /// </summary>
 public class ResultUIScore : NetworkBehaviour
 {
@@ -46,6 +45,31 @@ public class ResultUIScore : NetworkBehaviour
     private bool _isReturnedLobby = false;
 
     // ===============================
+    // ゲームフィニッシュ画像
+    // ===============================
+    [Header("ゲーム終了画像")]
+    [SerializeField] private Image _gameFinish;
+
+    // ===============================
+    // ゲームフィニッシュ画像最大サイズ
+    // ===============================
+    [Header("ゲーム終了画像サイズ設定")]
+    [Tooltip("最大サイズ")]
+    [SerializeField] private Vector2 _gameFinishMaxSize = new Vector2(800f, 800f);
+
+    // ===============================
+    // ゲームフィニッシュ画像拡大スピード
+    // ===============================
+    [Tooltip("拡大スピード")]
+    [SerializeField] private float _gameFinishScaleSpeed = 5f;
+
+    // ===============================
+    // ゲームフィニッシュ画像表示時間
+    // ===============================
+    [Tooltip("表示してから消えるまでの時間（秒）")]
+    [SerializeField] private float _gameFinishDisplayTime = 3f;
+
+    // ===============================
     // クライアント開始時処理
     // ===============================
     public override void OnStartClient()
@@ -80,7 +104,7 @@ public class ResultUIScore : NetworkBehaviour
             // 二重実行防止
             _isReturnedLobby = true;
 
-            // ロビーへ戻る処理を実行
+            // ロビーへ戻る処理
             OnClickReturnLobby();
         }
     }
@@ -94,8 +118,55 @@ public class ResultUIScore : NetworkBehaviour
         // お菓子オブジェクトを非表示
         _sweetContainer.SetActive(false);
 
+        // ゲーム終了画像を表示
+        _gameFinish.gameObject.SetActive(true);
+
+        // RectTransformを取得
+        RectTransform rect = _gameFinish.rectTransform;
+
+        // 最小サイズを0,0に設定
+        rect.sizeDelta = Vector2.zero;
+
+        // 拡大＆自動非表示演出を開始
+        StartCoroutine(GameFinishAnimation(rect));
+
         // スコアUI表示
         ShowScore(finalScore);
+    }
+
+    // ===============================
+    // ゲーム終了画像の拡大＋自動非表示演出
+    // ===============================
+    private IEnumerator GameFinishAnimation(RectTransform rect)
+    {
+        // 現在サイズを取得
+        Vector2 currentSize = rect.sizeDelta;
+
+        // 最大サイズになるまで拡大
+        while (currentSize.x < _gameFinishMaxSize.x)
+        {
+            // サイズを徐々に最大へ近づける
+            currentSize = Vector2.Lerp(
+                currentSize,
+                _gameFinishMaxSize,
+                Time.deltaTime * _gameFinishScaleSpeed
+            );
+
+            // サイズを反映
+            rect.sizeDelta = currentSize;
+
+            // 1フレーム待機
+            yield return null;
+        }
+
+        // 最終サイズを固定
+        rect.sizeDelta = _gameFinishMaxSize;
+
+        // 指定時間待機
+        yield return new WaitForSeconds(_gameFinishDisplayTime);
+
+        // ゲーム終了画像を非表示
+        _gameFinish.gameObject.SetActive(false);
     }
 
     // ===============================
@@ -106,9 +177,6 @@ public class ResultUIScore : NetworkBehaviour
         // 結果処理開始フラグを立てる（サーバー）
         if (isServer)
             _isResultStarted = true;
-
-        // デバッグログ
-        Debug.Log("Game Over! Showing Result UI");
 
         // 全プレイヤー取得
         Player_Tanabe[] players = FindObjectsOfType<Player_Tanabe>();

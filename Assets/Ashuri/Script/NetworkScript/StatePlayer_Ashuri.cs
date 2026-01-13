@@ -37,6 +37,20 @@ public class StatePlayer_Ashuri : NetworkBehaviour
         = new Dictionary<NetworkConnectionToClient, int>();
 
     // ----------------------------------------------------
+    // プレイヤー名を保存する辞書
+    // ----------------------------------------------------
+    [Tooltip("プレイヤーごとの名前を保存する辞書")]
+    private Dictionary<NetworkConnectionToClient, string> savedPlayerName
+        = new Dictionary<NetworkConnectionToClient, string>();
+
+    // ----------------------------------------------------
+    // プレイヤーのカラーコードを保存する辞書
+    // ----------------------------------------------------
+    [Tooltip("プレイヤーごとのカラーコードを保存する辞書")]
+    private Dictionary<NetworkConnectionToClient, Color> savedPlayerColor
+        = new Dictionary<NetworkConnectionToClient, Color>();
+
+    // ----------------------------------------------------
     // このオブジェクトをシーンを跨いでも残す処理
     // ----------------------------------------------------
     private void Awake()
@@ -221,6 +235,72 @@ public class StatePlayer_Ashuri : NetworkBehaviour
         }
 
         Debug.LogError("===== StatePlayer Dump End =====");
+    }
+    // ----------------------------------------------------
+    // プレイヤー名を保存する処理
+    // ----------------------------------------------------
+    [Server]
+    public void SavePlayerName(NetworkConnectionToClient conn, string playerName)
+    {
+        // 1つ上：接続が無効なら保存しない
+        if (conn == null || !conn.isReady)
+            return;
+
+        // 1つ上：名前をDictionaryに保存（上書き可）
+        savedPlayerName[conn] = playerName;
+
+        // 1つ上：デバッグログ
+        Debug.Log($"[StatePlayer] プレイヤー {conn.connectionId} の名前を {playerName} に保存しました");
+    }
+
+    // ----------------------------------------------------
+    // 保存されているプレイヤー名を取得
+    // ----------------------------------------------------
+    public string GetSavedPlayerName(NetworkConnectionToClient conn)
+    {
+        // 1つ上：接続が無効なら空文字
+        if (conn == null)
+            return string.Empty;
+
+        // 1つ上：保存されていれば返す
+        if (savedPlayerName.TryGetValue(conn, out string name))
+            return name;
+
+        // 1つ上：なければ空文字
+        return string.Empty;
+    }
+
+    // ----------------------------------------------------
+    // プレイヤーのカラーコードを保存する処理
+    // ----------------------------------------------------
+    [Server]
+    public void SavePlayerColor(NetworkConnectionToClient conn, Color color)
+    {
+        // 1つ上：接続が無効なら保存しない
+        if (conn == null || !conn.isReady)
+            return;
+
+        // 1つ上：カラーコードを保存
+        savedPlayerColor[conn] = color;
+
+        // 1つ上：デバッグログ
+        Debug.Log($"[StatePlayer] プレイヤー {conn.connectionId} のカラーを保存しました");
+    }
+    // ----------------------------------------------------
+    // 保存されているプレイヤーカラーを取得
+    // ----------------------------------------------------
+    public Color GetSavedPlayerColor(NetworkConnectionToClient conn)
+    {
+        // 1つ上：接続が無効なら白
+        if (conn == null)
+            return Color.white;
+
+        // 1つ上：保存されていれば返す
+        if (savedPlayerColor.TryGetValue(conn, out Color color))
+            return color;
+
+        // 1つ上：なければ白
+        return Color.white;
     }
 
 }
