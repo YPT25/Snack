@@ -134,6 +134,9 @@ public class Player_Tanabe : CharacterBase
         m_eyesObject[1]?.SetActive(false);
 
         m_nameDisplay = this.GetComponentInChildren<NameDisplay_Tanabe>();
+
+        // 1つ上：サーバー開始時に一度だけ反映
+        this.ServerSetNameColor();
     }
 
     public override void OnStartClient()
@@ -933,6 +936,71 @@ public class Player_Tanabe : CharacterBase
 
         m_nameDisplay.SetPlayerName(_playerName);
         m_nameDisplay.SetNameColor(_nameColor);
+    }
+
+    // ===============================
+    // サーバー専用：チームと名前色を設定
+    // ===============================
+    [Server]
+    public void ServerSetTeamAndName(string playerName, Color nameColor, int teamNumber)
+    {
+        // チーム番号を設定
+        m_teamNumber = teamNumber;
+
+        // 名前と色を保存
+        m_playerName = playerName;
+        m_nameColor = nameColor;
+
+        // プレイヤーの接続を取得
+        NetworkConnectionToClient conn = connectionToClient;
+
+        // State に保存（★ここが重要）
+        StatePlayer_Ashuri.Instance.SavePlayerName(conn, playerName);
+        StatePlayer_Ashuri.Instance.SavePlayerColor(conn, nameColor);
+    }
+
+    // ===============================
+    // サーバー専用：チームと名前色を設定
+    // ===============================
+    [Server]
+    public void ServerSetNameColor()
+    {
+        // プレイヤー一個人
+        NetworkConnectionToClient conn = connectionToClient;
+        // 取得
+        string name = StatePlayer_Ashuri.Instance.GetSavedPlayerName(conn);
+        Color color = StatePlayer_Ashuri.Instance.GetSavedPlayerColor(conn);
+        int teamNumber = 2;
+        // 全クライアントへ反映
+        RpcApplyNameAndColor(name, color, teamNumber);
+    }
+    // ===============================
+    // 全クライアントで表示を更新
+    // ===============================
+    [ClientRpc]
+    private void RpcApplyNameAndColor(string playerName, Color nameColor, int teamNumber)
+    {
+        m_teamNumber = teamNumber;
+        m_playerName = playerName;
+        m_nameColor = nameColor;
+
+        Debug.LogError(playerName);
+        Debug.LogError(nameColor);
+
+        if (!m_nameDisplay) { return; }
+
+        m_nameDisplay.SetPlayerName(playerName);
+        m_nameDisplay.SetNameColor(nameColor);
+    }
+    //Stateに名前と色の保存
+    [Command]
+    public void CmdSetStatePlayerNameColor(string _playerName, Color _nameColor)
+    {
+        // プレイヤー一個人
+        NetworkConnectionToClient conn = connectionToClient;
+        // サーバー側で保存
+        StatePlayer_Ashuri.Instance.SavePlayerName(conn, _playerName);
+        StatePlayer_Ashuri.Instance.SavePlayerColor(conn, _nameColor);
     }
 
     // プレイヤーの名前とその色設定
