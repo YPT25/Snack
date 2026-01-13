@@ -27,7 +27,7 @@ public class EndrollFadeIn_Tanabe : MonoBehaviour
             }
             if (m_fadeInImage[0].color.a <= 0f)
             {
-                SceneManager.LoadScene("ConnectionScene");
+                SceneManager.LoadScene("TitleTest");
             }
         }
         else if (Input.GetMouseButtonDown(0) || Input.GetButtonDown("Jump"))

@@ -22,6 +22,13 @@ public class TitlePlayVideo : MonoBehaviour
     [Header("シーン遷移")]
     [SerializeField] string SceneName = "";
 
+    [Header("ボタン")]
+    [Tooltip("ゲーム開始するボタン")]
+    [SerializeField] private Button _gameStartButton;
+
+    [Tooltip("クレジットに行くボタン")]
+    [SerializeField] private Button _staffSceneButton;
+
     //動画用
     private bool isVideoPlaying = false;
     //シーン遷移用
@@ -40,6 +47,12 @@ public class TitlePlayVideo : MonoBehaviour
         //時間がたったら関数を呼び出す
         Invoke(nameof(StartVideo), time);
         Invoke(nameof(StartInput), 3);       //３秒起ったらシーン遷移のクリックができるようになる
+
+        // ホスト開始ボタン押下時のイベント登録
+        _gameStartButton.onClick.AddListener(SceneInput);
+
+        // ホスト開始ボタン押下時のイベント登録
+        _staffSceneButton.onClick.AddListener(OnStaffSceneChange);
     }
 
     // クリックするまでの待機時間
@@ -136,6 +149,8 @@ public class TitlePlayVideo : MonoBehaviour
                 Debug.Log("入力がありました");
                 //再生を止める
                 videoPlayer.Stop();
+                _gameStartButton.gameObject.SetActive(true);
+                _staffSceneButton.gameObject.SetActive(true);
                 //再生時間を頭まで戻す
                 videoPlayer.time = 0;
                 isVideoPlaying = false;
@@ -154,6 +169,8 @@ public class TitlePlayVideo : MonoBehaviour
                 //アルファ値を1にする
                 OnMoveAlpha();
                 OffImageAlpha();
+                _gameStartButton.gameObject.SetActive(false);
+                _staffSceneButton.gameObject.SetActive(false);
                 //StartCoroutine(FadeOut());
                 //動画を再生する
                 videoPlayer.Play();
@@ -164,26 +181,25 @@ public class TitlePlayVideo : MonoBehaviour
     //シーン遷移の入力処理
     void SceneInput()
     {
-        //左クリックを受け付ける
-        if (isScene == true)
-        {
-            //マウスクリックとPADの〇×□▲に対応するのが反応したとき
-            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button0) ||
-                Input.GetKeyDown(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Joystick1Button2) ||
-                Input.GetKeyDown(KeyCode.Joystick1Button3) || Input.GetButtonDown("Jump"))
-            {
-
-                SceneManager.LoadScene(SceneName);
-            }
-        }
+        SceneManager.LoadScene(SceneName);
     }
 
     // Update is called once per frame
     void Update()
     {
         //シーン遷移に関する入力処理
-        SceneInput();
+        //SceneInput();
         //動画に関する入力処理
         VideoInput();
+    }
+
+    private void OnGameStart()
+    {
+
+    }
+
+    private void OnStaffSceneChange()
+    {
+        SceneManager.LoadScene("TextTestScene");
     }
 }
