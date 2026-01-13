@@ -136,19 +136,19 @@ public class Player_Tanabe : CharacterBase
         m_nameDisplay = this.GetComponentInChildren<NameDisplay_Tanabe>();
 
         // 1つ上：サーバー開始時に一度だけ反映
-        this.ServerSetNameColor();
+        //this.ServerSetNameColor();
     }
 
     public override void OnStartClient()
     {
         // キャラクタータイプの設定
         base.SetCharacterType(CharacterType.HERO_TYPE);
-        if(GameObject.Find("BattleMode") != null)
+        if (GameObject.Find("BattleMode") != null)
         {
             // キャラクタータイプの設定
             base.SetCharacterType(CharacterType.ENEMY_TYPE);
         }
-        if(GameObject.Find("TeamBattleMode") != null)
+        if (GameObject.Find("TeamBattleMode") != null)
         {
             m_isTeamBattle = true;
         }
@@ -181,7 +181,7 @@ public class Player_Tanabe : CharacterBase
         if (!this.isLocalPlayer)
         {
             // プレイヤーの登録
-            if(m_playerManager != null) { m_playerManager.SetPlayer(this); }
+            if (m_playerManager != null) { m_playerManager.SetPlayer(this); }
             return;
         }
         // プレイヤーマネージャがあればと押す
@@ -190,7 +190,7 @@ public class Player_Tanabe : CharacterBase
             // ローカルプレイヤーの登録
             m_playerManager.SetLocalPlayer(this);
             // カメラコントローラがあればプレイヤーマネージャに登録しておく
-            if(m_cameraController != null)
+            if (m_cameraController != null)
             {
                 m_playerManager.SetCameraController(m_cameraController);
             }
@@ -198,7 +198,7 @@ public class Player_Tanabe : CharacterBase
 
         // デバッグ時のみ
         m_debugParameterText = GameObject.Find("DebugParameterText")?.GetComponent<DebugParameterText_Tanabe>();
-        if(m_debugParameterText != null) { m_debugParameterText.SetCharacter(this); }
+        if (m_debugParameterText != null) { m_debugParameterText.SetCharacter(this); }
 
         m_cameraTransform = GameObject.FindWithTag("MainCamera").transform;
 
@@ -212,6 +212,11 @@ public class Player_Tanabe : CharacterBase
         }
         // ゲームオプションの取得
         m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
+
+        if (isLocalPlayer)
+        {
+            CmdRequestNameColor();
+        }
     }
 
     [Command]
@@ -237,7 +242,7 @@ public class Player_Tanabe : CharacterBase
     {
         RpcDeadExplosion(_headObject, _randomVector1, _randomVector2);
         HeadObject_Tanabe head = this.GetComponentInChildren<HeadObject_Tanabe>();
-        if(head == null) { return; }
+        if (head == null) { return; }
         head.GetComponent<BoxCollider>().enabled = true;
         head.transform.parent = null;
         m_eyesObject[0]?.SetActive(false);
@@ -355,9 +360,9 @@ public class Player_Tanabe : CharacterBase
         // 移動していない状態ならスタミナを回復する
         if (!m_isMoving || m_isStaminan)
         {
-            if(m_weaponID == WeaponID.HAMMER)
+            if (m_weaponID == WeaponID.HAMMER)
             {
-                if(!Input.GetButton("Dash") || m_isStaminan)
+                if (!Input.GetButton("Dash") || m_isStaminan)
                 {
                     base.SetStamina(GetStamina() + Time.deltaTime * 2f);
                 }
@@ -381,7 +386,7 @@ public class Player_Tanabe : CharacterBase
         }
 
         // セットパーツを装備しているときのみ通す
-        if(m_setPart != null)
+        if (m_setPart != null)
         {
             // 装備解除入力処理
             if (Input.GetKeyUp(KeyCode.V) || Input.GetKeyUp("joystick button 4"))
@@ -411,8 +416,8 @@ public class Player_Tanabe : CharacterBase
         else if (GetIsDefaultState() && m_equipStandbyItem != null && m_equipStandbyItem.GetPlayerData() == this)
         {
             // 攻撃入力でセットパーツの取得
-            if (Input.GetButtonDown("Attack")                                           && this.GetPart() == null ||
-                this.GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f    && this.GetPart() == null)
+            if (Input.GetButtonDown("Attack") && this.GetPart() == null ||
+                this.GetPrevShotButton() == 0.0f && Input.GetAxisRaw("Shot") != 0.0f && this.GetPart() == null)
             {
                 this.CmdChangeState_Item(m_equipStandbyItem, ItemStateMachine.ItemStateType.PARTEQUIPPED);
                 //m_equipStandbyItem.ChangeState(m_equipStandbyItem, ItemStateMachine.ItemStateType.PARTEQUIPPED);
@@ -446,7 +451,7 @@ public class Player_Tanabe : CharacterBase
         if (m_gameOption != null && m_gameOption.IsPause())
         {
             // 爆風が当たっていない時通す
-            if(!m_isHitBomb)
+            if (!m_isHitBomb)
             {
                 m_rb.velocity = new Vector3(0f, m_rb.velocity.y, 0f);
             }
@@ -628,7 +633,7 @@ public class Player_Tanabe : CharacterBase
     // CameraTransform.forwardの取得
     public Vector3 GetCameraForward()
     {
-        if(this.isLocalPlayer)
+        if (this.isLocalPlayer)
         {
             return m_cameraTransform.forward;
         }
@@ -732,7 +737,7 @@ public class Player_Tanabe : CharacterBase
     // デフォルト状態かの判定フラグの取得
     public bool GetIsDefaultState()
     {
-        if(m_weaponID == WeaponID.HAMMER && m_isAttackCharge)
+        if (m_weaponID == WeaponID.HAMMER && m_isAttackCharge)
         {
             return true;
         }
@@ -765,7 +770,7 @@ public class Player_Tanabe : CharacterBase
     // ポーズ中か
     public bool IsPause()
     {
-        if(m_gameOption == null) { return false; }
+        if (m_gameOption == null) { return false; }
         return m_gameOption.IsPause();
     }
 
@@ -919,7 +924,7 @@ public class Player_Tanabe : CharacterBase
         m_playerName = _playerName;
         m_nameColor = _nameColor;
 
-        if(!m_nameDisplay) { return; }
+        if (!m_nameDisplay) { return; }
 
         m_nameDisplay.SetPlayerName(_playerName);
         m_nameDisplay.SetNameColor(_nameColor);
@@ -932,7 +937,7 @@ public class Player_Tanabe : CharacterBase
         m_playerName = _playerName;
         m_nameColor = _nameColor;
 
-        if(!m_nameDisplay) { return; }
+        if (!m_nameDisplay) { return; }
 
         m_nameDisplay.SetPlayerName(_playerName);
         m_nameDisplay.SetNameColor(_nameColor);
@@ -991,6 +996,18 @@ public class Player_Tanabe : CharacterBase
 
         m_nameDisplay.SetPlayerName(playerName);
         m_nameDisplay.SetNameColor(nameColor);
+    }
+
+    // サーバー側
+    [Command]
+    private void CmdRequestNameColor()
+    {
+        NetworkConnectionToClient conn = connectionToClient;
+
+        string name = StatePlayer_Ashuri.Instance.GetSavedPlayerName(conn);
+        Color color = StatePlayer_Ashuri.Instance.GetSavedPlayerColor(conn);
+
+        RpcApplyNameAndColor(name, color, m_teamNumber);
     }
     //Stateに名前と色の保存
     [Command]
