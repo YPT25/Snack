@@ -37,9 +37,6 @@ public class AshuriNetworkDiscovery : MonoBehaviour
     [Tooltip("ネットワーク開始時のUIパネル")]
     [SerializeField] private GameObject networkPanel;
 
-    [Tooltip("クレジットシーン")]
-    [SerializeField] private string cregitSceneText;
-
     // 見つかったサーバー一覧を保持する辞書
     private readonly Dictionary<long, ServerResponse> discoveredServers = new();
 
@@ -56,9 +53,6 @@ public class AshuriNetworkDiscovery : MonoBehaviour
 
         // サーバー検出時のイベント登録
         networkDiscovery.OnServerFound.AddListener(OnServerFound);
-
-        //クレジットボタン押下時のイベント登録
-        creditButton.onClick.AddListener(OnCreditClicked);
     }
 
     // ====================================================
@@ -180,13 +174,5 @@ public class AshuriNetworkDiscovery : MonoBehaviour
         Button button = item.GetComponent<Button>();
         if (button != null)
             button.onClick.AddListener(() => ConnectToServer(info));
-    }
-
-    // ====================================================
-    // ホスト開始ボタン押下時の処理
-    // ====================================================
-    private void OnCreditClicked()
-    {
-
     }
 }
