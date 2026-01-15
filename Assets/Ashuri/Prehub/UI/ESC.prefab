@@ -354,7 +354,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _escCanvas: {fileID: 6962797246173493757}
   _gameFinishButton: {fileID: 7874053483327721350}
-  _normalCanvas: {fileID: 0}
+  _normalCanvasList: []
+  canInput: 1
 --- !u!114 &6889035159954672327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,6 +370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioMixer: {fileID: 24100000, guid: c0f5984be9380fc4ca69fd771cbc3659, type: 2}
   _bgmSlider: {fileID: 7546729132504987383}
+  _seSlider: {fileID: 523759290905455897}
 --- !u!1 &3363439988509475339
 GameObject:
   m_ObjectHideFlags: 0

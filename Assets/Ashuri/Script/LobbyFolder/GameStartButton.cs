@@ -47,7 +47,7 @@ public class GameStartButton : NetworkBehaviour // NetworkBehaviourを継承
         {
             // フェードアウトとシーン遷移を開始
             // コルーチンはモノビヘイビアからしか実行できないため、FadeManagerのInstanceから呼び出す
-            StartCoroutine(FadeManager.Instance.FadeOutAndLoadScene(nextSceneName));
+            //StartCoroutine(FadeManager.Instance.FadeOutAndLoadScene(nextSceneName));
         }
         else
         {

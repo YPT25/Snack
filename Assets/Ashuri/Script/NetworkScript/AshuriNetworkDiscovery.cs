@@ -37,6 +37,12 @@ public class AshuriNetworkDiscovery : MonoBehaviour
     [Tooltip("ネットワーク開始時のUIパネル")]
     [SerializeField] private GameObject networkPanel;
 
+    [Header("SE")]
+    [Header("ボタンを押した音")]
+    [SerializeField] public AudioClip sound1;
+
+    [Tooltip("AudioSource")] private AudioSource audioSource;
+
     // 見つかったサーバー一覧を保持する辞書
     private readonly Dictionary<long, ServerResponse> discoveredServers = new();
 
@@ -53,6 +59,9 @@ public class AshuriNetworkDiscovery : MonoBehaviour
 
         // サーバー検出時のイベント登録
         networkDiscovery.OnServerFound.AddListener(OnServerFound);
+
+        //Componentを取得
+        audioSource = GetComponent<AudioSource>();
     }
 
     // ====================================================
@@ -75,6 +84,8 @@ public class AshuriNetworkDiscovery : MonoBehaviour
             // Loading動画を表示
             manager.ShowLoading();
         }
+                //音声を流す
+        this.PlayButtonSE();
     }
 
     // ====================================================
@@ -99,6 +110,9 @@ public class AshuriNetworkDiscovery : MonoBehaviour
     // ====================================================
     private void OnClientClicked()
     {
+        //音声を流す
+        this.PlayButtonSE();
+
         // 既存のサーバーリストを削除
         foreach (Transform child in serverListContent)
             Destroy(child.gameObject);
@@ -132,6 +146,8 @@ public class AshuriNetworkDiscovery : MonoBehaviour
             // Loading動画を表示
             manager.ShowLoading();
         }
+        //音声を流す
+        this.PlayButtonSE();
     }
 
     // ====================================================
@@ -154,6 +170,9 @@ public class AshuriNetworkDiscovery : MonoBehaviour
     // ====================================================
     private void OnServerFound(ServerResponse info)
     {
+        //音声を流す
+        this.PlayButtonSE();
+
         // すでに検出済みなら無視
         if (discoveredServers.ContainsKey(info.serverId))
             return;
@@ -174,5 +193,22 @@ public class AshuriNetworkDiscovery : MonoBehaviour
         Button button = item.GetComponent<Button>();
         if (button != null)
             button.onClick.AddListener(() => ConnectToServer(info));
+    }
+
+    // ===============================
+    // ★ 追加：SEだけを鳴らす関数
+    // ===============================
+
+    /// <summary>
+    /// ボタン用SE再生
+    /// 他CanvasのButtonから呼び出す想定
+    /// </summary>
+    public void PlayButtonSE()
+    {
+        // AudioSourceが存在しない場合は処理しない
+        if (audioSource == null) return;
+
+        // 効果音を1回再生
+        audioSource.PlayOneShot(sound1);
     }
 }

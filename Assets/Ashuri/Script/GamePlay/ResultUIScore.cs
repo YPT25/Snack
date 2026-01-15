@@ -230,8 +230,23 @@ public class ResultUIScore : NetworkBehaviour
         // 時間停止解除
         Time.timeScale = 1f;
 
-        // ロビーシーンへ遷移
-        NetworkManager.singleton.ServerChangeScene("LobbyScene");
+        if (FadeManager.Instance != null)
+        {
+            // フェードアウトとシーン遷移を開始
+            // コルーチンはモノビヘイビアからしか実行できないため、FadeManagerのInstanceから呼び出す
+            FadeManager.Instance.FadeOut("LobbyScene");
+        }
+        else
+        {
+            Debug.LogError("FadeManager.Instance not found! Make sure FadeManager is on an active Canvas and has been initialized.");
+            // フェードマネージャーが見つからない場合でも、シーン遷移だけは試みる（フェードなし）
+            if (isServer)
+            {
+                NetworkManager.singleton.ServerChangeScene("LobbyScene");
+            }
+        }
+        // プレイヤー番号をリセット
+        ((AshuriNetworkManager)NetworkManager.singleton).PlayerNumberReset();
     }
 
     // ===============================

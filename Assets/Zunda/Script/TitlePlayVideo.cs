@@ -36,6 +36,12 @@ public class TitlePlayVideo : MonoBehaviour
     //フェイドにかかる時間
     private float FadeTime = 0.5f;
 
+    [Header("SE")]
+    [Header("ボタンを押した音")]
+    [SerializeField] public AudioClip sound1;
+
+    [Tooltip("AudioSource")]private AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,6 +59,9 @@ public class TitlePlayVideo : MonoBehaviour
 
         // ホスト開始ボタン押下時のイベント登録
         _staffSceneButton.onClick.AddListener(OnStaffSceneChange);
+
+        //Componentを取得
+        audioSource = GetComponent<AudioSource>();
     }
 
     // クリックするまでの待機時間
@@ -181,6 +190,9 @@ public class TitlePlayVideo : MonoBehaviour
     //シーン遷移の入力処理
     void SceneInput()
     {
+        //音(sound1)を鳴らす
+        PlayButtonSE();
+        //シーン遷移する
         SceneManager.LoadScene(SceneName);
     }
 
@@ -200,6 +212,26 @@ public class TitlePlayVideo : MonoBehaviour
 
     private void OnStaffSceneChange()
     {
+        //音(sound1)を鳴らす
+        PlayButtonSE();
+        // シーン遷移する
         SceneManager.LoadScene("TextTestScene");
+    }
+
+    // ===============================
+    // ★ 追加：SEだけを鳴らす関数
+    // ===============================
+
+    /// <summary>
+    /// ボタン用SE再生
+    /// 他CanvasのButtonから呼び出す想定
+    /// </summary>
+    public void PlayButtonSE()
+    {
+        // AudioSourceが存在しない場合は処理しない
+        if (audioSource == null) return;
+
+        // 効果音を1回再生
+        audioSource.PlayOneShot(sound1);
     }
 }

@@ -9,6 +9,17 @@ public class WeaponChangeManager : NetworkBehaviour
     [Tooltip("0:銃・1:ハンマー")]
     [SerializeField] private int weaponNumber;
 
+    [Header("SE")]
+    [Header("ボタンを押した音")]
+    [SerializeField] public AudioClip sound1;
+
+    [Tooltip("AudioSource")] private AudioSource audioSource;
+    private void Start()
+    {
+        //Componentを取得
+        audioSource = GetComponent<AudioSource>();
+    }
+
     // ----------------------------------------------------
     // プレイヤーが触れたら変身処理を呼ぶ
     // ----------------------------------------------------
@@ -25,5 +36,21 @@ public class WeaponChangeManager : NetworkBehaviour
 
         // プレイヤーのメソッドを呼び出す
         manager.TryChangePlayer(weaponNumber);
+
+        //音声を流す
+        this.RpcPlaySE();
+    }
+
+    // ===============================
+    // サーバーから全クライアントへSE再生
+    // ===============================
+    [ClientRpc]
+    private void RpcPlaySE()
+    {
+        // AudioSourceが存在しない場合は処理しない
+        if (audioSource == null) return;
+
+        // 効果音を再生
+        audioSource.PlayOneShot(sound1);
     }
 }

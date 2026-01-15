@@ -1,70 +1,129 @@
+// コルーチンを使用するために必要
 using System.Collections;
+
+// Unityの基本機能を使用するために必要
 using UnityEngine;
-using UnityEngine.UI; // UIを操作するために必要
-using Mirror; // Mirrorの機能を使用するために必要
-using UnityEngine.SceneManagement; // シーン管理のために必要
 
-public class FadeManager : NetworkBehaviour // NetworkBehaviourを継承
+// UI(Image)を操作するために必要
+using UnityEngine.UI;
+
+// Mirrorのネットワーク機能を使用するために必要
+using Mirror;
+
+// フェード処理を管理するクラス
+public class FadeManager : MonoBehaviour
 {
-    public Image fadePanel; // フェード用のUIパネル
-    public float fadeDuration = 1.5f; // フェードにかかる時間
+    // ==============================
+    // フェード用の黒いImageを指定
+    // ==============================
+    [SerializeField]
+    private Image fadePanel;
 
-    public static FadeManager Instance { get; private set; } // シングルトンパターン
+    // ==============================
+    // フェードにかかる時間（秒）
+    // ==============================
+    [SerializeField]
+    private float fadeDuration = 1.5f;
 
-    void Awake()
+    // ==============================
+    // シングルトン用のインスタンス
+    // ==============================
+    public static FadeManager Instance;
+
+    // ==============================
+    // オブジェクト生成時に一度だけ呼ばれる
+    // ==============================
+    private void Awake()
     {
+        // まだインスタンスが存在しない場合
         if (Instance == null)
         {
+            // 自分自身をシングルトンとして登録
             Instance = this;
-            // シーン遷移してもこのオブジェクトが破棄されないようにする（必要に応じて）
-            // DontDestroyOnLoad(gameObject); 
+
+            // シーンが変わっても破棄されないようにする
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
+            // すでに存在している場合は自分を破棄
             Destroy(gameObject);
         }
     }
 
-    // フェードアウト（画面が暗くなる）してからシーンをロードするコルーチン
-    public IEnumerator FadeOutAndLoadScene(string sceneName)
+    // ==============================
+    // フェードアウトを開始する外部用メソッド
+    // ==============================
+    public void FadeOut(string sceneName)
     {
-        // パネルの色を取得
-        Color panelColor = fadePanel.color;
-        // アルファ値を0から1へ変化させる
+        // フェードアウト用コルーチンを開始
+        StartCoroutine(FadeOutCoroutine(sceneName));
+    }
+
+    // ==============================
+    // フェードアウト処理本体
+    // ==============================
+    private IEnumerator FadeOutCoroutine(string sceneName)
+    {
+        // 現在のImageの色を取得
+        Color color = fadePanel.color;
+
+        // 指定時間かけてアルファ値を0→1に変化させる
         for (float t = 0; t < fadeDuration; t += Time.deltaTime)
         {
-            panelColor.a = Mathf.Lerp(0, 1, t / fadeDuration);
-            fadePanel.color = panelColor;
-            yield return null; // 1フレーム待つ
-        }
-        panelColor.a = 1; // 完全に不透明にする
-        fadePanel.color = panelColor;
+            // 時間経過に応じてアルファ値を補間
+            color.a = Mathf.Lerp(0f, 1f, t / fadeDuration);
 
-        // シーン遷移（Mirrorを使用）
-        if (NetworkServer.active) // サーバーの場合
+            // Imageに反映
+            fadePanel.color = color;
+
+            // 次のフレームまで待つ
+            yield return null;
+        }
+
+        // 最終的に完全な黒にする
+        color.a = 1f;
+        fadePanel.color = color;
+
+        // サーバーの場合のみシーンを変更する
+        if (NetworkServer.active)
         {
             NetworkManager.singleton.ServerChangeScene(sceneName);
         }
-        // クライアントの場合は、サーバーからのシーン変更を待つため、ここでは何もしない
-
-        yield return new WaitForSeconds(0.5f); // シーンロードが完了するのを少し待つ
-
-        // フェードイン（画面が明るくなる）
-        StartCoroutine(FadeIn());
     }
 
-    // フェードイン（画面が明るくなる）コルーチン
-    public IEnumerator FadeIn()
+    // ==============================
+    // フェードインを開始する外部用メソッド
+    // ==============================
+    public void FadeIn()
     {
-        Color panelColor = fadePanel.color;
-        // アルファ値を1から0へ変化させる
+        // フェードイン用コルーチンを開始
+        StartCoroutine(FadeInCoroutine());
+    }
+
+    // ==============================
+    // フェードイン処理本体
+    // ==============================
+    private IEnumerator FadeInCoroutine()
+    {
+        // 現在のImageの色を取得
+        Color color = fadePanel.color;
+
+        // 指定時間かけてアルファ値を1→0に変化させる
         for (float t = 0; t < fadeDuration; t += Time.deltaTime)
         {
-            panelColor.a = Mathf.Lerp(1, 0, t / fadeDuration);
-            fadePanel.color = panelColor;
+            // 時間経過に応じてアルファ値を補間
+            color.a = Mathf.Lerp(1f, 0f, t / fadeDuration);
+
+            // Imageに反映
+            fadePanel.color = color;
+
+            // 次のフレームまで待つ
             yield return null;
         }
-        panelColor.a = 0; // 完全に透明にする
-        fadePanel.color = panelColor;
+
+        // 最終的に完全に透明にする
+        color.a = 0f;
+        fadePanel.color = color;
     }
 }

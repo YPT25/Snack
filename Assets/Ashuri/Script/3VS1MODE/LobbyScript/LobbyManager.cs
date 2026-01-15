@@ -64,7 +64,31 @@ public class LobbyManager : NetworkBehaviour
         ChangeAllPlayerModels();
 
         // シーン遷移開始
-        NetworkManager.singleton.ServerChangeScene("3VS1ModeGame");
+        RpcRequestSceneChange();
+    }
+
+    // クライアントでフェードアウトとシーン遷移を開始するRPC
+    [ClientRpc]
+    void RpcRequestSceneChange()
+    {
+        if (FadeManager.Instance != null)
+        {
+            // フェードアウトとシーン遷移を開始
+            // コルーチンはモノビヘイビアからしか実行できないため、FadeManagerのInstanceから呼び出す
+            FadeManager.Instance.FadeOut("3VS1ModeGame");
+        }
+        else
+        {
+            Debug.LogError("FadeManager.Instance not found! Make sure FadeManager is on an active Canvas and has been initialized.");
+            // フェードマネージャーが見つからない場合でも、シーン遷移だけは試みる（フェードなし）
+            if (isServer)
+            {
+                NetworkManager.singleton.ServerChangeScene("3VS1ModeGame");
+            }
+        }
+        // プレイヤー番号をリセット
+        ((AshuriNetworkManager)NetworkManager.singleton).PlayerNumberReset();
+
     }
 
     // ----------------------------------------------------

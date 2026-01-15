@@ -262,4 +262,18 @@ public class AshuriNetworkManager : NetworkManager
         SceneManager.LoadScene("TitleScene");
     }
 
+    // ==============================
+    // クライアントのシーン切替完了時
+    // ==============================
+    public override void OnClientSceneChanged()
+    {
+        // 元の処理を実行
+        base.OnClientSceneChanged();
+
+        // FadeManager が存在する場合のみフェードイン
+        if (FadeManager.Instance != null)
+        {
+            FadeManager.Instance.FadeIn();
+        }
+    }
 }

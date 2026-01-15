@@ -9,8 +9,19 @@ public class DebugItemGenerator : NetworkBehaviour
     [Tooltip("トリガーに入ったとき生成されるアイテム")]
     [SerializeField] private GameObject m_itemPrefab;
 
+    [Header("SE")]
+    [Header("ボタンを押した音")]
+    [SerializeField] public AudioClip sound1;
+
+    [Tooltip("AudioSource")] private AudioSource audioSource;
     // 当たったトリガー
     private bool _isTrigger = false;
+
+    private void Start()
+    {
+        //Componentを取得
+        audioSource = GetComponent<AudioSource>();
+    }
 
     // ------------------------------
     // サーバー専用：トリガー侵入時の処理
@@ -31,6 +42,9 @@ public class DebugItemGenerator : NetworkBehaviour
 
         // ネットワーク上にスポーンさせる
         NetworkServer.Spawn(obj);
+
+        // 音声を流す
+        this.RpcPlaySE();
     }
 
     [ServerCallback]
@@ -42,5 +56,16 @@ public class DebugItemGenerator : NetworkBehaviour
         // 離れたらfalse
         _isTrigger = false;
     }
+    // ===============================
+    // サーバーから全クライアントへSE再生
+    // ===============================
+    [ClientRpc]
+    private void RpcPlaySE()
+    {
+        // AudioSourceが存在しない場合は処理しない
+        if (audioSource == null) return;
 
+        // 効果音を再生
+        audioSource.PlayOneShot(sound1);
+    }
 }

@@ -95,7 +95,7 @@ public class BWStartManager : NetworkBehaviour
         {
             // フェードアウトとシーン遷移を開始
             // コルーチンはモノビヘイビアからしか実行できないため、FadeManagerのInstanceから呼び出す
-            StartCoroutine(FadeManager.Instance.FadeOutAndLoadScene(nextSceneName));
+            FadeManager.Instance.FadeOut(nextSceneName);
         }
         else
         {

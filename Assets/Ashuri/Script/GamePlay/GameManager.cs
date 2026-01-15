@@ -121,6 +121,17 @@ public class GameManager : NetworkBehaviour
 
             // マイナス補正
             if (remainingGameTime < 0) remainingGameTime = 0;
+
+            // もしTeamBattleModeのオブジェクトがあって
+            // 生きているプレイヤーが1ならゲームを終了させる
+            if(GameObject.Find("TeamBattleMode") != null)
+            {
+                //if()
+                {
+                    yield return 1f;
+                    TwoModeResultScript.Instance._isResultStarted = false;
+                }
+            }
         }
 
         // 残り時間が0になったらゲーム終了
@@ -143,8 +154,18 @@ public class GameManager : NetworkBehaviour
         SweetScore score = FindObjectOfType<SweetScore>();
         float currentScore = score != null ? score.currentScore : 0f;
 
-        // 全クライアントにスコア表示を通知
-        ResultUIScore.Instance.RpcShowScore(currentScore);
+
+        // もしTeamBattleModeのオブジェクトがあって
+        // 生きているプレイヤーが1ならゲームを終了させる
+        if (GameObject.Find("TeamBattleMode") != null)
+        {
+            TwoModeResultScript.Instance.RpcShowScore(currentScore);
+        }
+        else 
+        {
+            // 全クライアントにスコア表示を通知
+            ResultUIScore.Instance.RpcShowScore(currentScore);
+        }
     }
 
     // ===============================
