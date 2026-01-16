@@ -29191,9 +29191,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_itemPrefabs:
-  - {fileID: 3953133752190140754, guid: 1b8f60117d54aea4fb33f29817ed48bd, type: 3}
-  - {fileID: 1780597438583396102, guid: 0dbb9a3b986b1004fbb6d562055c43c6, type: 3}
-  - {fileID: 9212673188351400512, guid: f0d91fad1ad9f974fbd24331774b1a6f, type: 3}
   - {fileID: 7119653282012016299, guid: 6a683f58a9e81f04186927a796978824, type: 3}
   - {fileID: 9067517619354686619, guid: a1901bcbcf1110e439de880deb5b0b3f, type: 3}
   - {fileID: 6164463997081074741, guid: 78aa09b9fe1eb2c4f87e35d4670ea547, type: 3}

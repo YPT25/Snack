@@ -9,10 +9,22 @@ public class BombExplosion_Tanabe : NetworkBehaviour
     [SerializeField] private float m_explosionForce = 5f;  // 爆風の強さ
     [SerializeField] private float m_upwardsModifier = 1f;   // 上方向の補正（持ち上がる感じ）
 
+    [Header("SE")]
+    [Header("ボタンを押した音")]
+    [SerializeField] public AudioClip sound1;
+
+    [Tooltip("AudioSource")] private AudioSource audioSource;
+
     private bool m_autoDestroy = false;
     private float m_destroyTimer = 2.0f;
 
     private List<Player_Tanabe> m_players = new List<Player_Tanabe>();
+
+    private void Start()
+    {
+        //Componentを取得
+        audioSource = GetComponent<AudioSource>();
+    }
 
     [ServerCallback]
     private void Update()
@@ -97,6 +109,8 @@ public class BombExplosion_Tanabe : NetworkBehaviour
         m_destroyTimer = 2f;
 
         this.RpcNoneIdentityExplode();
+        //音を流す
+        this.PlayButtonSE();
 
         // 爆風の範囲内にあるコライダーを全部取る
         Collider[] colliders = Physics.OverlapSphere(transform.position, 15f);
@@ -202,5 +216,24 @@ public class BombExplosion_Tanabe : NetworkBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, m_explosionRadius);
+    }
+
+
+    // ===============================
+    // ★ 追加：SEだけを鳴らす関数
+    // ===============================
+
+    /// <summary>
+    /// ボタン用SE再生
+    /// 他CanvasのButtonから呼び出す想定
+    /// </summary>
+    [Command]
+    public void PlayButtonSE()
+    {
+        // AudioSourceが存在しない場合は処理しない
+        if (audioSource == null) return;
+
+        // 効果音を1回再生
+        audioSource.PlayOneShot(sound1);
     }
 }

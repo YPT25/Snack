@@ -213,7 +213,7 @@ public class Player_Tanabe : CharacterBase
         // ゲームオプションの取得
         m_gameOption = GameObject.Find("GameOption")?.GetComponent<GameOption_Tanabe>();
 
-        if (isLocalPlayer)
+        if (isLocalPlayer && m_isTeamBattle)
         {
             CmdRequestNameColor();
         }
@@ -274,7 +274,10 @@ public class Player_Tanabe : CharacterBase
         // ローカルプレイヤー以外は処理しない
         if (!this.isLocalPlayer) { return; }
         //保存されていたら
-        this.CmdRequestNameColor();
+        if (isLocalPlayer && m_isTeamBattle)
+        {
+            CmdRequestNameColor();
+        }
         // HPが0かつ、頭オブジェクトとの親子関係がある場合通す
         if (GetHp() <= 0.0f && m_headObject != null)
         {

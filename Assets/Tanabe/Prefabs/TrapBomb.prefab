@@ -178,6 +178,7 @@ MonoBehaviour:
   m_explosionRadius: 5
   m_explosionForce: 5
   m_upwardsModifier: 1
+  sound1: {fileID: 8300000, guid: c9901962e2aa4444db5ff97524cba349, type: 3}
 --- !u!114 &7387042369687688168
 MonoBehaviour:
   m_ObjectHideFlags: 0
