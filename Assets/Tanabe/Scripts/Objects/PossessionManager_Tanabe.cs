@@ -149,6 +149,7 @@ public class PossessionManager_Tanabe : NetworkBehaviour
                     //item.CmdChangeState(item.netIdentity, ItemStateMachine.ItemStateType.PREPARINGTHROW);
                     m_player.SetRightHandsItem(item);
                     m_player.SetIsThrow(true);
+                    item.SetPlayerData(m_player);
                     break;
                 }
             case ItemStateMachine.ItemType.TRAP:

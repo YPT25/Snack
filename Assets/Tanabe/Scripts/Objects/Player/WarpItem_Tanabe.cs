@@ -34,7 +34,14 @@ public class WarpItem_Tanabe : NetworkBehaviour
     {
         if (m_item.GetItemStateType() != ItemStateMachine.ItemStateType.THROW || m_isWarp || other.GetComponent<Player_Tanabe>() != null) { return; }
         m_isWarp = true;
-        this.RpcWarp(m_item.GetPlayerData().gameObject);
+        if (m_item.GetPlayerData() == null && other.GetComponent<Player_Tanabe>() != null)
+        {
+            this.RpcWarp(other.GetComponent<Player_Tanabe>().gameObject);
+        }
+        else
+        {
+            this.RpcWarp(m_item.GetPlayerData().gameObject);
+        }
     }
 
     public void RpcWarp(GameObject _player)
