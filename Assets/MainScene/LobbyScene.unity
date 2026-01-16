@@ -25809,7 +25809,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _warpPoint: {fileID: 1347726137}
-  sound1: {fileID: 0}
+  sound1: {fileID: 8300000, guid: c74e9f7981cb14744a8ceedc0c3557a6, type: 3}
 --- !u!65 &757735197
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -66367,7 +66367,7 @@ MonoBehaviour:
   _spriteSpriteRenderer:
   - {fileID: 1888247975}
   - {fileID: 949589835}
-  _redPlayer: {fileID: 21300000, guid: dff155b58b8ea284da33c35e8fcf3282, type: 3}
+  _redPlayer: {fileID: 21300000, guid: 3ea288396f0cd7c4b81c966a0f83446a, type: 3}
   _whitePlayer: {fileID: 21300000, guid: f0bc01da350cfe848814a383e59bd6c6, type: 3}
   _targetCheck: {fileID: 1525802341}
 --- !u!4 &1911094300
@@ -74444,6 +74444,7 @@ MonoBehaviour:
   _drink_hp: {fileID: 21300000, guid: 00e58319d36d8d24cb88a55f94eae23e, type: 3}
   _gum: {fileID: 21300000, guid: fc20165acd44efa458d09f9ff9daf057, type: 3}
   _drink_stamina: {fileID: 21300000, guid: 9c1dc5854fd06bd46ba121c01ed6fe15, type: 3}
+  _warpItem: {fileID: 0}
   _transparent: {fileID: 21300000, guid: 4123e33cf1466ca4a9dd84b794e3c860, type: 3}
 --- !u!224 &3767186298239749164
 RectTransform:

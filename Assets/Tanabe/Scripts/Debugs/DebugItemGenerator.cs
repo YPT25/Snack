@@ -1,25 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
 public class DebugItemGenerator : NetworkBehaviour
 {
+    // ===============================
+    // 生成するアイテムのプレハブ
+    // ===============================
     [Header("生成するアイテムのプレハブ")]
     [Tooltip("トリガーに入ったとき生成されるアイテム")]
     [SerializeField] private GameObject m_itemPrefab;
 
+    // ===============================
+    // 効果音
+    // ===============================
     [Header("SE")]
-    [Header("ボタンを押した音")]
-    [SerializeField] public AudioClip sound1;
+    [Tooltip("ボタンを押した音")]
+    [SerializeField] private AudioClip sound1;
 
-    [Tooltip("AudioSource")] private AudioSource audioSource;
-    // 当たったトリガー
+    // ===============================
+    // AudioSource
+    // ===============================
+    private AudioSource audioSource;
+
+    // ===============================
+    // トリガー判定フラグ
+    // ===============================
     private bool _isTrigger = false;
 
     private void Start()
     {
-        //Componentを取得
+        // AudioSourceコンポーネントを取得
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -29,40 +39,51 @@ public class DebugItemGenerator : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null) { return; }
+        // レイヤー6 または Player_Tanabe が無ければ処理しない
+        if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null)
+            return;
 
-        // 生成したか確認する
+        // すでに生成済みなら処理しない
         if (_isTrigger) return;
 
-        // 生成したらtrueにする
+        // 生成済みフラグを立てる
         _isTrigger = true;
 
-        // アイテムを生成する
-        GameObject obj = Instantiate(m_itemPrefab, transform.position, Quaternion.identity);
+        // アイテムを生成
+        GameObject obj = Instantiate(
+            m_itemPrefab,
+            transform.position,
+            Quaternion.identity
+        );
 
-        // ネットワーク上にスポーンさせる
+        // ネットワーク上にスポーン
         NetworkServer.Spawn(obj);
 
-        // 音声を流す
-        this.RpcPlaySE();
+        // サーバーから全クライアントへSE再生
+        RpcPlaySE();
     }
 
+    // ------------------------------
+    // サーバー専用：トリガー退出時の処理
+    // ------------------------------
     [ServerCallback]
-
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null) { return; }
+        // レイヤー6 または Player_Tanabe が無ければ処理しない
+        if (other.gameObject.layer == 6 || other.gameObject.GetComponent<Player_Tanabe>() == null)
+            return;
 
-        // 離れたらfalse
+        // トリガー解除
         _isTrigger = false;
     }
+
     // ===============================
-    // サーバーから全クライアントへSE再生
+    // サーバー → 全クライアントへSE再生
     // ===============================
     [ClientRpc]
     private void RpcPlaySE()
     {
-        // AudioSourceが存在しない場合は処理しない
+        // AudioSourceが無ければ処理しない
         if (audioSource == null) return;
 
         // 効果音を再生

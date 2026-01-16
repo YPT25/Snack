@@ -55,6 +55,8 @@ public class PlayerWeaponManager : NetworkBehaviour
 
         StartCoroutine(FixRotationNextFrame(newPlayer, oldPlayer.transform.rotation));
 
+
+
         if (state != null)
         {
             state.SavePlayerModel(conn, playerNumber);

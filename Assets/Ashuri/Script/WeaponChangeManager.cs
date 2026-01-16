@@ -1,44 +1,60 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponChangeManager : NetworkBehaviour
 {
+    // ===============================
+    // プレイヤーの武器番号
+    // ===============================
     [Header("プレイヤーの武器番号")]
     [Tooltip("0:銃・1:ハンマー")]
     [SerializeField] private int weaponNumber;
 
+    // ===============================
+    // 効果音
+    // ===============================
     [Header("SE")]
-    [Header("ボタンを押した音")]
-    [SerializeField] public AudioClip sound1;
+    [Tooltip("ボタンを押した音")]
+    [SerializeField] private AudioClip sound1;
 
-    [Tooltip("AudioSource")] private AudioSource audioSource;
+    // ===============================
+    // AudioSource
+    // ===============================
+    private AudioSource audioSource;
+
     private void Start()
     {
-        //Componentを取得
+        // AudioSourceコンポーネントを取得
         audioSource = GetComponent<AudioSource>();
     }
 
     // ----------------------------------------------------
-    // プレイヤーが触れたら変身処理を呼ぶ
+    // プレイヤーが触れたときの処理（クライアント側）
     // ----------------------------------------------------
     private void OnTriggerEnter(Collider other)
     {
-        // プレイヤーかチェック
+        // PlayerWeaponManagerを取得
         PlayerWeaponManager manager = other.GetComponent<PlayerWeaponManager>();
         if (manager == null) return;
 
-        // ローカルプレイヤーのみ反応
+        // ローカルプレイヤーのみ処理
         if (!manager.isLocalPlayer) return;
 
-        Debug.Log("アイテムに触れた → プレイヤーの変更処理を呼び出す");
-
-        // プレイヤーのメソッドを呼び出す
+        // プレイヤーの武器変更処理
         manager.TryChangePlayer(weaponNumber);
 
-        //音声を流す
-        this.RpcPlaySE();
+        // サーバーへSE再生要求を送る
+        CmdRequestPlaySE();
+    }
+
+    // ===============================
+    // クライアントからサーバーへ通知
+    // ===============================
+    [Command]
+    private void CmdRequestPlaySE()
+    {
+        // サーバーから全クライアントへSE再生
+        RpcPlaySE();
     }
 
     // ===============================

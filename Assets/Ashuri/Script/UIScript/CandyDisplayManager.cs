@@ -38,6 +38,9 @@ public class CandyDisplayManager : MonoBehaviour
     [Tooltip("ドリンク(Stamoina)")]
     [SerializeField] private Sprite _drink_stamina;
 
+    [Tooltip("ワープアイテム")]
+    [SerializeField] private Sprite _warpItem;
+
     [Tooltip("何もないときの透明画像")]
     [SerializeField] private Sprite _transparent;
 
@@ -180,6 +183,13 @@ public class CandyDisplayManager : MonoBehaviour
         if(type == ItemNameID.DRINK_STAMINAN)
         {
             target.sprite = _drink_stamina;
+            return;
+        }
+
+        //ワープアイテム
+        if(type == ItemNameID.WARP_BALL)
+        {
+            target.sprite = _warpItem;
             return;
         }
 

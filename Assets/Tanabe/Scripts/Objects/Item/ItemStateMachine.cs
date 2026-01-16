@@ -40,6 +40,7 @@ public class ItemStateMachine : NetworkBehaviour
         DRINK_SPEEDUP,
         DRINK_HEALING,
         DRINK_STAMINAN,
+        WARP_BALL,
     }
 
 

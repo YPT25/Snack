@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 4911396726202867824}
   - component: {fileID: 5526887556520382659}
   - component: {fileID: 3246064891788539427}
+  - component: {fileID: -1501810190700857887}
   m_Layer: 6
   m_Name: Item_warp
   m_TagString: Untagged
@@ -187,6 +188,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   m_itemType: 3
+  m_itemNameID: 10
   moveSpeed: 8
   rotateSpeed: 30
   m_point: 0
@@ -253,6 +255,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ffca312bf6ef8340aa6f63aa20e8db7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &-1501810190700857887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7178753030872136944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32bbf70796f64554e86a284bf6f8be58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncDirection: 0

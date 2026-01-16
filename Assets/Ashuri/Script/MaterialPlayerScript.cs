@@ -15,46 +15,50 @@ public class MaterialPlayerScript : NetworkBehaviour
     [Header("シェーダー")]
     [SerializeField] private GameObject m_SprayObject;
 
+    // ===============================
+    // 効果音
+    // ===============================
     [Header("SE")]
-    [Header("ボタンを押した音")]
-    [SerializeField] public AudioClip sound1;
+    [Tooltip("ボタンを押した音")]
+    [SerializeField] private AudioClip sound1;
 
-    [Tooltip("AudioSource")] private AudioSource audioSource;
+    // ===============================
+    // AudioSource
+    // ===============================
+    private AudioSource audioSource;
 
     private void Start()
     {
-        //Componentを取得
+        // AudioSourceコンポーネントを取得
         audioSource = GetComponent<AudioSource>();
     }
 
     // ===============================
-    // 衝突時の処理
+    // 衝突時の処理（クライアント側）
     // ===============================
     private void OnTriggerEnter(Collider other)
     {
-        // ===============================
-        // ローカルプレイヤー判定
-        // ===============================
-        // 衝突相手から PlayerColorChanger を取得
+        // PlayerColorChangerを取得
         var changer = other.gameObject.GetComponentInParent<PlayerColorChanger>();
 
-        // changer が存在し なおかつ ローカルプレイヤーなら実行
+        // ローカルプレイヤーのみ処理
         if (changer != null && changer.isLocalPlayer)
         {
-            // クライアント → サーバーへ色変更リクエスト
+            // クライアントからサーバーへ色変更リクエスト
             changer.CmdChangeMaterial(_materialIndex);
-            //音声を流す
-            this.RpcPlaySE();
+
+            // クライアントからサーバーへSE再生リクエスト
+            CmdRequestPlaySE();
         }
 
         // ===============================
-        // サーバーでのみ生成
+        // サーバー以外は以降の処理をしない
         // ===============================
         if (!isServer)
             return;
 
         // ===============================
-        // スプレー生成
+        // スプレーオブジェクト生成
         // ===============================
         GameObject obj = Instantiate(
             m_SprayObject,
@@ -63,12 +67,12 @@ public class MaterialPlayerScript : NetworkBehaviour
         );
 
         // ===============================
-        // ネットワークSpawn
+        // ネットワーク上にSpawn
         // ===============================
         NetworkServer.Spawn(obj);
 
         // ===============================
-        // 色を設定
+        // 色をサーバー側で設定
         // ===============================
         SprayEffectMaterial spray = obj.GetComponent<SprayEffectMaterial>();
         if (spray != null)
@@ -78,12 +82,22 @@ public class MaterialPlayerScript : NetworkBehaviour
     }
 
     // ===============================
-    // サーバーから全クライアントへSE再生
+    // クライアント → サーバーへSE再生要求
+    // ===============================
+    [Command]
+    private void CmdRequestPlaySE()
+    {
+        // サーバーから全クライアントへSE再生
+        RpcPlaySE();
+    }
+
+    // ===============================
+    // サーバー → 全クライアントへSE再生
     // ===============================
     [ClientRpc]
     private void RpcPlaySE()
     {
-        // AudioSourceが存在しない場合は処理しない
+        // AudioSourceが無ければ処理しない
         if (audioSource == null) return;
 
         // 効果音を再生

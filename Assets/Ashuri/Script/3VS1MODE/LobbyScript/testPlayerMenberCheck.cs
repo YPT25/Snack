@@ -78,7 +78,7 @@ public class testPlayerMenberCheck : NetworkBehaviour
         }
         else
         {
-            holder.ServerSetTeamAndName("Team2", Color.blue, 1);
+            holder.ServerSetTeamAndName("Team2", Color.black, 1);
             Debug.LogError("ê›íËÇ≥ÇÍÇΩ");
         }
     }
