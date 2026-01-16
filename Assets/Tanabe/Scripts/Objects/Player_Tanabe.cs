@@ -273,6 +273,8 @@ public class Player_Tanabe : CharacterBase
     {
         // ローカルプレイヤー以外は処理しない
         if (!this.isLocalPlayer) { return; }
+        //保存されていたら
+        this.CmdRequestNameColor();
         // HPが0かつ、頭オブジェクトとの親子関係がある場合通す
         if (GetHp() <= 0.0f && m_headObject != null)
         {
