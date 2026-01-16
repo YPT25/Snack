@@ -14151,6 +14151,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 835005210}
     m_Modifications:
+    - target: {fileID: 2242006964507600473, guid: 592001f81c8a5d24eb5dbaa7f96fe4e2, type: 3}
+      propertyPath: m_itemPrefab
+      value: 
+      objectReference: {fileID: 3672497841849040991, guid: e51cb487b8ee110499589f30228433ee, type: 3}
     - target: {fileID: 3153522276919027645, guid: 592001f81c8a5d24eb5dbaa7f96fe4e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -299.15
@@ -28117,6 +28121,7 @@ GameObject:
   - component: {fileID: 833136329}
   - component: {fileID: 833136331}
   - component: {fileID: 833136330}
+  - component: {fileID: 833136332}
   m_Layer: 0
   m_Name: "\u7ACB\u65B9\u4F53.001"
   m_TagString: Untagged
@@ -28132,13 +28137,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833136328}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.038446993, y: -0.009792641, z: 0.020580668, w: 0.9990007}
-  m_LocalPosition: {x: 103.76729, y: -32.073174, z: -0.06519508}
+  m_LocalRotation: {x: -0.03777917, y: -0.8535395, z: -0.021782374, w: 0.51919997}
+  m_LocalPosition: {x: 103.64, y: -32.073174, z: 0.96}
   m_LocalScale: {x: 163.17944, y: 11.000879, z: 49.88667}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1034154251}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -4.382, y: -117.469, z: 2.407}
 --- !u!23 &833136330
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -28189,6 +28194,27 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833136328}
   m_Mesh: {fileID: 1243799223545203308, guid: 727c19e034a18f64d835a5d2865971ce, type: 3}
+--- !u!65 &833136332
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833136328}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.020000003, y: 0.02, z: 0.038201444}
+  m_Center: {x: 4.471319e-12, y: 0.00000023841858, z: 0.009602054}
 --- !u!1 &835005209
 GameObject:
   m_ObjectHideFlags: 0
@@ -51128,7 +51154,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 0.5
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

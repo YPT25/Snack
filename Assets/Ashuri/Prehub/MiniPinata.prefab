@@ -29199,7 +29199,8 @@ MonoBehaviour:
   - {fileID: 6164463997081074741, guid: 78aa09b9fe1eb2c4f87e35d4670ea547, type: 3}
   - {fileID: 3970781454396566587, guid: 4b6fd784c4d098149929e6282b8be3e8, type: 3}
   - {fileID: 1428976237933366271, guid: e66cde8831abfdf469265bfee3653a74, type: 3}
-  m_dropItemCount: 7
+  - {fileID: 3672497841849040991, guid: e51cb487b8ee110499589f30228433ee, type: 3}
+  m_dropItemCount: 8
 --- !u!114 &8820081859773714528
 MonoBehaviour:
   m_ObjectHideFlags: 0
