@@ -17,7 +17,6 @@ public class OffSceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!EscQuit.Instance._isOptionOpen) return;
         if (Input.GetButtonDown("Jump")|| Input.GetMouseButtonDown(0))
         {
             SceneManager.LoadScene("TitleTest");
